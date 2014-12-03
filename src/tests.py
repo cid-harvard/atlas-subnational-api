@@ -1,7 +1,7 @@
 from flask.ext.testing import TestCase
 
 from colombia import create_app
-from colombia.models import db
+from colombia.models import db, Municipality, HSProduct
 import factories
 
 
@@ -10,7 +10,8 @@ class ChassisTestCase(TestCase):
     asserts."""
 
     def create_app(self):
-        return create_app()
+        return create_app({"SQLALCHEMY_DATABASE_URI":
+                           self.SQLALCHEMY_DATABASE_URI})
 
     def setUp(self):
         db.create_all()
@@ -20,9 +21,28 @@ class ChassisTestCase(TestCase):
         db.drop_all()
 
 
+class TestModels(ChassisTestCase):
+
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
+
+    def try_model(self, factory, model):
+        self.assertEquals(db.session.query(model).count(), 0)
+
+        thing = factory()
+        db.session.commit()
+
+        self.assertEquals(db.session.query(model).count(), 1)
+
+    def test_locations(self):
+        self.try_model(factories.Municipality, Municipality)
+
+    def test_products(self):
+        self.try_model(factories.HSProduct, HSProduct)
+
+
 class TestCat(ChassisTestCase):
 
-    SQLALCHEMY_DATABASE_URI = "sqlite://:memory:"
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
 
     def test_get_cat(self):
         """Test to see if you can get a message by ID."""
