@@ -71,34 +71,64 @@ class HSProduct(BaseModel, IDMixin, LanguagesMixin):
     """
     __tablename__ = "product"
 
+    #: Possible aggregation levels
     AGGREGATIONS = [
         "section",
         "2digit",
         "4digit"
     ]
+    #: Enum that contains level of aggregation - how many "digits" of detail
     aggregation = db.Column(db.Enum(*AGGREGATIONS))
 
+    #: Canonical name of the product - in non_colloquial english (i.e. name vs
+    #: name_en)
     name = db.Column(db.String(50))
 
 
 class Location(BaseModel, IDMixin):
+    """A geographical location."""
     __tablename__ = "location"
+    type = db.Column(db.String(10))
+    __mapper_args__ = {
+        'polymorphic_identity': 'location',
+        'polymorphic_on': type
+    }
 
+    #: Possible aggregation levels
     AGGREGATIONS = [
         "municipality",
         "department",
     ]
+    #: Enum that contains level of aggregation - municipalities, cities,
+    #: regions, departments
     aggregation = db.Column(db.Enum(*AGGREGATIONS))
 
+    #: Name of the location in the most common language
     name = db.Column(db.String(50))
+
+    #: Location code - zip code or DANE code, etc
     code = db.Column(db.String(5))
 
+
+class Municipality(Location):
+    """A municipality that has a 5-digit code."""
+
+    __tablename__ = "municipality"
+    __mapper_args__ = {
+        'polymorphic_identity':'municipality',
+    }
+
+    id = db.Column(db.Integer,
+                   db.ForeignKey('location.id'), primary_key=True)
+
+    #: Possible sizes of a municipality
     SIZE = [
         "city",
         "midsize",
         "rural"
     ]
-    aggregation = db.Column(db.Enum(*SIZE))
+    #: Size of the municipality
+    size = db.Column(db.Enum(*SIZE))
 
     pop_2012 = db.Column(db.Integer)
     nbi = db.Column(db.Numeric)
