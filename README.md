@@ -1,31 +1,6 @@
-Chassis
-======
+Colombia Atlas
+==============
 
-Chassis is a "batteries included" boilerplate flask project to use as a quick
-starting point, especially for REST services.
-
-To see how easy it is to get up and running with Flask and Chassis, check out my 10 minute live coding presentation at the Boston Python group, where I write a backend for a backbone.js TODO app: https://github.com/malicustommade/chassis-backbonetodo 
-
-
-Features
---------
-
-* Clean and simple app factory model
-* Self-bootstrapping virtualenv
-* Separate requirements for dev and production, one pinned and the other
-  unpinned
-* Smart Makefile for common tasks
-* Error tracking with Sentry/raven
-* REST-y views with Flask-restful
-* Flask-Cache
-* Flask-DebugToolbar
-* Werkzeug Profiler Middleware
-* Flask-Script ./manage.py with shell already set
-* Flask-SQLAlchemy
-* Tests with unittest, nose, coverage.py
-* Factories with factory\_boy and faker
-* Sphinx docs with flask-style theme
-* sphinxcontrib-httpdomain for REST docs
 
 Usage
 -----
