@@ -134,5 +134,5 @@ class Municipality(Location):
     #: Size of the municipality
     size = db.Column(db.Enum(*SIZE))
 
-    pop_2012 = db.Column(db.Integer)
+    population = db.Column(db.Integer)
     nbi = db.Column(db.Numeric)
