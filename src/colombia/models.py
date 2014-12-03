@@ -1,4 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_method
 
 import time
 import random
@@ -22,6 +23,22 @@ class BaseModel(db.Model):
 class IDMixin:
     """Adds in an autoincremented integer ID."""
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+
+class LanguagesMixin:
+    """"
+    Mixin to include language support in a database object, plus convenience
+    functions.
+
+    - TODO: Write a make_languages(lang_list, string_length) to have this not
+    be hardcoded values.
+    """
+    en = db.Column(db.String(50))
+    es = db.Column(db.String(50))
+
+    @hybrid_method
+    def localized_name(self, lang):
+        return getattr(self, lang)
 
 
 class Cat(BaseModel):
