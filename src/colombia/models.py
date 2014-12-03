@@ -24,6 +24,9 @@ class IDMixin:
     """Adds in an autoincremented integer ID."""
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
+    def __repr__(self):
+        return "<{0}: {1}>".format(self.__class__.__name__, self.id)
+
 
 class LanguageMixin:
     """"
@@ -83,6 +86,8 @@ class HSProduct(BaseModel, IDMixin, LanguageMixin):
     #: name_en)
     name = db.Column(db.String(50))
 
+    def __repr__(self):
+        return "<HSProduct: %d, %s>" % (self.id, self.name)
 
 class Location(BaseModel, IDMixin):
     """A geographical location."""
