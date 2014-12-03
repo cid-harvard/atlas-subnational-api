@@ -37,3 +37,22 @@ Python API Reference
 
 .. autoclass:: colombia.models.Cat
     :members:
+
+.. autoclass:: colombia.models.HSProduct
+    :members:
+
+.. autoclass:: colombia.models.Location
+    :members:
+
+.. autoclass:: colombia.models.Municipality
+    :members:
+
+Mixins
+------
+
+.. autoclass:: colombia.models.LanguageMixin
+    :members:
+
+.. autoclass:: colombia.models.IDMixin
+    :members:
+
