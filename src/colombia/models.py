@@ -19,6 +19,11 @@ class BaseModel(db.Model):
     }
 
 
+class IDMixin:
+    """Adds in an autoincremented integer ID."""
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+
 class Cat(BaseModel):
     """
     A cat is a silly animal that belongs on the internet.
