@@ -25,7 +25,7 @@ class IDMixin:
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
 
-class LanguagesMixin:
+class LanguageMixin:
     """"
     Mixin to include language support in a database object, plus convenience
     functions.
@@ -64,8 +64,7 @@ class Cat(BaseModel):
                      unique=True)
 
 
-
-class HSProduct(BaseModel, IDMixin, LanguagesMixin):
+class HSProduct(BaseModel, IDMixin, LanguageMixin):
     """A product according to the HS4 (Harmonized System) classification.
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
     """
