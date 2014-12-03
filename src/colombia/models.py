@@ -62,3 +62,43 @@ class Cat(BaseModel):
                      nullable=False,
                      default=new_cat_name,
                      unique=True)
+
+
+
+class HSProduct(BaseModel, IDMixin, LanguagesMixin):
+    """A product according to the HS4 (Harmonized System) classification.
+    Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
+    """
+    __tablename__ = "product"
+
+    AGGREGATIONS = [
+        "section",
+        "2digit",
+        "4digit"
+    ]
+    aggregation = db.Column(db.Enum(*AGGREGATIONS))
+
+    name = db.Column(db.String(50))
+
+
+class Location(BaseModel, IDMixin):
+    __tablename__ = "location"
+
+    AGGREGATIONS = [
+        "municipality",
+        "department",
+    ]
+    aggregation = db.Column(db.Enum(*AGGREGATIONS))
+
+    name = db.Column(db.String(50))
+    code = db.Column(db.String(5))
+
+    SIZE = [
+        "city",
+        "midsize",
+        "rural"
+    ]
+    aggregation = db.Column(db.Enum(*SIZE))
+
+    pop_2012 = db.Column(db.Integer)
+    nbi = db.Column(db.Numeric)
