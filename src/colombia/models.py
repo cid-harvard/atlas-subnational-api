@@ -1,10 +1,8 @@
-from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_method
+from colombia.ext import db
 
 import time
 import random
-
-db = SQLAlchemy()
 
 
 def new_cat_name(prefix="mittens"):

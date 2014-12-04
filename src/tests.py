@@ -11,7 +11,8 @@ class ChassisTestCase(TestCase):
 
     def create_app(self):
         return create_app({"SQLALCHEMY_DATABASE_URI":
-                           self.SQLALCHEMY_DATABASE_URI})
+                           self.SQLALCHEMY_DATABASE_URI,
+                           "TESTING": True})
 
     def setUp(self):
         db.create_all()

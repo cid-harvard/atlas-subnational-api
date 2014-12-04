@@ -1,10 +1,8 @@
 from flask.ext import restful
 from flask.ext.restful import fields, marshal_with
-from flask.ext.cache import Cache
 from colombia.models import Cat
+from colombia.ext import cache
 
-api = restful.Api()
-cache = Cache()
 
 cat_fields = {
     'id': fields.String,
