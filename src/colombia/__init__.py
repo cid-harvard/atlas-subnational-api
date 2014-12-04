@@ -9,7 +9,7 @@ def create_app(config={}):
     app.config.from_envvar("FLASK_CONFIG")
     app.config.update(config)
 
-    from colombia.ext import api, cache, db
+    from colombia.ext import api, cache, db, restless_api
 
     cache.init_app(app)
     db.init_app(app)
@@ -20,6 +20,11 @@ def create_app(config={}):
     # Workaround for weird bug, instead of init_app
     # https://github.com/flask-restful/flask-restful/issues/357
     api.blueprint = app
+
+    #from colombia.models import HSProduct
+    #restless_api.init_app(app, flask_sqlalchemy_db=db)
+    #restless_api.create_api(HSProduct, ['GET'], exclude_columns=["en", "es"],
+    #                        results_per_page=-1)
 
     with app.app_context():
         db.create_all()
