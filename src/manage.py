@@ -2,8 +2,6 @@ from colombia import create_app, models
 import factories
 from flask.ext.script import Manager, Shell
 
-
-
 app = create_app()
 manager = Manager(app)
 
@@ -22,7 +20,7 @@ def dummy(n=10):
 
     ids = []
     for x in range(0, int(n)):
-        m = factories.Cat()
+        m = factories.HSProduct()
         ids.append(m.id)
     models.db.session.commit()
 
