@@ -1,20 +1,20 @@
 from flask.ext import restful
 from flask.ext.restful import fields, marshal_with
-from colombia.models import Cat
-from colombia.ext import cache
+from colombia.models import HSProduct
+from colombia import ext
 
 
-cat_fields = {
+hs_product_fields = {
     'id': fields.String,
     'born_at': fields.Integer,
     'name': fields.String,
 }
 
 
-class CatAPI(restful.Resource):
+class HSProductAPI(restful.Resource):
 
-    @cache.cached(timeout=60)
-    @marshal_with(cat_fields)
+    @ext.cache.cached(timeout=60)
+    @marshal_with(hs_product_fields)
     def get(self, cat_id):
         """Get a :py:class:`~colombia.models.Cat` with the given cat ID.
 
@@ -24,6 +24,6 @@ class CatAPI(restful.Resource):
 
         """
 
-        q = Cat.query.get_or_404(cat_id)
+        q = HSProduct.query.get_or_404(cat_id)
 
         return q

@@ -1,11 +1,17 @@
 from flask.ext.testing import TestCase
 
 from colombia import create_app
-from colombia.models import db, Municipality, HSProduct
+from colombia import ext
+from colombia.models import Municipality, HSProduct
+from colombia.views import HSProductAPI
 import factories
+
+db = ext.db
+api = ext.api
 
 
 class ChassisTestCase(TestCase):
+
     """Base TestCase to add in convenience functions, defaults and custom
     asserts."""
 
@@ -20,6 +26,7 @@ class ChassisTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        ext.reset()
 
 
 class TestModels(ChassisTestCase):
@@ -41,19 +48,15 @@ class TestModels(ChassisTestCase):
         self.try_model(factories.HSProduct, HSProduct)
 
 
-class TestCat(ChassisTestCase):
+class TestMetadataAPIs(ChassisTestCase):
 
     SQLALCHEMY_DATABASE_URI = "sqlite://"
 
-    def test_get_cat(self):
+    def test_get_hsproducts(self):
         """Test to see if you can get a message by ID."""
 
-        cat = factories.Cat()
+        product = factories.HSProduct()
         db.session.commit()
 
-        response = self.client.get("/cats/" + str(cat.id))
+        response = self.client.get(api.url_for(HSProductAPI, cat_id=1))
         self.assert_200(response)
-        resp_json = response.json
-        self.assertEquals(resp_json["id"], str(cat.id))
-        self.assertEquals(resp_json["born_at"], cat.born_at)
-        self.assertEquals(resp_json["name"], cat.name)

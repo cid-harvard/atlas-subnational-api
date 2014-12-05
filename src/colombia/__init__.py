@@ -3,23 +3,46 @@ from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.contrib.profiler import ProfilerMiddleware
 
+from flask.ext.cache import Cache
+from raven.contrib.flask import Sentry
+from flask.ext import restful, restless
+from flask.ext.sqlalchemy import SQLAlchemy
+
+
+class ext(object):
+    """Flask extensions."""
+
+    db = SQLAlchemy()
+    sentry = Sentry()
+    api = restful.Api()
+    cache = Cache()
+    restless_api = restless.APIManager()
+
+    @classmethod
+    def reset(cls):
+        """To use in unittest teardowns - reset all extensions."""
+        cls.db = SQLAlchemy()
+        cls.sentry = Sentry()
+        cls.api = restful.Api()
+        cls.cache = Cache()
+        cls.restless_api = restless.APIManager()
+
 
 def create_app(config={}):
     app = Flask("colombia")
     app.config.from_envvar("FLASK_CONFIG")
     app.config.update(config)
 
-    from colombia.ext import api, cache, db, restless_api
+    cache, db, api = ext.cache, ext.db, ext.api
 
     cache.init_app(app)
     db.init_app(app)
 
     # API Endpoints
-    from colombia.views import CatAPI
-    api.add_resource(CatAPI, "/cats/<int:cat_id>")
-    # Workaround for weird bug, instead of init_app
-    # https://github.com/flask-restful/flask-restful/issues/357
-    api.blueprint = app
+    from colombia.views import HSProductAPI
+    api.add_resource(HSProductAPI, "/products/<int:cat_id>",
+                     endpoint="product")
+    api.init_app(app)
 
     #from colombia.models import HSProduct
     #restless_api.init_app(app, flask_sqlalchemy_db=db)

@@ -1,8 +1,10 @@
 from sqlalchemy.ext.hybrid import hybrid_method
-from colombia.ext import db
+from colombia import ext
 
 import time
 import random
+
+db = ext.db
 
 
 def new_cat_name(prefix="mittens"):
