@@ -31,13 +31,10 @@ class HSProductListAPI(restful.Resource):
 
     @marshal_with(hs_product_fields)
     def get(self):
-        """Get a :py:class:`~colombia.models.HSProduct` with the given code.
+        """Get all the :py:class:`~colombia.models.HSProduct`s.
 
-        :param code: See :py:class:`colombia.models.HSProduct.code`
-        :type code: int
         :query aggregation:  Filter by
           :py:class:`colombia.models.HSProduct.aggregation` if specified.
-        :code 404: product doesn't exist
         """
 
         aggregation = request.args.get("aggregation", None)
