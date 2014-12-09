@@ -127,7 +127,9 @@ class Location(BaseModel, IDMixin):
 
 
 class Municipality(Location):
-    """A municipality that has a 5-digit code."""
+    """A municipality that has a 5-digit code. Cities often contain multiple
+    municipalities, but there are also standalone municipalities that are not
+    part of any city."""
 
     __tablename__ = "municipality"
     __mapper_args__ = {
