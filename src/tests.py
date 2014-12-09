@@ -3,7 +3,7 @@ from flask.ext.testing import TestCase
 from colombia import create_app
 from colombia import ext
 from colombia.models import Municipality, HSProduct
-from colombia.views import HSProductAPI
+from colombia.views import HSProductAPI, HSProductListAPI
 import factories
 
 db = ext.db
@@ -52,8 +52,7 @@ class TestMetadataAPIs(ChassisTestCase):
 
     SQLALCHEMY_DATABASE_URI = "sqlite://"
 
-    def test_get_hsproducts(self):
-        """Test to see if you can get a message by ID."""
+    def test_get_hsproduct(self):
 
         product = factories.HSProduct()
         db.session.commit()
@@ -61,3 +60,21 @@ class TestMetadataAPIs(ChassisTestCase):
         response = self.client.get(api.url_for(HSProductAPI,
                                                code=product.code))
         self.assert_200(response)
+
+    def test_get_hsproducts(self):
+
+        p1 = factories.HSProduct(aggregation="2digit", code="22")
+        p2 = factories.HSProduct(aggregation="4digit", code="1234")
+        p3 = factories.HSProduct(aggregation="section", code="A")
+        db.session.commit()
+
+        for p in [p1, p2, p3]:
+            response = self.client.get(api.url_for(HSProductListAPI,
+                                                   aggregation=p.aggregation))
+            self.assert_200(response)
+            self.assertEquals(len(response.json), 1)
+            self.assertEquals(response.json[0]["code"], p.code)
+
+        response = self.client.get(api.url_for(HSProductListAPI))
+        self.assert_200(response)
+        self.assertEquals(len(response.json), 3)

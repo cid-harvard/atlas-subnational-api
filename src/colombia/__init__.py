@@ -39,9 +39,10 @@ def create_app(config={}):
     db.init_app(app)
 
     # API Endpoints
-    from colombia.views import HSProductAPI
+    from colombia.views import HSProductAPI, HSProductListAPI
     api.add_resource(HSProductAPI, "/products/<int:code>",
                      endpoint="product")
+    api.add_resource(HSProductListAPI, "/products/", endpoint="products")
     api.init_app(app)
 
     #from colombia.models import HSProduct
