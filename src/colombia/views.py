@@ -43,12 +43,6 @@ class HSProductListAPI(restful.Resource):
         q = HSProduct.query
 
         aggregation = request.args.get("aggregation", None)
-        if aggregation is not None:
-            if aggregation not in HSProduct.AGGREGATIONS:
-                msg = "Expected one of: {0}, got {1}"\
-                    .format(HSProduct.AGGREGATIONS, aggregation)
-                restful.abort(400, message=msg)
-
-            q = q.filter_by(aggregation=aggregation)
+        q = q.filter_by_enum(HSProduct.aggregation, aggregation)
 
         return q.all()

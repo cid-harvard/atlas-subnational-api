@@ -1,5 +1,6 @@
 from flask import abort
 from sqlalchemy.ext.hybrid import hybrid_method
+from flask.ext import restful
 
 from colombia import ext
 
@@ -17,6 +18,27 @@ class BaseQuery(db.Query):
         """Get first result or return an error code."""
         result = self.first()
         return result or abort(http_code)
+
+    def filter_by_enum(self, enum, value, possible_values=None, http_code=400):
+        """
+        Filters a query object by an enum, testing that it got a valid value.
+
+        :param enum: Enum column from model, e.g. Vehicle.type
+        :param value: Value to filter by
+        :param possible_values: None or list of acceptable values for `value`
+        """
+        if value is None:
+            return self
+
+        if possible_values is None:
+            possible_values = enum.property.columns[0].type.enums
+
+        if value not in possible_values:
+            msg = "Expected one of: {0}, got {1}"\
+                .format(possible_values, value)
+            restful.abort(http_code, message=msg)
+
+        return self.filter(enum == value)
 
 
 class BaseModel(db.Model):
