@@ -36,13 +36,13 @@ class HSProductListAPI(restful.Resource):
 
         :param code: See :py:class:`colombia.models.HSProduct.code`
         :type code: int
-        :query aggregation: :py:class:`colombia.models.HSProduct.aggregation`
+        :query aggregation:  Filter by
+          :py:class:`colombia.models.HSProduct.aggregation` if specified.
         :code 404: product doesn't exist
         """
 
-        q = HSProduct.query
-
         aggregation = request.args.get("aggregation", None)
-        q = q.filter_by_enum(HSProduct.aggregation, aggregation)
+        q = HSProduct.query\
+            .filter_by_enum(HSProduct.aggregation, aggregation)
 
         return q.all()
