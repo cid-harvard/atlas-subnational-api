@@ -40,7 +40,7 @@ def create_app(config={}):
 
     # API Endpoints
     from colombia.views import HSProductAPI
-    api.add_resource(HSProductAPI, "/products/<int:cat_id>",
+    api.add_resource(HSProductAPI, "/products/<int:code>",
                      endpoint="product")
     api.init_app(app)
 

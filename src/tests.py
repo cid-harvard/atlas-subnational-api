@@ -58,5 +58,6 @@ class TestMetadataAPIs(ChassisTestCase):
         product = factories.HSProduct()
         db.session.commit()
 
-        response = self.client.get(api.url_for(HSProductAPI, cat_id=1))
+        response = self.client.get(api.url_for(HSProductAPI,
+                                               code=product.code))
         self.assert_200(response)

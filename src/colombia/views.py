@@ -15,15 +15,15 @@ class HSProductAPI(restful.Resource):
 
     @ext.cache.cached(timeout=60)
     @marshal_with(hs_product_fields)
-    def get(self, cat_id):
-        """Get a :py:class:`~colombia.models.Cat` with the given cat ID.
+    def get(self, code):
+        """Get a :py:class:`~colombia.models.HSProduct` with the given code.
 
-        :param id: unique ID of the cat
-        :type id: int
-        :code 404: cat doesn't exist
+        :param code: See :py:class:`colombia.models.HSProduct.code`
+        :type code: int
+        :code 404: product doesn't exist
 
         """
 
-        q = HSProduct.query.get_or_404(cat_id)
+        q = HSProduct.query.filter_by(code=code).first_or_abort(code)
 
         return q

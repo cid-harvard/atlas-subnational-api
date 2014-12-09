@@ -8,21 +8,11 @@ from factory import fuzzy
 
 import logging
 
-#Suppress factory-boy debug data
+# Suppress factory-boy debug data
 factory_log = logging.getLogger("factory")
 factory_log.setLevel(logging.WARNING)
 
 faker = Fake.create()
-
-
-class Cat(SQLAlchemyModelFactory):
-    FACTORY_FOR = models.Cat
-    FACTORY_SESSION = db.session
-
-    id = factory.LazyAttribute(lambda x: faker.unix_time())
-    born_at = factory.LazyAttribute(lambda x: faker.unix_time())
-
-    name = factory.LazyAttribute(lambda x: faker.first_name())
 
 
 class HSProduct(SQLAlchemyModelFactory):
@@ -35,6 +25,7 @@ class HSProduct(SQLAlchemyModelFactory):
     name = fuzzy.FuzzyChoice(["Petroleum", "Horses", "Cut flowers", "Gold",
                               "Cars", "Packaged medicaments", "Soya beans",
                               "Coal", "T-shirts", "Refrigerators", "Nuts"])
+    code = fuzzy.FuzzyInteger(0, 9999)
 
 
 class Municipality(SQLAlchemyModelFactory):

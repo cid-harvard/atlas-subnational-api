@@ -1,9 +1,7 @@
 from flask import abort
 from sqlalchemy.ext.hybrid import hybrid_method
-from colombia import ext
 
-import time
-import random
+from colombia import ext
 
 db = ext.db
 
@@ -54,29 +52,6 @@ class LanguageMixin:
         return getattr(self, lang)
 
 
-class Cat(BaseModel):
-    """
-    A cat is a silly animal that belongs on the internet.
-
-    Read more about :ref:`cat_architecture` before you
-    make any large changes. Do not try to shoehorn in tangential features,
-    create a new model instead!
-    """
-    __tablename__ = "cat"
-
-    #: Unique cat ID
-    id = db.Column(db.Integer, primary_key=True)
-
-    #: UTC creation stamp
-    born_at = db.Column(db.Integer, nullable=False, default=time.time)
-
-    #: Name of the cat
-    name = db.Column(db.String,
-                     nullable=False,
-                     default=new_cat_name,
-                     unique=True)
-
-
 class HSProduct(BaseModel, IDMixin, LanguageMixin):
     """A product according to the HS4 (Harmonized System) classification.
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
@@ -96,8 +71,13 @@ class HSProduct(BaseModel, IDMixin, LanguageMixin):
     #: name_en)
     name = db.Column(db.String(50))
 
+    #: HS4 code of the product, in the level of aggregation described in
+    #: :py:class:`.aggregation`.
+    code = db.Column(db.String(6))
+
     def __repr__(self):
         return "<HSProduct: %d, %s>" % (self.id, self.name)
+
 
 class Location(BaseModel, IDMixin):
     """A geographical location."""
@@ -129,7 +109,7 @@ class Municipality(Location):
 
     __tablename__ = "municipality"
     __mapper_args__ = {
-        'polymorphic_identity':'municipality',
+        'polymorphic_identity': 'municipality',
     }
 
     id = db.Column(db.Integer,
