@@ -1,3 +1,4 @@
+from flask import abort
 from sqlalchemy.ext.hybrid import hybrid_method
 from colombia import ext
 
@@ -7,9 +8,17 @@ import random
 db = ext.db
 
 
-def new_cat_name(prefix="mittens"):
-    """Returns a random cat name."""
-    return "%s%d" % (prefix, random.randint(0, 9999))
+class BaseQuery(db.Query):
+
+    def get_or_abort(self, obj_id, http_code=404):
+        """Get an object or return an error code."""
+        result = self.get(obj_id)
+        return result or abort(http_code)
+
+    def first_or_abort(self, obj_id, http_code=404):
+        """Get first result or return an error code."""
+        result = self.first()
+        return result or abort(http_code)
 
 
 class BaseModel(db.Model):
@@ -18,6 +27,7 @@ class BaseModel(db.Model):
         'mysql_engine': 'InnoDB',
         'mysql_charset': 'utf8'
     }
+    query_class = BaseQuery
 
 
 class IDMixin:
