@@ -15,7 +15,6 @@ hs_product_fields = {
 
 class HSProductAPI(restful.Resource):
 
-    @ext.cache.cached(timeout=60)
     @marshal_with(hs_product_fields)
     def get(self, code):
         """Get a :py:class:`~colombia.models.HSProduct` with the given code.
