@@ -1,6 +1,6 @@
 .. _projectmessage:
 
-Cats
+APIs
 ====
 
 A cat is the animal which is the core of our business model.
@@ -35,9 +35,6 @@ REST API Reference
 Python API Reference
 --------------------
 
-.. autoclass:: colombia.models.Cat
-    :members:
-
 .. autoclass:: colombia.models.HSProduct
     :members:
 
@@ -45,6 +42,9 @@ Python API Reference
     :members:
 
 .. autoclass:: colombia.models.Municipality
+    :members:
+
+.. autoclass:: colombia.models.Department
     :members:
 
 Mixins

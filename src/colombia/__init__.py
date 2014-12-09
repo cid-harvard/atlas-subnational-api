@@ -39,10 +39,14 @@ def create_app(config={}):
     db.init_app(app)
 
     # API Endpoints
-    from colombia.views import HSProductAPI, HSProductListAPI
-    api.add_resource(HSProductAPI, "/products/<int:code>",
-                     endpoint="product")
+    from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
+                                DepartmentListAPI)
+    api.add_resource(HSProductAPI, "/products/<int:code>", endpoint="product")
     api.add_resource(HSProductListAPI, "/products/", endpoint="products")
+    api.add_resource(DepartmentAPI, "/departments/<int:code>",
+                     endpoint="department")
+    api.add_resource(DepartmentListAPI, "/departments/",
+                     endpoint="departments")
     api.init_app(app)
 
     #from colombia.models import HSProduct

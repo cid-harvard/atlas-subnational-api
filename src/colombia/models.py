@@ -150,3 +150,20 @@ class Municipality(Location):
 
     population = db.Column(db.Integer)
     nbi = db.Column(db.Numeric)
+
+
+class Department(Location):
+    """A grouping of municipalities to create 32ish areas of the country.
+    Departments in Colombia have 2 digit codes, which are the first 2 digits of
+    the 5-digit codes of the constituent municipalities."""
+
+    __tablename__ = "department"
+    __mapper_args__ = {
+        'polymorphic_identity': 'department',
+    }
+
+    id = db.Column(db.Integer,
+                   db.ForeignKey('location.id'), primary_key=True)
+
+    population = db.Column(db.Integer)
+    gdp = db.Column(db.Integer)

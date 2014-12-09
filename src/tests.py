@@ -3,7 +3,9 @@ from flask.ext.testing import TestCase
 from colombia import create_app
 from colombia import ext
 from colombia.models import Municipality, HSProduct
-from colombia.views import HSProductAPI, HSProductListAPI
+from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
+                            DepartmentListAPI)
+
 import factories
 
 db = ext.db
@@ -60,6 +62,8 @@ class TestMetadataAPIs(ChassisTestCase):
         response = self.client.get(api.url_for(HSProductAPI,
                                                code=product.code))
         self.assert_200(response)
+        self.assertEquals(response.json["code"], product.code)
+        self.assertEquals(response.json["name"], product.name)
 
     def test_get_hsproducts(self):
 
@@ -78,3 +82,29 @@ class TestMetadataAPIs(ChassisTestCase):
         response = self.client.get(api.url_for(HSProductListAPI))
         self.assert_200(response)
         self.assertEquals(len(response.json), 3)
+
+    def test_get_department(self):
+
+        dept = factories.Department()
+        db.session.commit()
+
+        response = self.client.get(api.url_for(DepartmentAPI,
+                                               code=dept.code))
+        self.assert_200(response)
+        self.assertEquals(response.json["code"], dept.code)
+        self.assertEquals(response.json["name"], dept.name)
+        self.assertEquals(response.json["population"], dept.population)
+        self.assertEquals(response.json["gdp"], dept.gdp)
+
+    def test_get_departments(self):
+
+        factories.Department(code="22")
+        factories.Department(code="24")
+        factories.Department(code="26")
+        db.session.commit()
+
+        response = self.client.get(api.url_for(DepartmentListAPI))
+        self.assert_200(response)
+        self.assertEquals(len(response.json), 3)
+        self.assertEquals(set(x["code"] for x in response.json),
+                          set(["22", "24", "26"]))
