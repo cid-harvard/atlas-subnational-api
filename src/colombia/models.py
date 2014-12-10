@@ -167,3 +167,21 @@ class Department(Location):
 
     population = db.Column(db.Integer)
     gdp = db.Column(db.Integer)
+
+
+class DepartmentProductYear(BaseModel, IDMixin):
+
+    __tablename__ = "department_product_year"
+
+    department_id = db.Column(db.Integer, db.ForeignKey(Department.id))
+    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
+    year = db.Column(db.Integer)
+
+    department = db.relationship(Department)
+    product = db.relationship(HSProduct)
+
+    import_value = db.Column(db.Integer)
+    export_value = db.Column(db.Integer)
+    export_rca = db.Column(db.Integer)
+    distance = db.Column(db.Float)
+    opp_gain = db.Column(db.Float)

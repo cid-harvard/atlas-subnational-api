@@ -1,7 +1,7 @@
 from flask import request
 from flask.ext import restful
 from flask.ext.restful import fields, marshal_with
-from colombia.models import HSProduct, Department
+from colombia.models import HSProduct, Department, DepartmentProductYear
 
 
 hs_product_fields = {
@@ -17,6 +17,19 @@ department_fields = {
     'name': fields.String,
     'population': fields.Integer,
     'gdp': fields.Integer,
+}
+
+department_product_year_fields = {
+    'import_value': fields.Integer,
+    'export_value': fields.Integer,
+    'export_rca': fields.Float,
+    'distance': fields.Float,
+    'opp_gain': fields.Float,
+
+    'id': fields.Integer,
+    'department_id': fields.Integer,
+    'product_id': fields.Integer,
+    'year': fields.Integer
 }
 
 
@@ -70,5 +83,12 @@ class DepartmentListAPI(restful.Resource):
     @marshal_with(department_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.Department` s."""
-
         return Department.query.all()
+
+
+class DepartmentProductYearAPI(restful.Resource):
+
+    @marshal_with(department_product_year_fields)
+    def get(self, department, year):
+        return DepartmentProductYear.query\
+            .filter_by(department_id=department, year=year).all()

@@ -2,9 +2,9 @@ from flask.ext.testing import TestCase
 
 from colombia import create_app
 from colombia import ext
-from colombia.models import Municipality, HSProduct
+from colombia.models import Municipality, HSProduct, DepartmentProductYear
 from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
-                            DepartmentListAPI)
+                            DepartmentListAPI, DepartmentProductYearAPI)
 
 import factories
 
@@ -48,6 +48,9 @@ class TestModels(ChassisTestCase):
 
     def test_products(self):
         self.try_model(factories.HSProduct, HSProduct)
+
+    def test_DepartmentProductYear(self):
+        self.try_model(factories.DepartmentProductYear, DepartmentProductYear)
 
 
 class TestMetadataAPIs(ChassisTestCase):
@@ -108,3 +111,29 @@ class TestMetadataAPIs(ChassisTestCase):
         self.assertEquals(len(response.json), 3)
         self.assertEquals(set(x["code"] for x in response.json),
                           set(["22", "24", "26"]))
+
+    def test_get_department_product_year(self):
+
+        a = factories.DepartmentProductYear(year=2012)
+        b = factories.DepartmentProductYear(year=2012, department=a.department)
+        c = factories.DepartmentProductYear(year=2012, department=a.department)
+        entries = [a, b, c]
+        db.session.commit()
+
+        response = self.client.get(api.url_for(DepartmentProductYearAPI,
+                                               department=a.department_id,
+                                               year=2012))
+        self.assert_200(response)
+        self.assertEquals(len(response.json), 3)
+        for result in response.json:
+            self.assertIn(result["import_value"],
+                          [x.import_value for x in entries])
+            self.assertIn(result["export_value"],
+                          [x.export_value for x in entries])
+            self.assertIn(result["export_rca"],
+                          [x.export_rca for x in entries])
+            self.assertIn(result["distance"],
+                          [x.distance for x in entries])
+            self.assertIn(result["opp_gain"],
+                          [x.opp_gain for x in entries])
+
