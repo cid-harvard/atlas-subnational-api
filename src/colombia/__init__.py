@@ -5,7 +5,7 @@ from werkzeug.contrib.profiler import ProfilerMiddleware
 
 from flask.ext.cache import Cache
 from raven.contrib.flask import Sentry
-from flask.ext import restful, restless
+from flask.ext import restful
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
@@ -16,7 +16,6 @@ class ext(object):
     sentry = Sentry()
     api = restful.Api()
     cache = Cache()
-    restless_api = restless.APIManager()
 
     @classmethod
     def reset(cls):
@@ -25,7 +24,6 @@ class ext(object):
         cls.sentry = Sentry()
         cls.api = restful.Api()
         cls.cache = Cache()
-        cls.restless_api = restless.APIManager()
 
 
 def create_app(config={}):
