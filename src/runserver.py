@@ -10,4 +10,4 @@ if len(sys.argv) == 2 and sys.argv[1] == "--gevent":
     server = WSGIServer(("0",5000), application=app)
     server.serve_forever()
 else:
-    app.run()
+    app.run(port=8080)
