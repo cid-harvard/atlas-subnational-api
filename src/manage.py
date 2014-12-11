@@ -22,7 +22,7 @@ def dummy(n=10):
 
     # Generate a set of products and departments.
     departments = []
-    for x in range(0, 10):
+    for x in range(0, 6):
         departments.append(factories.Department())
 
     products = []

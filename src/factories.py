@@ -19,8 +19,8 @@ faker = Fake.create()
 PRODUCT_NAMES = ["Petroleum", "Horses", "Cut flowers", "Gold", "Cars",
                  "Packaged medicaments", "Soya beans", "Coal", "T-shirts",
                  "Refrigerators", "Nuts", "X-Ray Machines", "Aircraft",
-                 "Potatoes", "Coffee", "Chairs", "Springs", "Alcoholic\
-                 Drinks", "Shoes", "Shirts", "Paper"]
+                 "Potatoes", "Coffee", "Chairs", "Springs", "Alcohol", "Shoes",
+                 "Shirts", "Paper"]
 random.shuffle(PRODUCT_NAMES)
 
 
