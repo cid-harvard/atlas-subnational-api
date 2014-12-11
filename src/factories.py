@@ -7,12 +7,21 @@ import factory
 from factory import fuzzy
 
 import logging
+import random
 
 # Suppress factory-boy debug data
 factory_log = logging.getLogger("factory")
 factory_log.setLevel(logging.WARNING)
 
 faker = Fake.create()
+
+
+PRODUCT_NAMES = ["Petroleum", "Horses", "Cut flowers", "Gold", "Cars",
+                 "Packaged medicaments", "Soya beans", "Coal", "T-shirts",
+                 "Refrigerators", "Nuts", "X-Ray Machines", "Aircraft",
+                 "Potatoes", "Coffee", "Chairs", "Springs", "Alcoholic\
+                 Drinks", "Shoes", "Shirts", "Paper"]
+random.shuffle(PRODUCT_NAMES)
 
 
 class HSProduct(SQLAlchemyModelFactory):
@@ -22,9 +31,7 @@ class HSProduct(SQLAlchemyModelFactory):
 
     id = factory.Sequence(lambda n: n)
     aggregation = fuzzy.FuzzyChoice(models.HSProduct.AGGREGATIONS)
-    name = fuzzy.FuzzyChoice(["Petroleum", "Horses", "Cut flowers", "Gold",
-                              "Cars", "Packaged medicaments", "Soya beans",
-                              "Coal", "T-shirts", "Refrigerators", "Nuts"])
+    name = factory.Sequence(lambda n: PRODUCT_NAMES[n % len(PRODUCT_NAMES)])
     code = fuzzy.FuzzyInteger(0, 9999)
 
 
