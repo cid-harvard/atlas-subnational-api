@@ -90,5 +90,8 @@ class DepartmentProductYearAPI(restful.Resource):
 
     @marshal_with(department_product_year_fields)
     def get(self, department, year):
-        return DepartmentProductYear.query\
-            .filter_by(department_id=department, year=year).all()
+        q = DepartmentProductYear.query.filter_by(department_id=department)
+        if year is not None:
+            q = q.filter_by(year=year)
+        print(str(q))
+        return q.all()

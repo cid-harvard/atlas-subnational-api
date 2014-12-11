@@ -137,3 +137,16 @@ class TestMetadataAPIs(ChassisTestCase):
             self.assertIn(result["opp_gain"],
                           [x.opp_gain for x in entries])
 
+        # Add a 2010 datapoint
+        factories.DepartmentProductYear(year=2010, department=a.department)
+        db.session.commit()
+
+        # Should get it when we query for all years
+        response = self.client.get("/trade/{0}/".format(a.department_id))
+        self.assertEquals(len(response.json), 4)
+
+        # But not when we query for 2012
+        response = self.client.get(api.url_for(DepartmentProductYearAPI,
+                                               department=a.department_id,
+                                               year=2012))
+        self.assertEquals(len(response.json), 3)
