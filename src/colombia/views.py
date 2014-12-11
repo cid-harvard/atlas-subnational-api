@@ -90,6 +90,12 @@ class DepartmentProductYearAPI(restful.Resource):
 
     @marshal_with(department_product_year_fields)
     def get(self, department, year):
+        """Get the trades done by a department in a specific year or across all
+        years.
+
+        :param department: See :py:class:`colombia.models.Department` id
+        :param year: 4-digit year
+        """
         q = DepartmentProductYear.query.filter_by(department_id=department)
         if year is not None:
             q = q.filter_by(year=year)
