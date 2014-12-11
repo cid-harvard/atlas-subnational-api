@@ -26,6 +26,7 @@ class ext(object):
         cls.cache = Cache()
 
 
+
 def create_app(config={}):
     app = Flask("colombia")
     app.config.from_envvar("FLASK_CONFIG")
@@ -57,6 +58,13 @@ def create_app(config={}):
     #restless_api.init_app(app, flask_sqlalchemy_db=db)
     #restless_api.create_api(HSProduct, ['GET'], exclude_columns=["en", "es"],
     #                        results_per_page=-1)
+
+    # CORS hook for debug reasons.
+    @app.after_request
+    def cors(response):
+        if app.debug:
+            response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
     with app.app_context():
         db.create_all()
