@@ -139,5 +139,4 @@ class DepartmentProductYearAPI(restful.Resource):
         q = DepartmentProductYear.query.filter_by(department_id=department)
         if year is not None:
             q = q.filter_by(year=year)
-        print(str(q))
         return q.all()
