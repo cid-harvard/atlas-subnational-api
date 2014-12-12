@@ -80,7 +80,7 @@ class TestMetadataAPIs(ChassisTestCase):
                                                    aggregation=p.aggregation))
             self.assert_200(response)
             self.assertEquals(len(response.json), 1)
-            self.assertEquals(response.json[0]["code"], p.code)
+            self.assertEquals(response.json[str(p.id)]["code"], p.code)
 
         response = self.client.get(api.url_for(HSProductListAPI))
         self.assert_200(response)
@@ -109,7 +109,7 @@ class TestMetadataAPIs(ChassisTestCase):
         response = self.client.get(api.url_for(DepartmentListAPI))
         self.assert_200(response)
         self.assertEquals(len(response.json), 3)
-        self.assertEquals(set(x["code"] for x in response.json),
+        self.assertEquals(set(v["code"] for k, v in response.json.items()),
                           set(["22", "24", "26"]))
 
     def test_get_department_product_year(self):

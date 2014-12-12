@@ -7,7 +7,8 @@ of API endpoints, ones for data and ones for metadata.
 Metadata endpoints are for things like Cities, Departments, Products,
 Industries, things that come up often in data requests, and are probably a good
 idea to prefetch once, and cache. These are used to "decode" identifiers for
-fields in the responses that data endpoints give, like department ids.
+fields in the responses that data endpoints give, like department ids. Metadata
+endpoints return dicts to make it easier to merge the data on the client side.
 
 Data endpoints are more for looking up, say, the imports of a country in a
 specific year, or across years. Especially for queries across years, the result

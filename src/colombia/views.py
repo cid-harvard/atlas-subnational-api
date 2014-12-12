@@ -1,6 +1,6 @@
 from flask import request
 from flask.ext import restful
-from flask.ext.restful import fields, marshal_with
+from flask.ext.restful import fields, marshal_with, marshal
 from colombia.models import HSProduct, Department, DepartmentProductYear
 
 
@@ -26,11 +26,51 @@ department_product_year_fields = {
     'distance': fields.Float,
     'opp_gain': fields.Float,
 
-    'id': fields.Integer,
-    'department_id': fields.Integer,
-    'product_id': fields.Integer,
+    'id': fields.String,
+    'department_id': fields.String,
+    'product_id': fields.String,
     'year': fields.Integer
 }
+
+
+def make_id_dictionary(items, id_field='id'):
+    """Take a list of dicts (that contain an id field and a bunch of other
+    stuff) and turn it into a dict of ids
+
+        e.g. [{'id':3, 'value':7}, {'id':4, "value":1}] into:
+        {3:{'value':7}, 4:{'value':1}}
+
+    This is useful when I want to return a list of items as a javascript object
+    instead of an array, to make life easier for frontend.
+
+    :param id_field: Name of the dict key to use as id.
+    """
+    ret = {}
+    for item in items:
+        assert id_field in item, "Each element must have an id field"
+        id_val = item.pop(id_field)
+        ret[id_val] = item
+
+    return ret
+
+
+class marshal_as_dict(object):
+
+    def __init__(self, schema, id_field='id'):
+        self.schema = schema
+        self.id_field = id_field
+
+    def __call__(self, f):
+        def inner(*args, **kwargs):
+            invocation_result = f(*args, **kwargs)
+            marshalled_data = marshal(
+                invocation_result,
+                self.schema
+            )
+            return (make_id_dictionary(marshalled_data, self.id_field),
+                    200)
+
+        return inner
 
 
 class HSProductAPI(restful.Resource):
@@ -49,7 +89,7 @@ class HSProductAPI(restful.Resource):
 
 class HSProductListAPI(restful.Resource):
 
-    @marshal_with(hs_product_fields)
+    @marshal_as_dict(hs_product_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.HSProduct` s.
 
@@ -80,7 +120,7 @@ class DepartmentAPI(restful.Resource):
 
 class DepartmentListAPI(restful.Resource):
 
-    @marshal_with(department_fields)
+    @marshal_as_dict(department_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.Department` s."""
         return Department.query.all()
