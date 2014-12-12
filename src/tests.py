@@ -4,7 +4,8 @@ from colombia import create_app
 from colombia import ext
 from colombia.models import Municipality, HSProduct, DepartmentProductYear
 from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
-                            DepartmentListAPI, DepartmentProductYearAPI)
+                            DepartmentListAPI,
+                            DepartmentProductYearByDepartmentAPI)
 
 import factories
 
@@ -120,9 +121,10 @@ class TestMetadataAPIs(ChassisTestCase):
         entries = [a, b, c]
         db.session.commit()
 
-        response = self.client.get(api.url_for(DepartmentProductYearAPI,
-                                               department=a.department_id,
-                                               year=2012))
+        response = self.client.get(
+            api.url_for(DepartmentProductYearByDepartmentAPI,
+                        department=a.department_id,
+                        year=2012))
         self.assert_200(response)
         self.assertEquals(len(response.json), 3)
         for result in response.json:
@@ -142,11 +144,13 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         # Should get it when we query for all years
-        response = self.client.get("/trade/departments/{0}/".format(a.department_id))
+        response = self.client.get(
+            "/trade/departments/{0}/".format(a.department_id))
         self.assertEquals(len(response.json), 4)
 
         # But not when we query for 2012
-        response = self.client.get(api.url_for(DepartmentProductYearAPI,
-                                               department=a.department_id,
-                                               year=2012))
+        response = self.client.get(
+            api.url_for(DepartmentProductYearByDepartmentAPI,
+                        department=a.department_id,
+                        year=2012))
         self.assertEquals(len(response.json), 3)

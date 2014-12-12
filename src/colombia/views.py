@@ -126,7 +126,7 @@ class DepartmentListAPI(restful.Resource):
         return Department.query.all()
 
 
-class DepartmentProductYearAPI(restful.Resource):
+class DepartmentProductYearByDepartmentAPI(restful.Resource):
 
     @marshal_with(department_product_year_fields)
     def get(self, department, year):
