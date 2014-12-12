@@ -142,7 +142,7 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         # Should get it when we query for all years
-        response = self.client.get("/trade/{0}/".format(a.department_id))
+        response = self.client.get("/trade/departments/{0}/".format(a.department_id))
         self.assertEquals(len(response.json), 4)
 
         # But not when we query for 2012

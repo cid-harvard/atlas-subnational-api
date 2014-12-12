@@ -47,10 +47,11 @@ def create_app(config={}):
                      endpoint="department")
     api.add_resource(DepartmentListAPI, "/departments/",
                      endpoint="departments")
-    api.add_resource(DepartmentProductYearAPI, "/trade/<int:department>/",
+
+    api.add_resource(DepartmentProductYearAPI, "/trade/departments/<int:department>/",
                      endpoint="department_product", defaults={"year": None})
     api.add_resource(DepartmentProductYearAPI,
-                     "/trade/<int:department>/<int:year>",
+                     "/trade/departments/<int:department>/<int:year>",
                      endpoint="department_product_year")
     api.init_app(app)
 
