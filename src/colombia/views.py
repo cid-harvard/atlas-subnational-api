@@ -136,7 +136,23 @@ class DepartmentProductYearByDepartmentAPI(restful.Resource):
         :param department: See :py:class:`colombia.models.Department` id
         :param year: 4-digit year
         """
-        q = DepartmentProductYear.query.filter_by(department_id=department)
+        q = DepartmentProductYear.query.filter_by(department_id=int(department))
+        if year is not None:
+            q = q.filter_by(year=year)
+        return q.all()
+
+
+class DepartmentProductYearByProductAPI(restful.Resource):
+
+    @marshal_with(department_product_year_fields)
+    def get(self, product, year):
+        """Get the departments that traded a product in a specific year or
+        across all years.
+
+        :param product: See :py:class:`colombia.models.HSProduct` id
+        :param year: 4-digit year
+        """
+        q = DepartmentProductYear.query.filter_by(product_id=int(product))
         if year is not None:
             q = q.filter_by(year=year)
         return q.all()

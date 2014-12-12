@@ -41,7 +41,9 @@ def create_app(config={}):
     # Background on the URL scheme: https://github.com/cid-harvard/atlas-economic-complexity/issues/125
     from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
                                 DepartmentListAPI,
-                                DepartmentProductYearByDepartmentAPI)
+                                DepartmentProductYearByDepartmentAPI,
+                                DepartmentProductYearByProductAPI,
+                                )
     api.add_resource(HSProductAPI, "/products/<int:code>", endpoint="product")
     api.add_resource(HSProductListAPI, "/products/", endpoint="products")
     api.add_resource(DepartmentAPI, "/departments/<int:code>",
@@ -49,12 +51,22 @@ def create_app(config={}):
     api.add_resource(DepartmentListAPI, "/departments/",
                      endpoint="departments")
 
+    # Trades by Product
     api.add_resource(DepartmentProductYearByDepartmentAPI,
                      "/trade/departments/<int:department>/",
-                     endpoint="department_product", defaults={"year": None})
+                     endpoint="department_product_by_department", defaults={"year": None})
     api.add_resource(DepartmentProductYearByDepartmentAPI,
                      "/trade/departments/<int:department>/<int:year>",
-                     endpoint="department_product_year")
+                     endpoint="department_product_year_by_department")
+
+    # Trades by Department
+    api.add_resource(DepartmentProductYearByProductAPI,
+                     "/trade/products/<int:product>/",
+                     endpoint="department_product_by_product", defaults={"year": None})
+    api.add_resource(DepartmentProductYearByProductAPI,
+                     "/trade/products/<int:product>/<int:year>",
+                     endpoint="department_product_year_by_product")
+
     api.init_app(app)
 
     #from colombia.models import HSProduct

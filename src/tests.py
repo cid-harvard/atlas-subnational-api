@@ -5,7 +5,8 @@ from colombia import ext
 from colombia.models import Municipality, HSProduct, DepartmentProductYear
 from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
                             DepartmentListAPI,
-                            DepartmentProductYearByDepartmentAPI)
+                            DepartmentProductYearByDepartmentAPI,
+                            DepartmentProductYearByProductAPI)
 
 import factories
 
@@ -113,7 +114,7 @@ class TestMetadataAPIs(ChassisTestCase):
         self.assertEquals(set(v["code"] for k, v in response.json.items()),
                           set(["22", "24", "26"]))
 
-    def test_get_department_product_year(self):
+    def test_get_department_product_year_by_department(self):
 
         a = factories.DepartmentProductYear(year=2012)
         b = factories.DepartmentProductYear(year=2012, department=a.department)
@@ -152,5 +153,48 @@ class TestMetadataAPIs(ChassisTestCase):
         response = self.client.get(
             api.url_for(DepartmentProductYearByDepartmentAPI,
                         department=a.department_id,
+                        year=2012))
+        self.assertEquals(len(response.json), 3)
+
+
+    def test_get_department_product_year_by_product(self):
+
+        a = factories.DepartmentProductYear(year=2012)
+        b = factories.DepartmentProductYear(year=2012, product=a.product)
+        c = factories.DepartmentProductYear(year=2012, product=a.product)
+        entries = [a, b, c]
+        db.session.commit()
+
+        response = self.client.get(
+            api.url_for(DepartmentProductYearByProductAPI,
+                        product=a.product_id,
+                        year=2012))
+        self.assert_200(response)
+        self.assertEquals(len(response.json), 3)
+        for result in response.json:
+            self.assertIn(result["import_value"],
+                          [x.import_value for x in entries])
+            self.assertIn(result["export_value"],
+                          [x.export_value for x in entries])
+            self.assertIn(result["export_rca"],
+                          [x.export_rca for x in entries])
+            self.assertIn(result["distance"],
+                          [x.distance for x in entries])
+            self.assertIn(result["opp_gain"],
+                          [x.opp_gain for x in entries])
+
+        # Add a 2010 datapoint
+        factories.DepartmentProductYear(year=2010, product=a.product)
+        db.session.commit()
+
+        # Should get it when we query for all years
+        response = self.client.get(
+            "/trade/products/{0}/".format(a.product_id))
+        self.assertEquals(len(response.json), 4)
+
+        # But not when we query for 2012
+        response = self.client.get(
+            api.url_for(DepartmentProductYearByProductAPI,
+                        product=a.product_id,
                         year=2012))
         self.assertEquals(len(response.json), 3)
