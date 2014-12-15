@@ -132,7 +132,7 @@ aduanas_to_atlas = {
     "ubiquity": "ubiquity",
     "coi": "coi",
     "cog": "cog",
-    "rca": "rca"
+    "rca": "export_rca"
 }
 
 
