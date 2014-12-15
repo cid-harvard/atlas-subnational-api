@@ -8,15 +8,21 @@ from colombia.models import db
 from tests import ChassisTestCase
 
 
-def make_cpy(line):
-    dpy = models.DepartmentProductYear()
-    dpy.export_value = line["export_value"]
-    dpy.rca = line["rca"]
-    dpy.density = line["density"]
-    dpy.cog = line["cog"]
-    dpy.coi = line["coi"]
-    dpy.year = line["year"]
-    return dpy
+def make_cpy(department_map, product_map):
+    def inner(line):
+        dpy = models.DepartmentProductYear()
+        department = department_map[line["department"]]
+        dpy.department = department
+        product = product_map[line["product"]]
+        dpy.product = product
+        dpy.export_value = line["export_value"]
+        dpy.rca = line["rca"]
+        dpy.density = line["density"]
+        dpy.cog = line["cog"]
+        dpy.coi = line["coi"]
+        dpy.year = line["year"]
+        return dpy
+    return inner
 
 
 def make_cy(department_map):
@@ -47,7 +53,7 @@ def process_cpy(cpy, product_map, department_map):
 
     """
 
-    cpy_out = cpy.apply(make_cpy, axis=1)
+    cpy_out = cpy.apply(make_cpy(department_map, product_map), axis=1)
 
     cy = cpy.groupby(["department", "year"]).first().reset_index()
     cy_out = cy.apply(make_cy(department_map), axis=1)
@@ -203,11 +209,15 @@ class ImporterTestCase(ChassisTestCase):
         self.assertEquals(cpy[0].cog, 1)
         self.assertEquals(cpy[0].coi, 1)
         self.assertEquals(cpy[0].year, 1998)
+        self.assertEquals(cpy[0].department, department_map["10"])
+        self.assertEquals(cpy[0].product, product_map["22"])
         self.assertEquals(cpy[1].export_value, 4321)
         self.assertEquals(cpy[1].rca, 1)
         self.assertEquals(cpy[1].density, 1)
         self.assertEquals(cpy[1].cog, 1)
         self.assertEquals(cpy[1].coi, 1)
+        self.assertEquals(cpy[1].department, department_map["10"])
+        self.assertEquals(cpy[1].product, product_map["24"])
         self.assertEquals(cpy[1].year, 1998)
         self.assertEquals(cpy[2].export_value, 9999)
         self.assertEquals(cpy[2].rca, 1)
@@ -215,6 +225,8 @@ class ImporterTestCase(ChassisTestCase):
         self.assertEquals(cpy[2].cog, 1)
         self.assertEquals(cpy[2].coi, 1)
         self.assertEquals(cpy[2].year, 1999)
+        self.assertEquals(cpy[2].department, department_map["10"])
+        self.assertEquals(cpy[2].product, product_map["22"])
 
         # TODO eci_rank
 
