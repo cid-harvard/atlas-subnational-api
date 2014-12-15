@@ -4,6 +4,7 @@ import numpy as np
 from io import StringIO
 
 from colombia import models
+from tests import ChassisTestCase
 
 
 def make_cpy(line):
@@ -120,10 +121,9 @@ aduanas_to_atlas = {
 }
 
 
-import unittest
+class ImporterTestCase(ChassisTestCase):
 
-
-class ImporterTestCase(unittest.TestCase):
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
 
     def test_translate_columns(self):
 
