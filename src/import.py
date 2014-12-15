@@ -139,9 +139,14 @@ class ImporterTestCase(unittest.TestCase):
         self.assertEquals(cpy[2].coi, 1)
         self.assertEquals(cpy[2].year, 1999)
 
+        # TODO eci_rank
 
         #len(cy) == 2  # department, year, eci, eci_rank, diversity
-        #self.assertEquals(cy[0].department, 9999)
-        #self.assertEquals(cy[0].eci, 1)
-        #self.assertEquals(cy[0].eci_rank, 1)
+        #self.assertEquals(cy[0].department, 10)
+        #self.assertEquals(cy[0].year, 1998)
+        #self.assertEquals(cy[0].eci, 4)
         #self.assertEquals(cy[0].diversity, 1)
+        #self.assertEquals(cy[1].department, 10)
+        #self.assertEquals(cy[0].year, 1999)
+        #self.assertEquals(cy[1].eci, 7)
+        #self.assertEquals(cy[1].diversity, 1)

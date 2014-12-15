@@ -187,3 +187,15 @@ class DepartmentProductYear(BaseModel, IDMixin):
     distance = db.Column(db.Float)
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
+
+
+class DepartmentYear(BaseModel, IDMixin):
+
+    __tablename__ = "department_year"
+
+    department_id = db.Column(db.Integer, db.ForeignKey(Department.id))
+    year = db.Column(db.Integer)
+
+    eci = db.Column(db.Float)
+    eci_rank = db.Column(db.Integer)
+    diversity = db.Column(db.Float)
