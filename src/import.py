@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from io import StringIO
+
 from colombia import models
 
 
@@ -46,6 +48,22 @@ def process_cpy(cpy):
     py_out = py.apply(make_py, axis=1)
 
     return [cy_out, py_out, cpy_out]
+
+
+def process_department(dept):
+    department_data = dept.groupby("department_code")\
+        .first().reset_index()\
+        [["department_name", "department_code"]]
+
+    def make_department(line):
+        d = models.Department()
+        d.aggregation = "department"
+        d.name = line["department_name"]
+        d.code = line["department_code"]
+        return d
+
+    return department_data.apply(make_department, axis=1)
+
 
 
 def translate_columns(df, translation_table):
@@ -174,3 +192,69 @@ class ImporterTestCase(unittest.TestCase):
         self.assertEquals(py[2].product_id, 24)
         self.assertEquals(py[2].year, 1998)
         self.assertEquals(py[2].pci, 1)
+
+    def test_process_department(self):
+        data = """
+department_code	department_name	municipality_code	municipality_name	city	rural	midsize	pop_2012	nbi
+08	Atlántico	08849	Usiacurí	FALSE	TRUE	FALSE	9238	43.27979231
+11	"Bogotá, D.C."	11001	"Bogotá, D.C."	TRUE	FALSE	FALSE	7571345	9.20300877
+13	Bolívar	13001	Cartagena	TRUE	FALSE	FALSE	967051	26.01059996"""
+
+        data = pd.read_table(StringIO(data), encoding="utf-8",
+                             dtype={"department_code": np.object})
+        d = process_department(data)
+
+        # TODO population, gdp
+
+        self.assertEquals(d[0].aggregation, "department")
+        self.assertEquals(d[0].name, u"Atlántico")
+        self.assertEquals(d[0].code, "08")
+
+        self.assertEquals(d[1].aggregation, "department")
+        self.assertEquals(d[1].name, u"Bogotá, D.C.")
+        self.assertEquals(d[1].code, "11")
+
+        self.assertEquals(d[2].aggregation, "department")
+        self.assertEquals(d[2].name, u"Bolívar")
+        self.assertEquals(d[2].code, "13")
+
+    def test_process_product(self):
+
+        data = """
+Code	hs4_name	hs4_name_en	community
+0101	Live horses, asses, mules or hinnies	Horses	106
+0102	Live bovine animals	Bovines	106
+106	Animal & Animal Products	Animal & Animal Products	106
+116	Vegetable Products	Vegetable Products	116
+04	Dairy, Eggs, Honey, & Ed. Products	Dairy, Honey, & Ed. Prod.	106
+06	Live Trees & Other Plants	 Trees & Plants	116"""
+
+        data = pd.read_table(StringIO(data), encoding="utf-8",
+                             dtype={"department_code": np.object})
+        section, two_digit, four_digit = process_product(data)
+
+        len(four_digit) == 2
+        self.assertEquals(four_digit[0].name, "Horses")
+        self.assertEquals(four_digit[0].code, "0101")
+        self.assertEquals(four_digit[0].aggregation, "4digit")
+        self.assertEquals(four_digit[1].name, "Bovines")
+        self.assertEquals(four_digit[1].code, "0102")
+        self.assertEquals(four_digit[1].aggregation, "4digit")
+
+        len(two_digit) == 2
+        self.assertEquals(two_digit[0].name, "Dairy, Honey, & Ed. Prod.")
+        self.assertEquals(two_digit[0].code, "04")
+        self.assertEquals(two_digit[0].aggregation, "2digit")
+        self.assertEquals(two_digit[1].name, "Trees & Plants")
+        self.assertEquals(two_digit[1].code, "06")
+        self.assertEquals(two_digit[1].aggregation, "2digit")
+
+        len(section) == 2
+        self.assertEquals(section[0].name, "Animal & Animal Products")
+        self.assertEquals(section[0].code, "106")
+        self.assertEquals(section[0].aggregation, "section")
+        self.assertEquals(section[1].name, "Vegetable Products")
+        self.assertEquals(section[1].code, "116")
+        self.assertEquals(section[1].aggregation, "section")
+
+
