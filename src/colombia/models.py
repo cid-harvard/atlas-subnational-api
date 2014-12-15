@@ -199,3 +199,14 @@ class DepartmentYear(BaseModel, IDMixin):
     eci = db.Column(db.Float)
     eci_rank = db.Column(db.Integer)
     diversity = db.Column(db.Float)
+
+
+class ProductYear(BaseModel, IDMixin):
+
+    __tablename__ = "product_year"
+
+    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
+    year = db.Column(db.Integer)
+
+    pci = db.Column(db.Float)
+    pci_rank = db.Column(db.Integer)

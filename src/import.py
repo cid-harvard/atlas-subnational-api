@@ -14,14 +14,22 @@ def make_cpy(line):
     dpy.year = line["year"]
     return dpy
 
+
 def make_cy(line):
-    dpy = models.DepartmentProductYear()
-    dpy.export_value = line["export_value"]
-    dpy.rca = line["rca"]
-    dpy.density = line["density"]
-    dpy.cog = line["cog"]
-    dpy.coi = line["coi"]
-    return dpy
+    dy = models.DepartmentYear()
+    dy.department_id = line["department"]
+    dy.year = line["year"]
+    dy.eci = line["eci"]
+    dy.diversity = line["diversity"]
+    return dy
+
+
+def make_py(line):
+    py = models.ProductYear()
+    py.product_id = line["product"]
+    py.year = line["year"]
+    py.pci = line["pci"]
+    return py
 
 
 def process_cpy(cpy):
@@ -31,9 +39,13 @@ def process_cpy(cpy):
 
     cpy_out = cpy.apply(make_cpy, axis=1)
 
-    cy_out = cpy.apply(make_cy, axis=1)
+    cy = cpy.groupby(["department", "year"]).first().reset_index()
+    cy_out = cy.apply(make_cy, axis=1)
 
-    return [cy_out, [1]*4, cpy_out]
+    py = cpy.groupby(["product", "year"]).first().reset_index()
+    py_out = py.apply(make_py, axis=1)
+
+    return [cy_out, py_out, cpy_out]
 
 
 def translate_columns(df, translation_table):
@@ -114,7 +126,6 @@ class ImporterTestCase(unittest.TestCase):
 
         # CPY
         cy, py, cpy = process_cpy(data)
-        len(py) == 3  # product, year, pci, pci_rank
 
         # TODO imports
         # TODO distance vs density
@@ -141,12 +152,25 @@ class ImporterTestCase(unittest.TestCase):
 
         # TODO eci_rank
 
-        #len(cy) == 2  # department, year, eci, eci_rank, diversity
-        #self.assertEquals(cy[0].department, 10)
-        #self.assertEquals(cy[0].year, 1998)
-        #self.assertEquals(cy[0].eci, 4)
-        #self.assertEquals(cy[0].diversity, 1)
-        #self.assertEquals(cy[1].department, 10)
-        #self.assertEquals(cy[0].year, 1999)
-        #self.assertEquals(cy[1].eci, 7)
-        #self.assertEquals(cy[1].diversity, 1)
+        len(cy) == 2  # department, year, eci, eci_rank, diversity
+        self.assertEquals(cy[0].department_id, 10)
+        self.assertEquals(cy[0].year, 1998)
+        self.assertEquals(cy[0].eci, 4)
+        self.assertEquals(cy[0].diversity, 1)
+        self.assertEquals(cy[1].department_id, 10)
+        self.assertEquals(cy[1].year, 1999)
+        self.assertEquals(cy[1].eci, 7)
+        self.assertEquals(cy[1].diversity, 1)
+
+        # TODO pci_rank
+
+        len(py) == 3  # product, year, pci, pci_rank
+        self.assertEquals(py[0].product_id, 22)
+        self.assertEquals(py[0].year, 1998)
+        self.assertEquals(py[0].pci, 3)
+        self.assertEquals(py[1].product_id, 22)
+        self.assertEquals(py[1].year, 1999)
+        self.assertEquals(py[1].pci, 3)
+        self.assertEquals(py[2].product_id, 24)
+        self.assertEquals(py[2].year, 1998)
+        self.assertEquals(py[2].pci, 1)
