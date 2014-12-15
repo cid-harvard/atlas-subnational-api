@@ -4,6 +4,7 @@ import numpy as np
 from io import StringIO
 
 from colombia import models
+from colombia.models import db
 from tests import ChassisTestCase
 
 
@@ -226,6 +227,8 @@ department_code	department_name	municipality_code	municipality_name	city	rural	m
         data = pd.read_table(StringIO(data), encoding="utf-8",
                              dtype={"department_code": np.object})
         d = process_department(data)
+        db.session.add_all(d)
+        db.session.commit()
 
         # TODO population, gdp
 
@@ -255,6 +258,11 @@ Code	hs4_name	hs4_name_en	community
         data = pd.read_table(StringIO(data), encoding="utf-8",
                              dtype={"Code": np.object})
         section, two_digit, four_digit = process_product(data)
+
+        db.session.add_all(section)
+        db.session.add_all(two_digit)
+        db.session.add_all(four_digit)
+        db.session.commit()
 
         len(four_digit) == 2
         self.assertEquals(four_digit[0].name, "Horses")
