@@ -179,7 +179,6 @@ class DepartmentProductYear(BaseModel, IDMixin):
 
     department = db.relationship(Department)
     product = db.relationship(HSProduct)
-    year = db.Column(db.Integer)
 
     import_value = db.Column(db.Integer)
     export_value = db.Column(db.Integer)
@@ -196,6 +195,8 @@ class DepartmentYear(BaseModel, IDMixin):
     department_id = db.Column(db.Integer, db.ForeignKey(Department.id))
     year = db.Column(db.Integer)
 
+    department = db.relationship(Department)
+
     eci = db.Column(db.Float)
     eci_rank = db.Column(db.Integer)
     diversity = db.Column(db.Float)
@@ -207,6 +208,8 @@ class ProductYear(BaseModel, IDMixin):
 
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
+
+    product = db.relationship(HSProduct)
 
     pci = db.Column(db.Float)
     pci_rank = db.Column(db.Integer)
