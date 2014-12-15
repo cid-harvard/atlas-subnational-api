@@ -19,24 +19,30 @@ def make_cpy(line):
     return dpy
 
 
-def make_cy(line):
-    dy = models.DepartmentYear()
-    dy.department_id = line["department"]
-    dy.year = line["year"]
-    dy.eci = line["eci"]
-    dy.diversity = line["diversity"]
-    return dy
+def make_cy(department_map):
+    def inner(line):
+        dy = models.DepartmentYear()
+        department = department_map[line["department"]]
+        dy.department = department
+        dy.year = line["year"]
+        dy.eci = line["eci"]
+        dy.diversity = line["diversity"]
+        return dy
+    return inner
 
 
-def make_py(line):
-    py = models.ProductYear()
-    py.product_id = line["product"]
-    py.year = line["year"]
-    py.pci = line["pci"]
-    return py
+def make_py(product_map):
+    def inner(line):
+        py = models.ProductYear()
+        product = product_map[line["product"]]
+        py.product = product
+        py.year = line["year"]
+        py.pci = line["pci"]
+        return py
+    return inner
 
 
-def process_cpy(cpy):
+def process_cpy(cpy, product_map, department_map):
     """Take a dataframe and return
 
     """
@@ -44,10 +50,10 @@ def process_cpy(cpy):
     cpy_out = cpy.apply(make_cpy, axis=1)
 
     cy = cpy.groupby(["department", "year"]).first().reset_index()
-    cy_out = cy.apply(make_cy, axis=1)
+    cy_out = cy.apply(make_cy(department_map), axis=1)
 
     py = cpy.groupby(["product", "year"]).first().reset_index()
-    py_out = py.apply(make_py, axis=1)
+    py_out = py.apply(make_py(product_map), axis=1)
 
     return [cy_out, py_out, cpy_out]
 
@@ -152,22 +158,40 @@ class ImporterTestCase(ChassisTestCase):
         # Get import / export from CPY
         # Get CY / PY from ecomplexity
 
-        #
+
+        department_map = {
+            "10": models.Department(code="10", name="foo"),
+        }
+
+        product_map = {
+            "22": models.HSProduct(code="22", name="Cars"),
+            "24": models.HSProduct(code="24", name="Cars"),
+        }
+
+        db.session.add_all(department_map.values())
+        db.session.add_all(product_map.values())
+        db.session.commit()
+
         data = [
-            {"department": 10, "product": 22, "year": 1998, "export_value": 1234,
+            {"department": "10", "product": "22", "year": 1998, "export_value": 1234,
              "density": 1, "eci": 4, "pci": 3, "diversity": 1, "ubiquity": 1,
              "coi": 1, "cog": 1, "rca": 1},
-            {"department": 10, "product": 24, "year": 1998, "export_value": 4321,
+            {"department": "10", "product": "24", "year": 1998, "export_value": 4321,
              "density": 1, "eci": 4, "pci": 1, "diversity": 1, "ubiquity": 1,
              "coi": 1, "cog": 1, "rca": 1},
-            {"department": 10, "product": 22, "year": 1999, "export_value": 9999,
+            {"department": "10", "product": "22", "year": 1999, "export_value": 9999,
              "density": 1, "eci": 7, "pci": 3, "diversity": 1, "ubiquity": 1,
              "coi": 1, "cog": 1, "rca": 1},
         ]
         data = pd.DataFrame.from_dict(data)
 
         # CPY
-        cy, py, cpy = process_cpy(data)
+        cy, py, cpy = process_cpy(data, product_map, department_map)
+
+        db.session.add_all(cy)
+        db.session.add_all(py)
+        db.session.add_all(cpy)
+        db.session.commit()
 
         # TODO imports
         # TODO distance vs density
@@ -195,11 +219,13 @@ class ImporterTestCase(ChassisTestCase):
         # TODO eci_rank
 
         len(cy) == 2  # department, year, eci, eci_rank, diversity
-        self.assertEquals(cy[0].department_id, 10)
+        self.assertNotEquals(cy[0].department_id, 10)
+        self.assertEquals(cy[0].department, department_map["10"])
         self.assertEquals(cy[0].year, 1998)
         self.assertEquals(cy[0].eci, 4)
         self.assertEquals(cy[0].diversity, 1)
-        self.assertEquals(cy[1].department_id, 10)
+        self.assertNotEquals(cy[1].department_id, 10)
+        self.assertEquals(cy[1].department, department_map["10"])
         self.assertEquals(cy[1].year, 1999)
         self.assertEquals(cy[1].eci, 7)
         self.assertEquals(cy[1].diversity, 1)
@@ -207,13 +233,16 @@ class ImporterTestCase(ChassisTestCase):
         # TODO pci_rank
 
         len(py) == 3  # product, year, pci, pci_rank
-        self.assertEquals(py[0].product_id, 22)
+        self.assertNotEquals(py[0].product_id, 22)
+        self.assertEquals(py[0].product, product_map["22"])
         self.assertEquals(py[0].year, 1998)
         self.assertEquals(py[0].pci, 3)
-        self.assertEquals(py[1].product_id, 22)
+        self.assertNotEquals(py[1].product_id, 22)
+        self.assertEquals(py[1].product, product_map["22"])
         self.assertEquals(py[1].year, 1999)
         self.assertEquals(py[1].pci, 3)
-        self.assertEquals(py[2].product_id, 24)
+        self.assertNotEquals(py[2].product_id, 24)
+        self.assertEquals(py[2].product, product_map["24"])
         self.assertEquals(py[2].year, 1998)
         self.assertEquals(py[2].pci, 1)
 
