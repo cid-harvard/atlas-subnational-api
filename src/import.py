@@ -11,6 +11,7 @@ def make_cpy(line):
     dpy.density = line["density"]
     dpy.cog = line["cog"]
     dpy.coi = line["coi"]
+    dpy.year = line["year"]
     return dpy
 
 def make_cy(line):
@@ -124,16 +125,19 @@ class ImporterTestCase(unittest.TestCase):
         self.assertEquals(cpy[0].density, 1)
         self.assertEquals(cpy[0].cog, 1)
         self.assertEquals(cpy[0].coi, 1)
+        self.assertEquals(cpy[0].year, 1998)
         self.assertEquals(cpy[1].export_value, 4321)
         self.assertEquals(cpy[1].rca, 1)
         self.assertEquals(cpy[1].density, 1)
         self.assertEquals(cpy[1].cog, 1)
         self.assertEquals(cpy[1].coi, 1)
+        self.assertEquals(cpy[1].year, 1998)
         self.assertEquals(cpy[2].export_value, 9999)
         self.assertEquals(cpy[2].rca, 1)
         self.assertEquals(cpy[2].density, 1)
         self.assertEquals(cpy[2].cog, 1)
         self.assertEquals(cpy[2].coi, 1)
+        self.assertEquals(cpy[2].year, 1999)
 
 
         #len(cy) == 2  # department, year, eci, eci_rank, diversity

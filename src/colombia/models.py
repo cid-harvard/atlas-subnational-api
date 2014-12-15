@@ -179,6 +179,7 @@ class DepartmentProductYear(BaseModel, IDMixin):
 
     department = db.relationship(Department)
     product = db.relationship(HSProduct)
+    year = db.Column(db.Integer)
 
     import_value = db.Column(db.Integer)
     export_value = db.Column(db.Integer)
