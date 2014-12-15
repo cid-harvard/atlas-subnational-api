@@ -98,7 +98,7 @@ class HSProduct(BaseModel, IDMixin, LanguageMixin):
     code = db.Column(db.String(6))
 
     def __repr__(self):
-        return "<HSProduct: %d, %s>" % (self.id, self.name)
+        return "<HSProduct: %d, %s>" % (self.id or -1, self.name or None)
 
 
 class Location(BaseModel, IDMixin):

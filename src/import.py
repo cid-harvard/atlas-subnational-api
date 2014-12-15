@@ -65,6 +65,29 @@ def process_department(dept):
     return department_data.apply(make_department, axis=1)
 
 
+def process_product(prod):
+    d = prod[["Code", "hs4_name_en"]]
+
+    four_digit = d[d.Code.str.len() == 4]
+    two_digit = d[d.Code.str.len() == 2]
+    section = d[d.Code.str.len() == 3]
+
+
+    def product_maker(aggregation):
+        def make_product(line):
+            d = models.HSProduct()
+            d.code = line["Code"]
+            d.name = line["hs4_name_en"]
+            d.aggregation = aggregation
+            return d
+        return make_product
+
+    return (
+        list(section.apply(product_maker("section"), axis=1)),
+        list(two_digit.apply(product_maker("2digit"), axis=1)),
+        list(four_digit.apply(product_maker("4digit"), axis=1))
+    )
+
 
 def translate_columns(df, translation_table):
     """Take a dataframe, filter only the columns we want, rename them, drop all
@@ -227,10 +250,10 @@ Code	hs4_name	hs4_name_en	community
 106	Animal & Animal Products	Animal & Animal Products	106
 116	Vegetable Products	Vegetable Products	116
 04	Dairy, Eggs, Honey, & Ed. Products	Dairy, Honey, & Ed. Prod.	106
-06	Live Trees & Other Plants	 Trees & Plants	116"""
+06	Live Trees & Other Plants	Trees & Plants	116"""
 
         data = pd.read_table(StringIO(data), encoding="utf-8",
-                             dtype={"department_code": np.object})
+                             dtype={"Code": np.object})
         section, two_digit, four_digit = process_product(data)
 
         len(four_digit) == 2
