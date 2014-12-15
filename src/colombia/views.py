@@ -24,7 +24,8 @@ department_product_year_fields = {
     'export_value': fields.Integer,
     'export_rca': fields.Float,
     'distance': fields.Float,
-    'opp_gain': fields.Float,
+    'cog': fields.Float,
+    'coi': fields.Float,
 
     'id': fields.String,
     'department_id': fields.String,

@@ -137,8 +137,10 @@ class TestMetadataAPIs(ChassisTestCase):
                           [x.export_rca for x in entries])
             self.assertIn(result["distance"],
                           [x.distance for x in entries])
-            self.assertIn(result["opp_gain"],
-                          [x.opp_gain for x in entries])
+            self.assertIn(result["cog"],
+                          [x.cog for x in entries])
+            self.assertIn(result["coi"],
+                          [x.coi for x in entries])
 
         # Add a 2010 datapoint
         factories.DepartmentProductYear(year=2010, department=a.department)
@@ -180,8 +182,10 @@ class TestMetadataAPIs(ChassisTestCase):
                           [x.export_rca for x in entries])
             self.assertIn(result["distance"],
                           [x.distance for x in entries])
-            self.assertIn(result["opp_gain"],
-                          [x.opp_gain for x in entries])
+            self.assertIn(result["cog"],
+                          [x.cog for x in entries])
+            self.assertIn(result["coi"],
+                          [x.coi for x in entries])
 
         # Add a 2010 datapoint
         factories.DepartmentProductYear(year=2010, product=a.product)

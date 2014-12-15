@@ -79,4 +79,5 @@ class DepartmentProductYear(SQLAlchemyModelFactory):
     export_value = fuzzy.FuzzyInteger(10**5, 10**11)
     export_rca = fuzzy.FuzzyFloat(0, 1)
     distance = fuzzy.FuzzyFloat(0, 8)
-    opp_gain = fuzzy.FuzzyFloat(-1, 1)
+    cog = fuzzy.FuzzyFloat(-1, 1)
+    coi = fuzzy.FuzzyFloat(-1, 1)

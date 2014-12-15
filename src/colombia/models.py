@@ -184,4 +184,5 @@ class DepartmentProductYear(BaseModel, IDMixin):
     export_value = db.Column(db.Integer)
     export_rca = db.Column(db.Integer)
     distance = db.Column(db.Float)
-    opp_gain = db.Column(db.Float)
+    cog = db.Column(db.Float)
+    coi = db.Column(db.Float)
