@@ -1,9 +1,11 @@
+# vim: set fileencoding=utf8
+
 import pandas as pd
 import numpy as np
 
 from io import StringIO
 
-from colombia import models
+from colombia import models, create_app
 from colombia.models import db
 from tests import ChassisTestCase
 
@@ -121,8 +123,8 @@ def translate_columns(df, translation_table):
 aduanas_to_atlas = {
     "department": "department",
     "hs4": "product",
-    "year": None,
-    "value": "export_value",
+    "year": "year",
+    "dollar": "export_value",
     "density": "density",
     "eci": "eci",
     "pci": "pci",
@@ -330,3 +332,46 @@ Code	hs4_name	hs4_name_en	community
         self.assertEquals(section[1].aggregation, "section")
 
 
+if __name__ == "__main__":
+
+        app = create_app()
+
+        with app.app_context():
+            departments_file = "/Users/makmana/ciddata/metadata_data/location_table_with_pop.txt"
+            products_file = "/Users/makmana/ciddata/metadata_data/hs4_all.tsv"
+
+            # Load departments
+            departments = pd.read_table(departments_file, encoding="utf-16",
+                                        dtype={"department_code": np.object})
+            departments = process_department(departments)
+            db.session.add_all(departments)
+            db.session.commit()
+
+            department_map = {d.code: d for d in departments}
+
+
+            # Load products
+            products = pd.read_table(products_file, encoding="utf-8",
+                                 dtype={"Code": np.object})
+            section, two_digit, four_digit = process_product(products)
+            db.session.add_all(section)
+            db.session.add_all(two_digit)
+            db.session.add_all(four_digit)
+            db.session.commit()
+
+            product_map = {p.code: p for p in section + two_digit + four_digit}
+
+            dpy_file = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_08_dollar.dta"
+            dpy = pd.read_stata(dpy_file)
+            dpy = dpy[~dpy.department.isin([0, 1])]
+            dpy["year"] = 2008
+            dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
+            dpy["department"] = dpy.department.map(lambda x: str(x).zfill(2))
+            dpy = translate_columns(dpy, aduanas_to_atlas)
+
+            cy, py, cpy = process_cpy(dpy, product_map, department_map)
+            db.session.add_all(cy)
+            db.session.add_all(py)
+            db.session.add_all(cpy)
+            db.session.commit()
+            import ipdb; ipdb.set_trace()
