@@ -9,7 +9,7 @@ from functools import wraps
 
 hs_product_fields = {
     'code': fields.String,
-    'parent_code': fields.String,
+    'section_code': fields.String,
     'id': fields.String,
     'name': fields.String,
     'aggregation': fields.String,
@@ -120,11 +120,15 @@ class HSProductListAPI(restful.Resource):
         q = HSProduct.query\
             .filter_by_enum(HSProduct.aggregation, aggregation)
 
+        sections = HSProduct.query\
+            .filter_by(aggregation=HSProduct.AGGREGATIONS[0]).all()
+        sections = {s.id: s for s in sections}
+
         # Include parent product codes
         products = q.all()
         for product in products:
             if product.aggregation == HSProduct.AGGREGATIONS[2]:
-                product.parent_code = product.code[:2]
+                product.section_code = product.code[:2]
 
         return products
 

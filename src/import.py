@@ -82,12 +82,11 @@ def process_department(dept):
 
 
 def process_product(prod):
-    d = prod[["Code", "hs4_name_en"]]
+    d = prod[["Code", "hs4_name_en", "community"]]
 
     four_digit = d[d.Code.str.len() == 4]
     two_digit = d[d.Code.str.len() == 2]
     section = d[d.Code.str.len() == 3]
-
 
     def product_maker(aggregation):
         def make_product(line):
@@ -95,6 +94,8 @@ def process_product(prod):
             d.code = line["Code"]
             d.name = line["hs4_name_en"]
             d.aggregation = aggregation
+            if aggregation == "4digit":
+                d.section_code = line["community"]
             return d
         return make_product
 
@@ -292,7 +293,7 @@ department_code	department_name	municipality_code	municipality_name	city	rural	m
         data = """
 Code	hs4_name	hs4_name_en	community
 0101	Live horses, asses, mules or hinnies	Horses	106
-0102	Live bovine animals	Bovines	106
+0102	Live bovine animals	Bovines	206
 106	Animal & Animal Products	Animal & Animal Products	106
 116	Vegetable Products	Vegetable Products	116
 04	Dairy, Eggs, Honey, & Ed. Products	Dairy, Honey, & Ed. Prod.	106
@@ -311,25 +312,31 @@ Code	hs4_name	hs4_name_en	community
         self.assertEquals(four_digit[0].name, "Horses")
         self.assertEquals(four_digit[0].code, "0101")
         self.assertEquals(four_digit[0].aggregation, "4digit")
+        self.assertEquals(four_digit[0].section_code, "106")
         self.assertEquals(four_digit[1].name, "Bovines")
         self.assertEquals(four_digit[1].code, "0102")
         self.assertEquals(four_digit[1].aggregation, "4digit")
+        self.assertEquals(four_digit[1].section_code, "206")
 
         len(two_digit) == 2
         self.assertEquals(two_digit[0].name, "Dairy, Honey, & Ed. Prod.")
         self.assertEquals(two_digit[0].code, "04")
         self.assertEquals(two_digit[0].aggregation, "2digit")
+        self.assertEquals(two_digit[0].section_code, None)
         self.assertEquals(two_digit[1].name, "Trees & Plants")
         self.assertEquals(two_digit[1].code, "06")
         self.assertEquals(two_digit[1].aggregation, "2digit")
+        self.assertEquals(two_digit[1].section_code, None)
 
         len(section) == 2
         self.assertEquals(section[0].name, "Animal & Animal Products")
         self.assertEquals(section[0].code, "106")
         self.assertEquals(section[0].aggregation, "section")
+        self.assertEquals(section[0].section_code, None)
         self.assertEquals(section[1].name, "Vegetable Products")
         self.assertEquals(section[1].code, "116")
         self.assertEquals(section[1].aggregation, "section")
+        self.assertEquals(section[1].section_code, None)
 
 
 if __name__ == "__main__":
