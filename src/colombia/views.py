@@ -3,6 +3,9 @@ from flask.ext import restful
 from flask.ext.restful import fields, marshal_with, marshal
 from colombia.models import HSProduct, Department, DepartmentProductYear
 
+from colombia import ext
+
+from functools import wraps
 
 hs_product_fields = {
     'code': fields.String,
@@ -33,6 +36,19 @@ department_product_year_fields = {
     'product_id': fields.String,
     'year': fields.Integer
 }
+
+
+def headers(headers={}):
+    """Adds custom HTTP headers to the response."""
+    def decorator(f):
+        @wraps(f)
+        def inner(*args, **kwargs):
+            response = ext.api.make_response(*f(*args, **kwargs))
+            for header, value in headers.items():
+                response.headers[header] = value
+            return response
+        return inner
+    return decorator
 
 
 def make_id_dictionary(items, id_field='id'):
@@ -91,6 +107,7 @@ class HSProductAPI(restful.Resource):
 
 class HSProductListAPI(restful.Resource):
 
+    @headers({"Cache-Control": "max-age=600"})
     @marshal_as_dict(hs_product_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.HSProduct` s.
@@ -128,6 +145,7 @@ class DepartmentAPI(restful.Resource):
 
 class DepartmentListAPI(restful.Resource):
 
+    @headers({"Cache-Control": "max-age=600"})
     @marshal_as_dict(department_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.Department` s."""
