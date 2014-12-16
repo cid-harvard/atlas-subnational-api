@@ -361,17 +361,21 @@ if __name__ == "__main__":
 
             product_map = {p.code: p for p in section + two_digit + four_digit}
 
-            dpy_file = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_08_dollar.dta"
-            dpy = pd.read_stata(dpy_file)
-            dpy = dpy[~dpy.department.isin([0, 1])]
-            dpy["year"] = 2008
-            dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
-            dpy["department"] = dpy.department.map(lambda x: str(x).zfill(2))
-            dpy = translate_columns(dpy, aduanas_to_atlas)
+            dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
+            for i in range(8, 14):
 
-            cy, py, cpy = process_cpy(dpy, product_map, department_map)
-            db.session.add_all(cy)
-            db.session.add_all(py)
-            db.session.add_all(cpy)
-            db.session.commit()
-            import ipdb; ipdb.set_trace()
+                print(i)
+
+                dpy_file = dpy_file_template.format(str(i).zfill(2))
+                dpy = pd.read_stata(dpy_file)
+                dpy = dpy[~dpy.department.isin([0, 1])]
+                dpy["year"] = 2000 + i
+                dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
+                dpy["department"] = dpy.department.map(lambda x: str(x).zfill(2))
+                dpy = translate_columns(dpy, aduanas_to_atlas)
+
+                cy, py, cpy = process_cpy(dpy, product_map, department_map)
+                db.session.add_all(cy)
+                db.session.add_all(py)
+                db.session.add_all(cpy)
+                db.session.commit()
