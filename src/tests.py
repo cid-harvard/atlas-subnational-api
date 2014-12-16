@@ -84,6 +84,13 @@ class TestMetadataAPIs(ChassisTestCase):
             self.assertEquals(len(response.json), 1)
             self.assertEquals(response.json[str(p.id)]["code"], p.code)
 
+        # TODO: do parent mapping properly
+        response = self.client.get(api.url_for(HSProductListAPI))
+        self.assertEquals(response.json[str(p1.id)]["parent_code"], None)
+        self.assertEquals(response.json[str(p2.id)]["parent_code"], "12")
+        self.assertEquals(response.json[str(p3.id)]["parent_code"], None)
+
+
         response = self.client.get(api.url_for(HSProductListAPI))
         self.assert_200(response)
         self.assertEquals(len(response.json), 3)

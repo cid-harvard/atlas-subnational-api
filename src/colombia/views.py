@@ -6,6 +6,7 @@ from colombia.models import HSProduct, Department, DepartmentProductYear
 
 hs_product_fields = {
     'code': fields.String,
+    'parent_code': fields.String,
     'id': fields.String,
     'name': fields.String,
     'aggregation': fields.String,
@@ -102,7 +103,13 @@ class HSProductListAPI(restful.Resource):
         q = HSProduct.query\
             .filter_by_enum(HSProduct.aggregation, aggregation)
 
-        return q.all()
+        # Include parent product codes
+        products = q.all()
+        for product in products:
+            if product.aggregation == HSProduct.AGGREGATIONS[2]:
+                product.parent_code = product.code[:2]
+
+        return products
 
 
 class DepartmentAPI(restful.Resource):
