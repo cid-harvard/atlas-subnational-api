@@ -100,6 +100,9 @@ class HSProduct(BaseModel, IDMixin, LanguageMixin):
     #: HS4 section of the product, this is deprecated and shouldn't be used.
     #: EVER. I had to stick this in for the alpha demo.
     section_code = db.Column(db.String(6))
+    #: HS4 section name of the product, this is deprecated and shouldn't be used.
+    #: EVER. I had to stick this in for the alpha demo.
+    section_name = db.Column(db.String(6))
 
     def __repr__(self):
         return "<HSProduct: %d, %s>" % (self.id or -1, self.name or None)

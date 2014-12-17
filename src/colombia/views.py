@@ -10,6 +10,7 @@ from functools import wraps
 hs_product_fields = {
     'code': fields.String,
     'section_code': fields.String,
+    'section_name': fields.String,
     'id': fields.String,
     'name': fields.String,
     'aggregation': fields.String,
