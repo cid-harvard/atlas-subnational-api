@@ -120,17 +120,7 @@ class HSProductListAPI(restful.Resource):
         q = HSProduct.query\
             .filter_by_enum(HSProduct.aggregation, aggregation)
 
-        sections = HSProduct.query\
-            .filter_by(aggregation=HSProduct.AGGREGATIONS[0]).all()
-        sections = {s.id: s for s in sections}
-
-        # Include parent product codes
-        products = q.all()
-        for product in products:
-            if product.aggregation == HSProduct.AGGREGATIONS[2]:
-                product.section_code = product.code[:2]
-
-        return products
+        return q.all()
 
 
 class DepartmentAPI(restful.Resource):

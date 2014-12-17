@@ -73,7 +73,8 @@ class TestMetadataAPIs(ChassisTestCase):
     def test_get_hsproducts(self):
 
         p1 = factories.HSProduct(aggregation="2digit", code="22")
-        p2 = factories.HSProduct(aggregation="4digit", code="1234")
+        p2 = factories.HSProduct(aggregation="4digit", code="6208",
+                                 section_code="416")
         p3 = factories.HSProduct(aggregation="section", code="A")
         db.session.commit()
 
@@ -87,7 +88,7 @@ class TestMetadataAPIs(ChassisTestCase):
         # TODO: do parent mapping properly
         response = self.client.get(api.url_for(HSProductListAPI))
         self.assertEquals(response.json[str(p1.id)]["section_code"], None)
-        self.assertEquals(response.json[str(p2.id)]["section_code"], "12")
+        self.assertEquals(response.json[str(p2.id)]["section_code"], "416")
         self.assertEquals(response.json[str(p3.id)]["section_code"], None)
 
 
