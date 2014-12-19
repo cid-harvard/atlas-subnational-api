@@ -391,7 +391,7 @@ if __name__ == "__main__":
                     dpy = dpy[~dpy.department.isin([0, 1])]
                     dpy["year"] = 2000 + i
                     dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
-                    dpy["department"] = dpy.department.map(lambda x: str(x).zfill(2))
+                    dpy["department"] = dpy.department.map(lambda x: str(int(x)).zfill(2))
                     dpy = translate_columns(dpy, translation_table)
                     return dpy
 
