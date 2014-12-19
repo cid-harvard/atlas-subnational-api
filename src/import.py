@@ -17,6 +17,7 @@ def make_cpy(department_map, product_map):
         dpy.department = department
         product = product_map[line["product"]]
         dpy.product = product
+        dpy.import_value = line["import_value"]
         dpy.export_value = line["export_value"]
         dpy.export_rca = line["export_rca"]
         dpy.density = line["density"]
@@ -137,6 +138,8 @@ aduanas_to_atlas = {
     "cog": "cog",
     "rca": "export_rca"
 }
+aduanas_to_atlas_import = dict(aduanas_to_atlas)
+aduanas_to_atlas_import["dollar"] = "import_value"
 
 
 class ImporterTestCase(ChassisTestCase):
@@ -186,13 +189,13 @@ class ImporterTestCase(ChassisTestCase):
         data = [
             {"department": "10", "product": "22", "year": 1998, "export_value": 1234,
              "density": 1, "eci": 4, "pci": 3, "diversity": 1, "ubiquity": 1,
-             "coi": 1, "cog": 1, "export_rca": 1},
+             "coi": 1, "cog": 1, "export_rca": 1, "import_value": 22},
             {"department": "10", "product": "24", "year": 1998, "export_value": 4321,
              "density": 1, "eci": 4, "pci": 1, "diversity": 1, "ubiquity": 1,
-             "coi": 1, "cog": 1, "export_rca": 1},
+             "coi": 1, "cog": 1, "export_rca": 1, "import_value": 44},
             {"department": "10", "product": "22", "year": 1999, "export_value": 9999,
              "density": 1, "eci": 7, "pci": 3, "diversity": 1, "ubiquity": 1,
-             "coi": 1, "cog": 1, "export_rca": 1},
+             "coi": 1, "cog": 1, "export_rca": 1, "import_value": 666},
         ]
         data = pd.DataFrame.from_dict(data)
 
@@ -217,6 +220,7 @@ class ImporterTestCase(ChassisTestCase):
         self.assertEquals(cpy[0].department, department_map["10"])
         self.assertEquals(cpy[0].product, product_map["22"])
         self.assertEquals(cpy[1].export_value, 4321)
+        self.assertEquals(cpy[1].import_value, 44)
         self.assertEquals(cpy[1].export_rca, 1)
         self.assertEquals(cpy[1].density, 1)
         self.assertEquals(cpy[1].cog, 1)
@@ -377,17 +381,31 @@ if __name__ == "__main__":
             product_map = {p.code: p for p in section + two_digit + four_digit}
 
             dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
+            dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
             for i in range(8, 14):
 
                 print(i)
 
-                dpy_file = dpy_file_template.format(str(i).zfill(2))
-                dpy = pd.read_stata(dpy_file)
-                dpy = dpy[~dpy.department.isin([0, 1])]
-                dpy["year"] = 2000 + i
-                dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
-                dpy["department"] = dpy.department.map(lambda x: str(x).zfill(2))
-                dpy = translate_columns(dpy, aduanas_to_atlas)
+                def parse_dpy(dpy_file, translation_table):
+                    dpy = pd.read_stata(dpy_file)
+                    dpy = dpy[~dpy.department.isin([0, 1])]
+                    dpy["year"] = 2000 + i
+                    dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
+                    dpy["department"] = dpy.department.map(lambda x: str(x).zfill(2))
+                    dpy = translate_columns(dpy, translation_table)
+                    return dpy
+
+                filename = dpy_file_template.format(str(i).zfill(2))
+                dpy = parse_dpy(filename, aduanas_to_atlas)
+
+                filename = dpy_import_file_template.format(str(i).zfill(2))
+                imports_dpy = parse_dpy(filename, aduanas_to_atlas_import)
+                imports_dpy = imports_dpy[["department", "product", "import_value"]]
+
+                # Merge in imports with exports
+                dpy = pd.merge(dpy,
+                               imports_dpy,
+                               on=["department", "product"], how="inner")
 
                 cy, py, cpy = process_cpy(dpy, product_map, department_map)
                 db.session.add_all(cy)
