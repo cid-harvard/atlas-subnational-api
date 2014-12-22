@@ -101,7 +101,7 @@ def process_product(prod):
                 d.section_code = str(line["community_id"])
                 community_index = section.code == d.section_code
                 d.section_name = section[community_index].name_en.values[0]
-                d.section_es = section[community_index].name_es.values[0]
+                d.section_name_es = section[community_index].name_es.values[0]
             return d
         return make_product
 
