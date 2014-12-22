@@ -83,22 +83,24 @@ def process_department(dept):
 
 
 def process_product(prod):
-    d = prod[["Code", "hs4_name_en", "community"]]
+    d = prod[["code", "name_en", "name_es", "community_id"]]
 
-    four_digit = d[d.Code.str.len() == 4]
-    two_digit = d[d.Code.str.len() == 2]
-    section = d[d.Code.str.len() == 3]
+    four_digit = d[d.code.str.len() == 4]
+    two_digit = d[d.code.str.len() == 2]
+    section = d[d.code.str.len() == 3]
 
     def product_maker(aggregation):
         def make_product(line):
             d = models.HSProduct()
-            d.code = line["Code"]
-            d.name = line["hs4_name_en"]
+            d.code = line["code"]
+            d.name = line["name_en"]
+            d.es = line["name_es"]
             d.aggregation = aggregation
             if aggregation == "4digit":
-                d.section_code = str(line["community"])
-                community_index = section.Code == d.section_code
-                d.section_name = section[community_index].hs4_name_en.values[0]
+                d.section_code = str(line["community_id"])
+                community_index = section.code == d.section_code
+                d.section_name = section[community_index].name_en.values[0]
+                d.section_es = section[community_index].name_es.values[0]
             return d
         return make_product
 
@@ -297,16 +299,16 @@ department_code	department_name	municipality_code	municipality_name	city	rural	m
     def test_process_product(self):
 
         data = """
-Code	hs4_name	hs4_name_en	community
-0101	Live horses, asses, mules or hinnies	Horses	106
-0102	Live bovine animals	Bovines	116
-106	Animal & Animal Products	Animal & Animal Products	106
-116	Vegetable Products	Vegetable Products	116
-04	Dairy, Eggs, Honey, & Ed. Products	Dairy, Honey, & Ed. Prod.	106
-06	Live Trees & Other Plants	Trees & Plants	116"""
+code	name	name_en	name_es	community_id
+0101	Live horses, asses, mules or hinnies	Horses	Caballos	106
+0102	Live bovine animals	Bovines	Bovinos	116
+106	Animal & Animal Products	Animal & Animal Products	NULL	106
+116	Vegetable Products	Vegetable Products	NULL	116
+04	Dairy, Eggs, Honey, & Ed. Products	Dairy, Honey, & Ed. Prod.	Productos lácteos, la miel, y Ed. Prod.	106
+06	Live Trees & Other Plants	 Trees & Plants	 Árboles y Plantas	116"""
 
         data = pd.read_table(StringIO(data), encoding="utf-8",
-                             dtype={"Code": np.object})
+                             dtype={"code": np.object})
         section, two_digit, four_digit = process_product(data)
 
         db.session.add_all(section)
@@ -316,11 +318,13 @@ Code	hs4_name	hs4_name_en	community
 
         len(four_digit) == 2
         self.assertEquals(four_digit[0].name, "Horses")
+        self.assertEquals(four_digit[0].es, "Caballos")
         self.assertEquals(four_digit[0].code, "0101")
         self.assertEquals(four_digit[0].aggregation, "4digit")
         self.assertEquals(four_digit[0].section_code, "106")
         self.assertEquals(four_digit[0].section_name, "Animal & Animal Products")
         self.assertEquals(four_digit[1].name, "Bovines")
+        self.assertEquals(four_digit[1].es, "Bovinos")
         self.assertEquals(four_digit[1].code, "0102")
         self.assertEquals(four_digit[1].aggregation, "4digit")
         self.assertEquals(four_digit[1].section_code, "116")
@@ -328,11 +332,13 @@ Code	hs4_name	hs4_name_en	community
 
         len(two_digit) == 2
         self.assertEquals(two_digit[0].name, "Dairy, Honey, & Ed. Prod.")
+        self.assertEquals(two_digit[0].es, "Productos lácteos, la miel, y Ed. Prod.")
         self.assertEquals(two_digit[0].code, "04")
         self.assertEquals(two_digit[0].aggregation, "2digit")
         self.assertEquals(two_digit[0].section_code, None)
         self.assertEquals(two_digit[0].section_name, None)
-        self.assertEquals(two_digit[1].name, "Trees & Plants")
+        self.assertEquals(two_digit[1].name, " Trees & Plants")
+        self.assertEquals(two_digit[1].es, " Árboles y Plantas")
         self.assertEquals(two_digit[1].code, "06")
         self.assertEquals(two_digit[1].aggregation, "2digit")
         self.assertEquals(two_digit[1].section_code, None)
@@ -340,11 +346,13 @@ Code	hs4_name	hs4_name_en	community
 
         len(section) == 2
         self.assertEquals(section[0].name, "Animal & Animal Products")
+        self.assertEquals(section[0].es, None)
         self.assertEquals(section[0].code, "106")
         self.assertEquals(section[0].aggregation, "section")
         self.assertEquals(section[0].section_code, None)
         self.assertEquals(section[0].section_name, None)
         self.assertEquals(section[1].name, "Vegetable Products")
+        self.assertEquals(section[1].es, None)
         self.assertEquals(section[1].code, "116")
         self.assertEquals(section[1].aggregation, "section")
         self.assertEquals(section[1].section_code, None)
