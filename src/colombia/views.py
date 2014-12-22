@@ -11,8 +11,11 @@ hs_product_fields = {
     'code': fields.String,
     'section_code': fields.String,
     'section_name': fields.String,
+    'section_name_es': fields.String,
     'id': fields.String,
     'name': fields.String,
+    'en': fields.String,
+    'es': fields.String,
     'aggregation': fields.String,
 }
 
