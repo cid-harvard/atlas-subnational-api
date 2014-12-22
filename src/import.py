@@ -372,7 +372,7 @@ if __name__ == "__main__":
 
         with app.app_context():
             departments_file = "/Users/makmana/ciddata/metadata_data/location_table_with_pop.txt"
-            products_file = "/Users/makmana/ciddata/metadata_data/hs4_all.tsv"
+            products_file = "/Users/makmana/ciddata/metadata_data/hs4_translations.tsv"
 
             # Load departments
             departments = pd.read_table(departments_file, encoding="utf-16",
@@ -386,7 +386,7 @@ if __name__ == "__main__":
 
             # Load products
             products = pd.read_table(products_file, encoding="utf-8",
-                                 dtype={"Code": np.object})
+                                 dtype={"code": np.object})
             section, two_digit, four_digit = process_product(products)
             db.session.add_all(section)
             db.session.add_all(two_digit)
