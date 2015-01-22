@@ -98,21 +98,21 @@ class marshal_as_dict(object):
 class HSProductAPI(restful.Resource):
 
     @marshal_with(hs_product_fields)
-    def get(self, code):
+    def get(self, product_id):
         """Get a :py:class:`~colombia.models.HSProduct` with the given code.
 
         :param code: See :py:class:`colombia.models.HSProduct.code`
         :type code: int
         :code 404: product doesn't exist
         """
-        q = HSProduct.query.filter_by(code=code).first_or_abort(code)
+        q = HSProduct.query.filter_by(id=product_id).first_or_abort(product_id)
         return q
 
 
 class HSProductListAPI(restful.Resource):
 
     @headers({"Cache-Control": "max-age=600"})
-    @marshal_as_dict(hs_product_fields)
+    @marshal_with(hs_product_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.HSProduct` s.
 
@@ -130,21 +130,21 @@ class HSProductListAPI(restful.Resource):
 class DepartmentAPI(restful.Resource):
 
     @marshal_with(department_fields)
-    def get(self, code):
+    def get(self, department_id):
         """Get a :py:class:`~colombia.models.Department` with the given code.
 
         :param code: See :py:class:`colombia.models.Department.code`
         :type code: int
         :code 404: department doesn't exist
         """
-        q = Department.query.filter_by(code=code).first_or_abort(code)
+        q = Department.query.filter_by(id=department_id).first_or_abort(department_id)
         return q
 
 
 class DepartmentListAPI(restful.Resource):
 
     @headers({"Cache-Control": "max-age=600"})
-    @marshal_as_dict(department_fields)
+    @marshal_with(department_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.Department` s."""
         return Department.query.all()

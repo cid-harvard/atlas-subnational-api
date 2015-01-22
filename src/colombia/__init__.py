@@ -44,9 +44,9 @@ def create_app(config={}):
                                 DepartmentProductYearByDepartmentAPI,
                                 DepartmentProductYearByProductAPI,
                                 )
-    api.add_resource(HSProductAPI, "/products/<int:code>", endpoint="product")
+    api.add_resource(HSProductAPI, "/products/<int:product_id>", endpoint="product")
     api.add_resource(HSProductListAPI, "/products/", endpoint="products")
-    api.add_resource(DepartmentAPI, "/departments/<int:code>",
+    api.add_resource(DepartmentAPI, "/departments/<int:department_id>",
                      endpoint="department")
     api.add_resource(DepartmentListAPI, "/departments/",
                      endpoint="departments")
