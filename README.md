@@ -15,7 +15,7 @@ you want. Alternatively, the `create_app` factory could also be used.
 <table>
 <tr><th>Command</th><th> What it does </th></tr>
 <tr><td>`make dev` </td><td> Run the flask test server in debug mode. </td></tr>
-<tr><td>`make test` </td><td> run nosetests with coverage</td></tr>
+<tr><td>`make test` </td><td> run tests with coverage</td></tr>
 <tr><td>`make dummy` </td><td> Generates some dummy data and dumps ids.</td></tr>
 <tr><td>`make shell` </td><td> run an ipython shell where you can play around with objects. The variables `app`, `db` and `models` come preloaded.</td></tr>
 <tr><td>`make docs` </td><td> Builds pretty docs and pops open a browser window</td></tr>

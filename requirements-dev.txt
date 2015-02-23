@@ -2,9 +2,8 @@ flask-debugtoolbar
 flask-testing
 sphinx
 sphinxcontrib-httpdomain
-coverage
-nose
-nose-progressive
+pytest
+pytest-cov
 factory-boy
 fake-factory
 ipython
