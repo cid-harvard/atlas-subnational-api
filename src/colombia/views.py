@@ -111,7 +111,7 @@ class HSProductAPI(restful.Resource):
 
 class HSProductListAPI(restful.Resource):
 
-    @headers({"Cache-Control": "max-age=600"})
+    #@headers({"Cache-Control": "max-age=600"})
     @marshal_with(hs_product_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.HSProduct` s.
@@ -143,7 +143,7 @@ class DepartmentAPI(restful.Resource):
 
 class DepartmentListAPI(restful.Resource):
 
-    @headers({"Cache-Control": "max-age=600"})
+    #@headers({"Cache-Control": "max-age=600"})
     @marshal_with(department_fields)
     def get(self):
         """Get all the :py:class:`~colombia.models.Department` s."""
