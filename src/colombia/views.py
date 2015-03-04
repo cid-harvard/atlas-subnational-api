@@ -12,7 +12,7 @@ hs_product_fields = {
     'section_code': fields.String,
     'section_name': fields.String,
     'section_name_es': fields.String,
-    'id': fields.String,
+    'id': fields.Integer,
     'name': fields.String,
     'en': fields.String,
     'es': fields.String,
@@ -21,7 +21,7 @@ hs_product_fields = {
 
 department_fields = {
     'code': fields.String,
-    'id': fields.String,
+    'id': fields.Integer,
     'name': fields.String,
     'population': fields.Integer,
     'gdp': fields.Integer,
@@ -35,7 +35,7 @@ department_product_year_fields = {
     'cog': fields.Float,
     'coi': fields.Float,
 
-    'id': fields.String,
+    'id': fields.Integer,
     'department_id': fields.String,
     'product_id': fields.String,
     'year': fields.Integer
