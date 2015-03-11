@@ -6,13 +6,14 @@ from werkzeug.contrib.profiler import ProfilerMiddleware
 from flask.ext.cache import Cache
 from raven.contrib.flask import Sentry
 from flask.ext import restful
-from flask.ext.sqlalchemy import SQLAlchemy
+
+from atlas_core import db as core_db
 
 
 class ext(object):
     """Flask extensions."""
 
-    db = SQLAlchemy()
+    db = core_db
     sentry = Sentry()
     api = restful.Api()
     cache = Cache()
@@ -20,11 +21,10 @@ class ext(object):
     @classmethod
     def reset(cls):
         """To use in unittest teardowns - reset all extensions."""
-        cls.db = SQLAlchemy()
+        cls.db = core_db
         cls.sentry = Sentry()
         cls.api = restful.Api()
         cls.cache = Cache()
-
 
 
 def create_app(config={}):
