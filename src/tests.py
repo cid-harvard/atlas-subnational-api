@@ -10,7 +10,7 @@ from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
 
 import factories
 
-db = ext.db
+from atlas_core import db
 api = ext.api
 
 
