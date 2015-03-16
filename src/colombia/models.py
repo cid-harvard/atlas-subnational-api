@@ -3,6 +3,12 @@ from atlas_core.sqlalchemy import BaseModel
 from atlas_core.model_mixins import IDMixin, LanguageMixin
 
 
+
+# On hierarchy trees: there are two types. One is where each element is the
+# same regardless of position in the hierarchy, the other has different
+# elements for each level of hierarchy.
+
+
 class HSProduct(BaseModel, IDMixin, LanguageMixin):
     """A product according to the HS4 (Harmonized System) classification.
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
