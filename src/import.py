@@ -10,20 +10,52 @@ from colombia.models import db
 from tests import ChassisTestCase
 
 
+def assign_properties(target, source, fields=None, ignore_missing=True):
+
+    if fields is None:
+        fields = source.items()
+
+    for k in fields:
+
+        if not hasattr(target, k):
+            if ignore_missing:
+                return
+            raise ValueError("Object {} has no property {}".format(target, k))
+        if not hasattr(source, k):
+            if ignore_missing:
+                return
+            raise ValueError("Object {} has no property {}".format(source, k))
+
+        setattr(target, k, source[k])
+
+
 def make_cpy(department_map, product_map):
     def inner(line):
+
         dpy = models.DepartmentProductYear()
-        department = department_map[line["department"]]
+
+        department = department_map.get(line.pop("department"), None)
+        product = product_map.get(line.pop("product"), None)
+
+        if product is None or department is None:
+            return None
+            raise ValueError("Mismatching product or dept in line: {}".format(line))
+
+        # Relations
         dpy.department = department
-        product = product_map[line["product"]]
         dpy.product = product
-        dpy.import_value = line["import_value"]
-        dpy.export_value = line["export_value"]
-        dpy.export_rca = line["export_rca"]
-        dpy.density = line["density"]
-        dpy.cog = line["cog"]
-        dpy.coi = line["coi"]
-        dpy.year = line["year"]
+
+        # Remaining non-relation properties
+        assign_properties(dpy, line,
+                          [
+                              "import_value",
+                              "export_value",
+                              "distance",
+                              "cog",
+                              "coi",
+                              "year"
+                          ])
+
         return dpy
     return inner
 
@@ -31,22 +63,27 @@ def make_cpy(department_map, product_map):
 def make_cy(department_map):
     def inner(line):
         dy = models.DepartmentYear()
-        department = department_map[line["department"]]
+
+        department = department_map.get(line.pop("department"), None)
         dy.department = department
-        dy.year = line["year"]
-        dy.eci = line["eci"]
-        dy.diversity = line["diversity"]
+
+        assign_properties(dy, line,
+                          ["year", "eci", "diversity"])
+
         return dy
+
     return inner
 
 
 def make_py(product_map):
     def inner(line):
         py = models.ProductYear()
-        product = product_map[line["product"]]
+
+        product = product_map.get(line.pop("product"), None)
         py.product = product
-        py.year = line["year"]
-        py.pci = line["pci"]
+
+        assign_properties(py, line,
+                          ["year", "pci"])
         return py
     return inner
 
@@ -57,6 +94,7 @@ def process_cpy(cpy, product_map, department_map):
     """
 
     cpy_out = cpy.apply(make_cpy(department_map, product_map), axis=1)
+    cpy_out = filter(lambda x: x is not None, cpy_out)
 
     cy = cpy.groupby(["department", "year"]).first().reset_index()
     cy_out = cy.apply(make_cy(department_map), axis=1)
@@ -143,6 +181,15 @@ aduanas_to_atlas = {
 }
 aduanas_to_atlas_import = dict(aduanas_to_atlas)
 aduanas_to_atlas_import["dollar"] = "import_value"
+
+mexico_aduanas_to_atlas = {
+    "r_est": "department",
+    "p": "product",  # Fix to 4 digits
+    "year": "year",  # Set manually to filename year
+    "V": "export_value",
+}
+mexico_aduanas_to_atlas_import = dict(mexico_aduanas_to_atlas)
+mexico_aduanas_to_atlas_import["V"] = "import_value"
 
 
 class ImporterTestCase(ChassisTestCase):
@@ -371,17 +418,18 @@ if __name__ == "__main__":
         app = create_app()
 
         with app.app_context():
-            departments_file = "/Users/makmana/ciddata/metadata_data/location_table_with_pop.txt"
-            products_file = "/Users/makmana/ciddata/metadata_data/hs4_translations.tsv"
+            departments_file = "/Users/makmana/ciddata/Mexico/Metadata/state_names.dta"
+            products_file = "/Users/makmana/ciddata/mali_metadata/hs4_translations.tsv"
 
             # Load departments
-            departments = pd.read_table(departments_file, encoding="utf-16",
-                                        dtype={"department_code": np.object})
+            departments = pd.read_stata(departments_file)
+            departments.columns = ["department_code", "department_name"]
             departments = process_department(departments)
             db.session.add_all(departments)
             db.session.commit()
 
             department_map = {d.code: d for d in departments}
+            department_map.setdefault(None)
 
 
             # Load products
@@ -394,27 +442,28 @@ if __name__ == "__main__":
             db.session.commit()
 
             product_map = {p.code: p for p in section + two_digit + four_digit}
+            product_map.setdefault(None)
 
-            dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
-            dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
-            for i in range(8, 14):
+            dpy_file_template = "/Users/makmana/ciddata/Mexico/data/cpy_aduanas_1_est_{0}.dta"
+            dpy_import_file_template = "/Users/makmana/ciddata/Mexico/data/cpy_aduanas_2_est_{0}.dta"
+
+            for i in range(2012, 2014):
 
                 print(i)
 
                 def parse_dpy(dpy_file, translation_table):
                     dpy = pd.read_stata(dpy_file)
-                    dpy = dpy[~dpy.department.isin([0, 1])]
-                    dpy["year"] = 2000 + i
-                    dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
-                    dpy["department"] = dpy.department.map(lambda x: str(int(x)).zfill(2))
+                    dpy["year"] = i
+                    dpy["p"] = dpy.p.map(lambda x: str(int(x)).zfill(4)).astype(str)
+                    dpy["r_est"] = dpy.r_est.astype(int).astype(str)
                     dpy = translate_columns(dpy, translation_table)
                     return dpy
 
                 filename = dpy_file_template.format(str(i).zfill(2))
-                dpy = parse_dpy(filename, aduanas_to_atlas)
+                dpy = parse_dpy(filename, mexico_aduanas_to_atlas)
 
                 filename = dpy_import_file_template.format(str(i).zfill(2))
-                imports_dpy = parse_dpy(filename, aduanas_to_atlas_import)
+                imports_dpy = parse_dpy(filename, mexico_aduanas_to_atlas_import)
                 imports_dpy = imports_dpy[["department", "product", "import_value"]]
 
                 # Merge in imports with exports
