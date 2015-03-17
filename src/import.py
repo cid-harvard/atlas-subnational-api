@@ -19,11 +19,11 @@ def assign_properties(target, source, fields=None, ignore_missing=True):
 
         if not hasattr(target, k):
             if ignore_missing:
-                return
+                continue
             raise ValueError("Object {} has no property {}".format(target, k))
         if not hasattr(source, k):
             if ignore_missing:
-                return
+                continue
             raise ValueError("Object {} has no property {}".format(source, k))
 
         setattr(target, k, source[k])
