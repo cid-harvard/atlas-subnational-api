@@ -422,7 +422,7 @@ if __name__ == "__main__":
             products_file = "/Users/makmana/ciddata/mali_metadata/hs4_translations.tsv"
 
             # Load departments
-            departments = pd.read_stata(departments_file)
+            departments = pd.read_stata(departments_file, encoding="utf-8")
             departments.columns = ["department_code", "department_name"]
             departments = process_department(departments)
             db.session.add_all(departments)
