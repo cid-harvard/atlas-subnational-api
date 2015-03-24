@@ -444,15 +444,16 @@ if __name__ == "__main__":
             product_map = {p.code: p for p in section + two_digit + four_digit}
             product_map.setdefault(None)
 
-            dpy_file_template = "/Users/makmana/ciddata/Mexico/data/cpy_aduanas_1_est_{0}.dta"
-            dpy_import_file_template = "/Users/makmana/ciddata/Mexico/data/cpy_aduanas_2_est_{0}.dta"
+            dpy_file_template = "/Users/makmana/ciddata/Mexico/data/ecomplexity_aduanas_est_{0}.dta"
+            dpy_import_file_template = "/Users/makmana/ciddata/Mexico/data/cpy_aduanas_1_est_{0}.dta"
 
-            for i in range(2012, 2014):
+            for i in range(2009, 2014):
 
                 print(i)
 
                 def parse_dpy(dpy_file, translation_table):
                     dpy = pd.read_stata(dpy_file)
+                    dpy = dpy[~dpy.r_est.isnull()]
                     dpy["year"] = i
                     dpy["p"] = dpy.p.map(lambda x: str(int(x)).zfill(4)).astype(str)
                     dpy["r_est"] = dpy.r_est.astype(int).astype(str)
