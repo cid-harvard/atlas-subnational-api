@@ -182,13 +182,26 @@ aduanas_to_atlas = {
 aduanas_to_atlas_import = dict(aduanas_to_atlas)
 aduanas_to_atlas_import["dollar"] = "import_value"
 
-mexico_aduanas_to_atlas = {
+mexico_aduanas_to_atlas_base = {
     "r_est": "department",
     "p": "product",  # Fix to 4 digits
     "year": "year",  # Set manually to filename year
     "V": "export_value",
 }
-mexico_aduanas_to_atlas_import = dict(mexico_aduanas_to_atlas)
+
+mexico_aduanas_to_atlas = dict(mexico_aduanas_to_atlas_base)
+mexico_aduanas_to_atlas.update({
+    "density": "density",
+    "eci": "eci",
+    "pci": "pci",
+    "diversity": "diversity",
+    "ubiquity": "ubiquity",
+    "coi": "coi",
+    "cog": "cog",
+    "rca": "export_rca"
+})
+
+mexico_aduanas_to_atlas_import = dict(mexico_aduanas_to_atlas_base)
 mexico_aduanas_to_atlas_import["V"] = "import_value"
 
 
