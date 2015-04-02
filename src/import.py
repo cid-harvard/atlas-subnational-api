@@ -371,8 +371,8 @@ if __name__ == "__main__":
         app = create_app()
 
         with app.app_context():
-            departments_file = "/Users/makmana/ciddata/metadata_data/location_table_with_pop.txt"
-            products_file = "/Users/makmana/ciddata/metadata_data/hs4_translations.tsv"
+            departments_file = "/Users/makmana/ciddata/mali_metadata/location_table_with_pop.txt"
+            products_file = "/Users/makmana/ciddata/mali_metadata/hs4_translations.tsv"
 
             # Load departments
             departments = pd.read_table(departments_file, encoding="utf-16",
