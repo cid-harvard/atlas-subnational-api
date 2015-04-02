@@ -395,8 +395,8 @@ if __name__ == "__main__":
 
             product_map = {p.code: p for p in section + two_digit + four_digit}
 
-            dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
-            dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
+            dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_{0}_dollar.dta"
+            dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_imp_{0}_dollar.dta"
             for i in range(8, 14):
 
                 print(i)
