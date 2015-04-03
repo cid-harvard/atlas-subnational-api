@@ -128,8 +128,8 @@ def translate_columns(df, translation_table):
 # u'density', u'eci', u'pci', u'diversity', u'ubiquity', u'coi', u'cog',
 # u'rca']
 aduanas_to_atlas = {
-    "department": "department",
-    "hs4": "product",
+    "DEPTO_PROCED": "department",
+    "POS_ARA3": "product",
     "year": "year",
     "dollar": "export_value",
     "density": "density",
@@ -139,10 +139,14 @@ aduanas_to_atlas = {
     "ubiquity": "ubiquity",
     "coi": "coi",
     "cog": "cog",
-    "rca": "export_rca"
+    "rca": "export_rca",
+    "dollar": "export_value"
 }
-aduanas_to_atlas_import = dict(aduanas_to_atlas)
-aduanas_to_atlas_import["dollar"] = "import_value"
+aduanas_to_atlas_import = {
+    "department": "department",
+    "hs4": "product",
+    "dollar": "import_value",
+}
 
 
 class ImporterTestCase(ChassisTestCase):
@@ -396,18 +400,19 @@ if __name__ == "__main__":
             product_map = {p.code: p for p in section + two_digit + four_digit}
 
             dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_{0}_dollar.dta"
-            dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_imp_{0}_dollar.dta"
+            dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
             for i in range(8, 14):
 
                 print(i)
 
                 def parse_dpy(dpy_file, translation_table):
                     dpy = pd.read_stata(dpy_file)
-                    dpy = dpy[~dpy.department.isin([0, 1])]
                     dpy["year"] = 2000 + i
-                    dpy["hs4"] = dpy.hs4.map(lambda x: str(int(x)).zfill(4)).astype(str)
-                    dpy["department"] = dpy.department.map(lambda x: str(int(x)).zfill(2))
+
                     dpy = translate_columns(dpy, translation_table)
+                    dpy = dpy[~dpy.department.isin([0, 1])]
+                    dpy["product"] = dpy["product"].map(lambda x: str(int(x)).zfill(4)).astype(str)
+                    dpy["department"] = dpy.department.map(lambda x: str(int(x)).zfill(2))
                     return dpy
 
                 filename = dpy_file_template.format(str(i).zfill(2))
