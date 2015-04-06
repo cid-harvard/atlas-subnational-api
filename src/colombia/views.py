@@ -1,7 +1,7 @@
 from flask import request
 from flask.ext import restful
 from flask.ext.restful import fields, marshal_with, marshal
-from colombia.models import HSProduct, Department, DepartmentProductYear
+from colombia.models import HSProduct, Department, DepartmentProductYear, ProductYear
 
 from colombia import ext
 
@@ -37,6 +37,15 @@ department_product_year_fields = {
 
     'id': fields.Integer,
     'department_id': fields.String,
+    'product_id': fields.String,
+    'year': fields.Integer
+}
+
+
+product_year_fields = {
+    'pci': fields.Float,
+
+    'id': fields.Integer,
     'product_id': fields.String,
     'year': fields.Integer
 }
@@ -177,6 +186,19 @@ class DepartmentProductYearByProductAPI(restful.Resource):
         :param year: 4-digit year
         """
         q = DepartmentProductYear.query.filter_by(product_id=int(product))
+        if year is not None:
+            q = q.filter_by(year=year)
+        return q.all()
+
+
+class ProductYearAPI(restful.Resource):
+
+    @marshal_with(product_year_fields)
+    def get(self, year):
+        """Get product / year specific variables (e.g. product complexity) in a
+        specific year or across all years.
+        """
+        q = ProductYear.query
         if year is not None:
             q = q.filter_by(year=year)
         return q.all()

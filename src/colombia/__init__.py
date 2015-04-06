@@ -43,6 +43,7 @@ def create_app(config={}):
                                 DepartmentListAPI,
                                 DepartmentProductYearByDepartmentAPI,
                                 DepartmentProductYearByProductAPI,
+                                ProductYearAPI,
                                 )
     api.add_resource(HSProductAPI, "/products/<int:product_id>", endpoint="product")
     api.add_resource(HSProductListAPI, "/products/", endpoint="products")
@@ -66,6 +67,14 @@ def create_app(config={}):
     api.add_resource(DepartmentProductYearByProductAPI,
                      "/trade/products/<int:product>/<int:year>",
                      endpoint="department_product_year_by_product")
+
+    # Product / Year variables
+    api.add_resource(ProductYearAPI,
+                     "/trade/metadata/",
+                     endpoint="product_year", defaults={"year": None})
+    api.add_resource(ProductYearAPI,
+                     "/trade/metadata/<int:year>",
+                     endpoint="product_year_by_year")
 
     api.init_app(app)
 
