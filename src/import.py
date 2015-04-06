@@ -128,8 +128,8 @@ def translate_columns(df, translation_table):
 # u'density', u'eci', u'pci', u'diversity', u'ubiquity', u'coi', u'cog',
 # u'rca']
 aduanas_to_atlas = {
-    "DEPTO_PROCED": "department",
-    "POS_ARA3": "product",
+    "department": "department",
+    "hs4": "product",
     "year": "year",
     "dollar": "export_value",
     "density": "density",
@@ -139,8 +139,7 @@ aduanas_to_atlas = {
     "ubiquity": "ubiquity",
     "coi": "coi",
     "cog": "cog",
-    "rca": "export_rca",
-    "dollar": "export_value"
+    "rca": "export_rca"
 }
 aduanas_to_atlas_import = {
     "department": "department",
@@ -399,7 +398,7 @@ if __name__ == "__main__":
 
             product_map = {p.code: p for p in section + two_digit + four_digit}
 
-            dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_{0}_dollar.dta"
+            dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
             dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
             for i in range(8, 14):
 
