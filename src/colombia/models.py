@@ -191,7 +191,7 @@ class DepartmentProductYear(BaseModel, IDMixin):
     import_value = db.Column(db.Integer)
     export_value = db.Column(db.Integer)
     export_rca = db.Column(db.Integer)
-    distance = db.Column(db.Float)
+    density = db.Column(db.Float)
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
 
