@@ -31,7 +31,7 @@ department_product_year_fields = {
     'import_value': fields.Integer,
     'export_value': fields.Integer,
     'export_rca': fields.Float,
-    'distance': fields.Float,
+    'density': fields.Float,
     'cog': fields.Float,
     'coi': fields.Float,
 

@@ -195,6 +195,10 @@ class DepartmentProductYear(BaseModel, IDMixin):
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
 
+    @property
+    def distance(self):
+        return 1.0 - self.density
+
 
 class DepartmentYear(BaseModel, IDMixin):
 
