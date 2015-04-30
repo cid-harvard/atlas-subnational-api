@@ -5,6 +5,7 @@ import numpy as np
 
 from io import StringIO
 
+from atlas_core.helpers.data_import import translate_columns
 from colombia import models, create_app
 from colombia.models import db
 from tests import ChassisTestCase
@@ -110,17 +111,6 @@ def process_product(prod):
         list(two_digit.apply(product_maker("2digit"), axis=1)),
         list(four_digit.apply(product_maker("4digit"), axis=1))
     )
-
-
-def translate_columns(df, translation_table):
-    """Take a dataframe, filter only the columns we want, rename them, drop all
-    other columns.
-
-    :param df: pandas dataframe
-    :param translation_table: dict[column_name_before -> column_name_after]
-    """
-    return df[list(translation_table.keys())]\
-        .rename(columns=translation_table)
 
 
 # Taken from ecomplexity_from_cepii_xx_dollar.dta
