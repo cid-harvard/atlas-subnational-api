@@ -1,7 +1,8 @@
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from atlas_core import db
 from atlas_core.sqlalchemy import BaseModel
 from atlas_core.model_mixins import IDMixin, LanguageMixin
-
 
 
 # On hierarchy trees: there are two types. One is where each element is the
@@ -130,7 +131,7 @@ class DepartmentProductYear(BaseModel, IDMixin):
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
 
-    @property
+    @hybrid_property
     def distance(self):
         return 1.0 - self.density
 
