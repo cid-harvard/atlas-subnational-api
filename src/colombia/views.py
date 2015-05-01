@@ -1,7 +1,8 @@
 from flask import request
 from flask.ext import restful
 from flask.ext.restful import fields, marshal_with, marshal
-from colombia.models import HSProduct, Department, DepartmentProductYear, ProductYear
+from colombia.models import (HSProduct, Department, DepartmentProductYear,
+                             ProductYear)
 
 from colombia import ext
 
