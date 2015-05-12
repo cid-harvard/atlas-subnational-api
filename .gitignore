@@ -24,3 +24,5 @@ nosetests.xml
 
 #Docs
 doc/_build/
+
+.DS_Store
