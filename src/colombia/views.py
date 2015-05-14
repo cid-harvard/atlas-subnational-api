@@ -52,57 +52,6 @@ product_year_fields = {
 }
 
 
-def headers(headers={}):
-    """Adds custom HTTP headers to the response."""
-    def decorator(f):
-        @wraps(f)
-        def inner(*args, **kwargs):
-            response = ext.api.make_response(*f(*args, **kwargs))
-            for header, value in headers.items():
-                response.headers[header] = value
-            return response
-        return inner
-    return decorator
-
-
-def make_id_dictionary(items, id_field='id'):
-    """Take a list of dicts (that contain an id field and a bunch of other
-    stuff) and turn it into a dict of ids
-
-        e.g. [{'id':3, 'value':7}, {'id':4, "value":1}] into:
-        {3:{'value':7}, 4:{'value':1}}
-
-    This is useful when I want to return a list of items as a javascript object
-    instead of an array, to make life easier for frontend.
-
-    :param id_field: Name of the dict key to use as id.
-    """
-    ret = {}
-    for item in items:
-        assert id_field in item, "Each element must have an id field"
-        id_val = item.pop(id_field)
-        ret[id_val] = item
-
-    return ret
-
-
-class marshal_as_dict(object):
-
-    def __init__(self, schema, id_field='id'):
-        self.schema = schema
-        self.id_field = id_field
-
-    def __call__(self, f):
-        def inner(*args, **kwargs):
-            invocation_result = f(*args, **kwargs)
-            marshalled_data = marshal(
-                invocation_result,
-                self.schema
-            )
-            return (make_id_dictionary(marshalled_data, self.id_field),
-                    200)
-
-        return inner
 
 
 class HSProductAPI(restful.Resource):
