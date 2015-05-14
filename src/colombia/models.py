@@ -133,7 +133,7 @@ class DepartmentProductYear(BaseModel, IDMixin):
 
     @hybrid_property
     def distance(self):
-        return 1.0 - self.density
+        return (1.0 - self.density).label("distance")
 
 
 class DepartmentYear(BaseModel, IDMixin):
