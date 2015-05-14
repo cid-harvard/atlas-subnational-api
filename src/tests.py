@@ -136,8 +136,9 @@ class TestMetadataAPIs(ChassisTestCase):
                         department=a.department_id,
                         year=2012))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
-        for result in response.json:
+        response_data = response.json["data"]
+        self.assertEquals(len(response_data), 3)
+        for result in response_data:
             self.assertIn(result["import_value"],
                           [x.import_value for x in entries])
             self.assertIn(result["export_value"],
@@ -158,15 +159,14 @@ class TestMetadataAPIs(ChassisTestCase):
         # Should get it when we query for all years
         response = self.client.get(
             "/trade/departments/{0}/".format(a.department_id))
-        self.assertEquals(len(response.json), 4)
+        self.assertEquals(len(response.json["data"]), 4)
 
         # But not when we query for 2012
         response = self.client.get(
             api.url_for(DepartmentProductYearByDepartmentAPI,
                         department=a.department_id,
                         year=2012))
-        self.assertEquals(len(response.json), 3)
-
+        self.assertEquals(len(response.json["data"]), 3)
 
     def test_get_department_product_year_by_product(self):
 
@@ -181,8 +181,9 @@ class TestMetadataAPIs(ChassisTestCase):
                         product=a.product_id,
                         year=2012))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
-        for result in response.json:
+        response_data = response.json["data"]
+        self.assertEquals(len(response_data), 3)
+        for result in response_data:
             self.assertIn(result["import_value"],
                           [x.import_value for x in entries])
             self.assertIn(result["export_value"],
@@ -203,11 +204,11 @@ class TestMetadataAPIs(ChassisTestCase):
         # Should get it when we query for all years
         response = self.client.get(
             "/trade/products/{0}/".format(a.product_id))
-        self.assertEquals(len(response.json), 4)
+        self.assertEquals(len(response.json["data"]), 4)
 
         # But not when we query for 2012
         response = self.client.get(
             api.url_for(DepartmentProductYearByProductAPI,
                         product=a.product_id,
                         year=2012))
-        self.assertEquals(len(response.json), 3)
+        self.assertEquals(len(response.json["data"]), 3)

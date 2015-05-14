@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask.ext import restful
 from flask.ext.restful import fields, marshal_with, marshal
 from colombia.models import (HSProduct, Department, DepartmentProductYear,
@@ -8,6 +8,7 @@ from colombia.api_schemas import (hs_product_fields, department_fields,
 
 from functools import wraps
 
+from atlas_core import db
 
 class HSProductAPI(restful.Resource):
 
@@ -64,9 +65,19 @@ class DepartmentListAPI(restful.Resource):
         return Department.query.all()
 
 
+import marshmallow as ma
+from marshmallow import fields
+
+class DepartmentProductYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("import_value", "export_value", "export_rca", "distance",
+                  "cog", "coi", "department_id", "product_id", "year")
+
+dpy_schema = DepartmentProductYearSchema(many=True)
+
 class DepartmentProductYearByDepartmentAPI(restful.Resource):
 
-    @marshal_with(department_product_year_fields)
     def get(self, department, year):
         """Get the trades done by a department in a specific year or across all
         years.
@@ -74,15 +85,29 @@ class DepartmentProductYearByDepartmentAPI(restful.Resource):
         :param department: See :py:class:`colombia.models.Department` id
         :param year: 4-digit year
         """
-        q = DepartmentProductYear.query.filter_by(department_id=int(department))
+        q = db.session\
+            .query(
+                DepartmentProductYear.import_value,
+                DepartmentProductYear.export_value,
+                DepartmentProductYear.export_rca,
+                DepartmentProductYear.distance,
+                DepartmentProductYear.cog,
+                DepartmentProductYear.coi,
+                DepartmentProductYear.department_id,
+                DepartmentProductYear.product_id,
+                DepartmentProductYear.year,
+            )\
+            .filter_by(department_id=int(department))\
+            .filter(
+                (DepartmentProductYear.export_value > 0)\
+                | (DepartmentProductYear.import_value > 0))
         if year is not None:
             q = q.filter_by(year=year)
-        return q.all()
+        return jsonify(data=dpy_schema.dump(q).data)
 
 
 class DepartmentProductYearByProductAPI(restful.Resource):
 
-    @marshal_with(department_product_year_fields)
     def get(self, product, year):
         """Get the departments that traded a product in a specific year or
         across all years.
@@ -90,10 +115,24 @@ class DepartmentProductYearByProductAPI(restful.Resource):
         :param product: See :py:class:`colombia.models.HSProduct` id
         :param year: 4-digit year
         """
-        q = DepartmentProductYear.query.filter_by(product_id=int(product))
+
+        q = db.session\
+            .query(
+                DepartmentProductYear.import_value,
+                DepartmentProductYear.export_value,
+                DepartmentProductYear.export_rca,
+                DepartmentProductYear.distance,
+                DepartmentProductYear.cog,
+                DepartmentProductYear.coi,
+                DepartmentProductYear.department_id,
+                DepartmentProductYear.product_id,
+                DepartmentProductYear.year,
+            )\
+            .filter_by(product_id=int(product))
+
         if year is not None:
             q = q.filter_by(year=year)
-        return q.all()
+        return jsonify(data=dpy_schema.dump(q).data)
 
 
 class ProductYearAPI(restful.Resource):
