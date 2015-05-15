@@ -30,18 +30,12 @@ def create_app(config={}):
 
     # API Endpoints
     # Background on the URL scheme: https://github.com/cid-harvard/atlas-economic-complexity/issues/125
-    from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
-                                DepartmentListAPI,
-                                DepartmentProductYearByDepartmentAPI,
+
+    from colombia.views import (DepartmentProductYearByDepartmentAPI,
                                 DepartmentProductYearByProductAPI,
-                                ProductYearAPI,
-                                )
-    api.add_resource(HSProductAPI, "/products/<int:product_id>", endpoint="product")
-    api.add_resource(HSProductListAPI, "/products/", endpoint="products")
-    api.add_resource(DepartmentAPI, "/departments/<int:department_id>",
-                     endpoint="department")
-    api.add_resource(DepartmentListAPI, "/departments/",
-                     endpoint="departments")
+                                ProductYearAPI, metadata_app)
+
+    app.register_blueprint(metadata_app)
 
     # Trades by Product
     api.add_resource(DepartmentProductYearByDepartmentAPI,

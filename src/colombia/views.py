@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, Blueprint
 from flask.ext import restful
 from colombia.models import (HSProduct, Department, DepartmentProductYear,
                              ProductYear)
@@ -8,55 +8,55 @@ import colombia.api_schemas as schemas
 from atlas_core import db
 
 
-
-class HSProductAPI(restful.Resource):
-
-    def get(self, product_id):
-        """Get a :py:class:`~colombia.models.HSProduct` with the given code.
-
-        :param code: See :py:class:`colombia.models.HSProduct.code`
-        :type code: int
-        :code 404: product doesn't exist
-        """
-        q = HSProduct.query.filter_by(id=product_id).first_or_abort(product_id)
-        return marshal(schemas.hs_product, q, many=False)
+metadata_app = Blueprint("metadata", __name__)
 
 
-class HSProductListAPI(restful.Resource):
+@metadata_app.route("/products/<int:product_id>")
+def product(product_id):
+    """Get a :py:class:`~colombia.models.HSProduct` with the given code.
 
-    def get(self):
-        """Get all the :py:class:`~colombia.models.HSProduct` s.
-
-        :query aggregation:  Filter by
-          :py:class:`colombia.models.HSProduct.aggregation` if specified.
-        """
-
-        aggregation = request.args.get("aggregation", None)
-        q = HSProduct.query\
-            .filter_by_enum(HSProduct.aggregation, aggregation)
-
-        return marshal(schemas.hs_product, q)
+    :param code: See :py:class:`colombia.models.HSProduct.code`
+    :type code: int
+    :code 404: product doesn't exist
+    """
+    q = HSProduct.query.filter_by(id=product_id)\
+        .first_or_abort(product_id)
+    return marshal(schemas.hs_product, q, many=False)
 
 
-class DepartmentAPI(restful.Resource):
+@metadata_app.route("/products/")
+def products():
+    """Get all the :py:class:`~colombia.models.HSProduct` s.
 
-    def get(self, department_id):
-        """Get a :py:class:`~colombia.models.Department` with the given code.
+    :query aggregation:  Filter by
+      :py:class:`colombia.models.HSProduct.aggregation` if specified.
+    """
 
-        :param code: See :py:class:`colombia.models.Department.code`
-        :type code: int
-        :code 404: department doesn't exist
-        """
-        q = Department.query.filter_by(id=department_id).first_or_abort(department_id)
-        return marshal(schemas.department, q, many=False)
+    aggregation = request.args.get("aggregation", None)
+    q = HSProduct.query\
+        .filter_by_enum(HSProduct.aggregation, aggregation)
+
+    return marshal(schemas.hs_product, q)
 
 
-class DepartmentListAPI(restful.Resource):
+@metadata_app.route("/departments/<int:department_id>")
+def department(department_id):
+    """Get a :py:class:`~colombia.models.Department` with the given code.
 
-    def get(self):
-        """Get all the :py:class:`~colombia.models.Department` s."""
-        q = Department.query.all()
-        return marshal(schemas.department, q)
+    :param code: See :py:class:`colombia.models.Department.code`
+    :type code: int
+    :code 404: department doesn't exist
+    """
+    q = Department.query.filter_by(id=department_id)\
+        .first_or_abort(department_id)
+    return marshal(schemas.department, q, many=False)
+
+
+@metadata_app.route("/departments/")
+def departments():
+    """Get all the :py:class:`~colombia.models.Department` s."""
+    q = Department.query.all()
+    return marshal(schemas.department, q)
 
 
 class DepartmentProductYearByDepartmentAPI(restful.Resource):

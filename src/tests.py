@@ -1,11 +1,10 @@
+from flask import url_for
 from flask.ext.testing import TestCase
 
 from colombia import create_app
 from colombia import ext
 from colombia.models import Municipality, HSProduct, DepartmentProductYear
-from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
-                            DepartmentListAPI,
-                            DepartmentProductYearByDepartmentAPI,
+from colombia.views import (DepartmentProductYearByDepartmentAPI,
                             DepartmentProductYearByProductAPI)
 
 import factories
@@ -64,8 +63,8 @@ class TestMetadataAPIs(ChassisTestCase):
         product = factories.HSProduct()
         db.session.commit()
 
-        response = self.client.get(api.url_for(HSProductAPI,
-                                               product_id=product.id))
+        response = self.client.get(url_for("metadata.product",
+                                           product_id=product.id))
         self.assert_200(response)
         response_json = response.json["data"]
         self.assertEquals(response_json["code"], product.code)
@@ -80,8 +79,8 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         for p in [p1, p2, p3]:
-            response = self.client.get(api.url_for(HSProductListAPI,
-                                                   aggregation=p.aggregation))
+            response = self.client.get(url_for("metadata.products",
+                                               aggregation=p.aggregation))
             self.assert_200(response)
 
             response_json = response.json["data"]
@@ -89,14 +88,14 @@ class TestMetadataAPIs(ChassisTestCase):
             self.assertEquals(response_json[0]["code"], p.code)
 
         # TODO: do parent mapping properly
-        response = self.client.get(api.url_for(HSProductListAPI))
+        response = self.client.get(url_for("metadata.products"))
         for item in response_json:
             # Find product object with given id
             obj = [x for x in [p1, p2, p3] if item["id"] == x.id][0]
             self.assertEquals(item["section_code"], obj.section_code)
             self.assertEquals(item["section_name"], obj.section_name)
 
-        response = self.client.get(api.url_for(HSProductListAPI))
+        response = self.client.get(url_for("metadata.products"))
         self.assert_200(response)
         self.assertEquals(len(response.json["data"]), 3)
 
@@ -105,8 +104,8 @@ class TestMetadataAPIs(ChassisTestCase):
         dept = factories.Department()
         db.session.commit()
 
-        response = self.client.get(api.url_for(DepartmentAPI,
-                                               department_id=dept.id))
+        response = self.client.get(url_for("metadata.department",
+                                           department_id=dept.id))
         self.assert_200(response)
         response_json = response.json["data"]
         self.assertEquals(response_json["code"], dept.code)
@@ -121,7 +120,7 @@ class TestMetadataAPIs(ChassisTestCase):
         factories.Department(code="26")
         db.session.commit()
 
-        response = self.client.get(api.url_for(DepartmentListAPI))
+        response = self.client.get(url_for("metadata.departments"))
         self.assert_200(response)
 
         response_json = response.json["data"]
