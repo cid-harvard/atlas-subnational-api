@@ -67,8 +67,9 @@ class TestMetadataAPIs(ChassisTestCase):
         response = self.client.get(api.url_for(HSProductAPI,
                                                product_id=product.id))
         self.assert_200(response)
-        self.assertEquals(response.json["code"], product.code)
-        self.assertEquals(response.json["name"], product.name)
+        response_json = response.json["data"]
+        self.assertEquals(response_json["code"], product.code)
+        self.assertEquals(response_json["name"], product.name)
 
     def test_get_hsproducts(self):
 
@@ -82,12 +83,14 @@ class TestMetadataAPIs(ChassisTestCase):
             response = self.client.get(api.url_for(HSProductListAPI,
                                                    aggregation=p.aggregation))
             self.assert_200(response)
-            self.assertEquals(len(response.json), 1)
-            self.assertEquals(response.json[0]["code"], p.code)
+
+            response_json = response.json["data"]
+            self.assertEquals(len(response_json), 1)
+            self.assertEquals(response_json[0]["code"], p.code)
 
         # TODO: do parent mapping properly
         response = self.client.get(api.url_for(HSProductListAPI))
-        for item in response.json:
+        for item in response_json:
             # Find product object with given id
             obj = [x for x in [p1, p2, p3] if item["id"] == x.id][0]
             self.assertEquals(item["section_code"], obj.section_code)
@@ -95,7 +98,7 @@ class TestMetadataAPIs(ChassisTestCase):
 
         response = self.client.get(api.url_for(HSProductListAPI))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
+        self.assertEquals(len(response.json["data"]), 3)
 
     def test_get_department(self):
 
@@ -105,10 +108,11 @@ class TestMetadataAPIs(ChassisTestCase):
         response = self.client.get(api.url_for(DepartmentAPI,
                                                department_id=dept.id))
         self.assert_200(response)
-        self.assertEquals(response.json["code"], dept.code)
-        self.assertEquals(response.json["name"], dept.name)
-        self.assertEquals(response.json["population"], dept.population)
-        self.assertEquals(response.json["gdp"], dept.gdp)
+        response_json = response.json["data"]
+        self.assertEquals(response_json["code"], dept.code)
+        self.assertEquals(response_json["name"], dept.name)
+        self.assertEquals(response_json["population"], dept.population)
+        self.assertEquals(response_json["gdp"], dept.gdp)
 
     def test_get_departments(self):
 
@@ -119,8 +123,10 @@ class TestMetadataAPIs(ChassisTestCase):
 
         response = self.client.get(api.url_for(DepartmentListAPI))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
-        self.assertEquals(set(x["code"] for x in response.json),
+
+        response_json = response.json["data"]
+        self.assertEquals(len(response_json), 3)
+        self.assertEquals(set(x["code"] for x in response_json),
                           set(["22", "24", "26"]))
 
     def test_get_department_product_year_by_department(self):
