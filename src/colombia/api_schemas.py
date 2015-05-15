@@ -1,6 +1,5 @@
 from flask import jsonify
 import marshmallow as ma
-from marshmallow import fields
 
 from atlas_core.helpers.flask import APIError
 
@@ -50,4 +49,3 @@ department_product_year = DepartmentProductYearSchema(many=True)
 product_year = ProductYearSchema(many=True)
 hs_product = HSProductSchema(many=True)
 department = DepartmentSchema(many=True)
-

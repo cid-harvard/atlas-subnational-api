@@ -1,12 +1,9 @@
-from flask import request, jsonify
+from flask import request
 from flask.ext import restful
-from flask.ext.restful import marshal_with
 from colombia.models import (HSProduct, Department, DepartmentProductYear,
                              ProductYear)
 from colombia.api_schemas import marshal
 import colombia.api_schemas as schemas
-
-from functools import wraps
 
 from atlas_core import db
 
