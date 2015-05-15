@@ -1,6 +1,23 @@
-
+from flask import jsonify
 import marshmallow as ma
 from marshmallow import fields
+
+from atlas_core.helpers.flask import APIError
+
+
+def marshal(schema, data, json=True, many=True):
+    """Shortcut to marshals a marshmallow schema and dump out a flask json
+    response, or raise an APIError with appropriate messages otherwise."""
+
+    try:
+        serialization_result = schema.dump(data, many=many)
+    except ma.ValidationError as err:
+        raise APIError(message=err.messages)
+
+    if json:
+        return jsonify(data=serialization_result.data)
+    else:
+        return serialization_result.data
 
 
 class DepartmentProductYearSchema(ma.Schema):
@@ -10,56 +27,27 @@ class DepartmentProductYearSchema(ma.Schema):
                   "cog", "coi", "department_id", "product_id", "year")
 
 
-class HSProductFields(ma.Schema):
+class HSProductSchema(ma.Schema):
 
     class Meta:
         fields = ("code", "section_code", "section_name", "section_name_es",
                   "id", "name", "en", "es", "aggregation")
 
 
+class DepartmentSchema(ma.Schema):
+
+    class Meta:
+        fields = ("code", "id", "name", "population", "gdp")
+
+
+class ProductYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("pci", "id", "product_id", "year")
+
+
 department_product_year = DepartmentProductYearSchema(many=True)
-hs_product = HSProductFields(many=True)
+product_year = ProductYearSchema(many=True)
+hs_product = HSProductSchema(many=True)
+department = DepartmentSchema(many=True)
 
-from flask.ext.restful import fields
-hs_product_fields = {
-    'code': fields.String,
-    'section_code': fields.String,
-    'section_name': fields.String,
-    'section_name_es': fields.String,
-    'id': fields.Integer,
-    'name': fields.String,
-    'en': fields.String,
-    'es': fields.String,
-    'aggregation': fields.String,
-}
-
-department_fields = {
-    'code': fields.String,
-    'id': fields.Integer,
-    'name': fields.String,
-    'population': fields.Integer,
-    'gdp': fields.Integer,
-}
-
-department_product_year_fields = {
-    'import_value': fields.Integer,
-    'export_value': fields.Integer,
-    'export_rca': fields.Float,
-    'distance': fields.Float,
-    'cog': fields.Float,
-    'coi': fields.Float,
-
-    'id': fields.Integer,
-    'department_id': fields.String,
-    'product_id': fields.String,
-    'year': fields.Integer
-}
-
-
-product_year_fields = {
-    'pci': fields.Float,
-
-    'id': fields.Integer,
-    'product_id': fields.String,
-    'year': fields.Integer
-}
