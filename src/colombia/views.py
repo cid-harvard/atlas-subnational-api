@@ -5,6 +5,7 @@ from colombia.models import (HSProduct, Department, DepartmentProductYear,
                              ProductYear)
 from colombia.api_schemas import (hs_product_fields, department_fields,
                                   department_product_year_fields, product_year_fields)
+import colombia.api_schemas as schemas
 
 from functools import wraps
 
@@ -65,17 +66,6 @@ class DepartmentListAPI(restful.Resource):
         return Department.query.all()
 
 
-import marshmallow as ma
-from marshmallow import fields
-
-class DepartmentProductYearSchema(ma.Schema):
-
-    class Meta:
-        fields = ("import_value", "export_value", "export_rca", "distance",
-                  "cog", "coi", "department_id", "product_id", "year")
-
-dpy_schema = DepartmentProductYearSchema(many=True)
-
 class DepartmentProductYearByDepartmentAPI(restful.Resource):
 
     def get(self, department, year):
@@ -103,7 +93,7 @@ class DepartmentProductYearByDepartmentAPI(restful.Resource):
                 | (DepartmentProductYear.import_value > 0))
         if year is not None:
             q = q.filter_by(year=year)
-        return jsonify(data=dpy_schema.dump(q).data)
+        return jsonify(data=schemas.department_product_year.dump(q).data)
 
 
 class DepartmentProductYearByProductAPI(restful.Resource):
@@ -132,7 +122,7 @@ class DepartmentProductYearByProductAPI(restful.Resource):
 
         if year is not None:
             q = q.filter_by(year=year)
-        return jsonify(data=dpy_schema.dump(q).data)
+        return jsonify(data=schemas.department_product_year.dump(q).data)
 
 
 class ProductYearAPI(restful.Resource):
