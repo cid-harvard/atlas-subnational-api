@@ -4,13 +4,10 @@ from flask.ext.testing import TestCase
 from colombia import create_app
 from colombia import ext
 from colombia.models import Municipality, HSProduct, DepartmentProductYear
-from colombia.views import (DepartmentProductYearByDepartmentAPI,
-                            DepartmentProductYearByProductAPI)
 
 import factories
 
 from atlas_core import db
-api = ext.api
 
 
 class ChassisTestCase(TestCase):
@@ -137,9 +134,9 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         response = self.client.get(
-            api.url_for(DepartmentProductYearByDepartmentAPI,
-                        department=a.department_id,
-                        year=2012))
+            url_for("products.department_product_year",
+                    department=a.department_id,
+                    year=2012))
         self.assert_200(response)
         response_data = response.json["data"]
         self.assertEquals(len(response_data), 3)
@@ -163,14 +160,15 @@ class TestMetadataAPIs(ChassisTestCase):
 
         # Should get it when we query for all years
         response = self.client.get(
-            "/trade/departments/{0}/".format(a.department_id))
+            url_for("products.department_product_year",
+                    department=a.department_id))
         self.assertEquals(len(response.json["data"]), 4)
 
         # But not when we query for 2012
         response = self.client.get(
-            api.url_for(DepartmentProductYearByDepartmentAPI,
-                        department=a.department_id,
-                        year=2012))
+            url_for("products.department_product_year",
+                    department=a.department_id,
+                    year=2012))
         self.assertEquals(len(response.json["data"]), 3)
 
     def test_get_department_product_year_by_product(self):
@@ -182,7 +180,7 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         response = self.client.get(
-            api.url_for(DepartmentProductYearByProductAPI,
+            url_for("products.department_product_year_by_product",
                         product=a.product_id,
                         year=2012))
         self.assert_200(response)
@@ -208,12 +206,13 @@ class TestMetadataAPIs(ChassisTestCase):
 
         # Should get it when we query for all years
         response = self.client.get(
-            "/trade/products/{0}/".format(a.product_id))
+            url_for("products.department_product_year_by_product",
+                    product=a.product_id))
         self.assertEquals(len(response.json["data"]), 4)
 
         # But not when we query for 2012
         response = self.client.get(
-            api.url_for(DepartmentProductYearByProductAPI,
-                        product=a.product_id,
-                        year=2012))
+            url_for("products.department_product_year_by_product",
+                    product=a.product_id,
+                    year=2012))
         self.assertEquals(len(response.json["data"]), 3)
