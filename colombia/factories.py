@@ -1,5 +1,5 @@
-from colombia.models import db
-from colombia import models
+from .core import db
+from . import models
 
 from faker import Factory as Fake
 from factory.alchemy import SQLAlchemyModelFactory

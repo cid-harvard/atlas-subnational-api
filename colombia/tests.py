@@ -1,11 +1,11 @@
 from flask import url_for
 from flask.ext.testing import TestCase
 
-from colombia import create_app
-from colombia.core import db
-from colombia.models import Municipality, HSProduct, DepartmentProductYear
+from . import create_app
+from .core import db
+from .models import Municipality, HSProduct, DepartmentProductYear
 
-import factories
+from . import factories
 
 
 

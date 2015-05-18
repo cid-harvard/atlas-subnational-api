@@ -1,8 +1,8 @@
 from flask import request, Blueprint
-from colombia.models import (HSProduct, Department, DepartmentProductYear,
+from .models import (HSProduct, Department, DepartmentProductYear,
                              ProductYear)
-from colombia.api_schemas import marshal
-import colombia.api_schemas as schemas
+from .api_schemas import marshal
+from . import api_schemas as schemas
 
 from .core import db
 

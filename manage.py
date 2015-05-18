@@ -1,5 +1,4 @@
-from colombia import create_app, models
-import factories
+from colombia import create_app, models, factories
 from flask.ext.script import Manager, Shell
 
 import random

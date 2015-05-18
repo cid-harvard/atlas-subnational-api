@@ -11,6 +11,7 @@ count=10
 
 PYTHON_EXECUTABLE=python3
 VIRTUALENV_EXECUTABLE=pyvenv
+CONF="../conf/dev.py"
 
 
 requirements = requirements.txt requirements-dev.txt
@@ -23,16 +24,16 @@ $(ACTIVATE): $(requirements)
 	touch $(ACTIVATE)
 
 dev: virtualenv
-	. $(ACTIVATE); FLASK_CONFIG="../../conf/dev.py" $(PYTHON_EXECUTABLE) src/runserver.py
+	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" $(PYTHON_EXECUTABLE) runserver.py
 
 test: virtualenv
-	. $(ACTIVATE); FLASK_CONFIG="../../conf/dev.py" py.test --cov colombia src/tests.py
+	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" py.test --cov colombia colombia/tests.py
 
 shell: virtualenv
-	. $(ACTIVATE); FLASK_CONFIG="../../conf/dev.py" $(PYTHON_EXECUTABLE) src/manage.py shell
+	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" $(PYTHON_EXECUTABLE) manage.py shell
 
 dummy: virtualenv
-	. $(ACTIVATE); FLASK_CONFIG="../../conf/dev.py" $(PYTHON_EXECUTABLE) src/manage.py dummy -n $(count)
+	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" $(PYTHON_EXECUTABLE) manage.py dummy -n $(count)
 
 submodule:
 	test -d doc/_themes/ || git submodule add git://github.com/kennethreitz/kr-sphinx-themes.git doc/_themes

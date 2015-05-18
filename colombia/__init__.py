@@ -1,7 +1,8 @@
 import atlas_core
-from colombia.views import (products_app, metadata_app)
+from .views import (products_app, metadata_app)
 
 from .core import db, cache
+
 
 def create_app(config={}):
 
