@@ -3,8 +3,8 @@ from flask.ext.testing import TestCase
 
 from . import create_app
 from .core import db
-from .models import Municipality, HSProduct, DepartmentProductYear
 
+from .models import Municipality, HSProduct, DepartmentProductYear
 from . import factories
 
 

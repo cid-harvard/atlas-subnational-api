@@ -1,5 +1,6 @@
 import atlas_core
-from .views import (products_app, metadata_app)
+from .metadata.views import metadata_app
+from .data.views import products_app
 
 from .core import db, cache
 
