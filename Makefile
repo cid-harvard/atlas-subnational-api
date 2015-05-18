@@ -19,7 +19,7 @@ virtualenv: $(ACTIVATE)
 $(ACTIVATE): $(requirements)
 	test -d $(ENVDIR) || $(VIRTUALENV_EXECUTABLE) $(ENVDIR)
 	for f in $?; do \
-		. $(ACTIVATE); pip install -r $$f; \
+		. $(ACTIVATE); pip install -U -r $$f; \
 	done
 	touch $(ACTIVATE)
 
