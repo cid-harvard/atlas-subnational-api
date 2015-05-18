@@ -1,17 +1,12 @@
+from flask import url_for
 from flask.ext.testing import TestCase
 
-from colombia import create_app
-from colombia import ext
-from colombia.models import Municipality, HSProduct, DepartmentProductYear
-from colombia.views import (HSProductAPI, HSProductListAPI, DepartmentAPI,
-                            DepartmentListAPI,
-                            DepartmentProductYearByDepartmentAPI,
-                            DepartmentProductYearByProductAPI)
+from . import create_app
+from .core import db
 
-import factories
+from .models import Municipality, HSProduct, DepartmentProductYear
+from . import factories
 
-db = ext.db
-api = ext.api
 
 
 class ChassisTestCase(TestCase):
@@ -30,7 +25,6 @@ class ChassisTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        ext.reset()
 
 
 class TestModels(ChassisTestCase):
@@ -64,11 +58,12 @@ class TestMetadataAPIs(ChassisTestCase):
         product = factories.HSProduct()
         db.session.commit()
 
-        response = self.client.get(api.url_for(HSProductAPI,
-                                               product_id=product.id))
+        response = self.client.get(url_for("metadata.product",
+                                           product_id=product.id))
         self.assert_200(response)
-        self.assertEquals(response.json["code"], product.code)
-        self.assertEquals(response.json["name"], product.name)
+        response_json = response.json["data"]
+        self.assertEquals(response_json["code"], product.code)
+        self.assertEquals(response_json["name"], product.name)
 
     def test_get_hsproducts(self):
 
@@ -79,36 +74,39 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         for p in [p1, p2, p3]:
-            response = self.client.get(api.url_for(HSProductListAPI,
-                                                   aggregation=p.aggregation))
+            response = self.client.get(url_for("metadata.products",
+                                               aggregation=p.aggregation))
             self.assert_200(response)
-            self.assertEquals(len(response.json), 1)
-            self.assertEquals(response.json[0]["code"], p.code)
+
+            response_json = response.json["data"]
+            self.assertEquals(len(response_json), 1)
+            self.assertEquals(response_json[0]["code"], p.code)
 
         # TODO: do parent mapping properly
-        response = self.client.get(api.url_for(HSProductListAPI))
-        for item in response.json:
+        response = self.client.get(url_for("metadata.products"))
+        for item in response_json:
             # Find product object with given id
             obj = [x for x in [p1, p2, p3] if item["id"] == x.id][0]
             self.assertEquals(item["section_code"], obj.section_code)
             self.assertEquals(item["section_name"], obj.section_name)
 
-        response = self.client.get(api.url_for(HSProductListAPI))
+        response = self.client.get(url_for("metadata.products"))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
+        self.assertEquals(len(response.json["data"]), 3)
 
     def test_get_department(self):
 
         dept = factories.Department()
         db.session.commit()
 
-        response = self.client.get(api.url_for(DepartmentAPI,
-                                               department_id=dept.id))
+        response = self.client.get(url_for("metadata.department",
+                                           department_id=dept.id))
         self.assert_200(response)
-        self.assertEquals(response.json["code"], dept.code)
-        self.assertEquals(response.json["name"], dept.name)
-        self.assertEquals(response.json["population"], dept.population)
-        self.assertEquals(response.json["gdp"], dept.gdp)
+        response_json = response.json["data"]
+        self.assertEquals(response_json["code"], dept.code)
+        self.assertEquals(response_json["name"], dept.name)
+        self.assertEquals(response_json["population"], dept.population)
+        self.assertEquals(response_json["gdp"], dept.gdp)
 
     def test_get_departments(self):
 
@@ -117,10 +115,12 @@ class TestMetadataAPIs(ChassisTestCase):
         factories.Department(code="26")
         db.session.commit()
 
-        response = self.client.get(api.url_for(DepartmentListAPI))
+        response = self.client.get(url_for("metadata.departments"))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
-        self.assertEquals(set(x["code"] for x in response.json),
+
+        response_json = response.json["data"]
+        self.assertEquals(len(response_json), 3)
+        self.assertEquals(set(x["code"] for x in response_json),
                           set(["22", "24", "26"]))
 
     def test_get_department_product_year_by_department(self):
@@ -132,12 +132,13 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         response = self.client.get(
-            api.url_for(DepartmentProductYearByDepartmentAPI,
-                        department=a.department_id,
-                        year=2012))
+            url_for("products.department_product_year",
+                    department=a.department_id,
+                    year=2012))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
-        for result in response.json:
+        response_data = response.json["data"]
+        self.assertEquals(len(response_data), 3)
+        for result in response_data:
             self.assertIn(result["import_value"],
                           [x.import_value for x in entries])
             self.assertIn(result["export_value"],
@@ -157,16 +158,16 @@ class TestMetadataAPIs(ChassisTestCase):
 
         # Should get it when we query for all years
         response = self.client.get(
-            "/trade/departments/{0}/".format(a.department_id))
-        self.assertEquals(len(response.json), 4)
+            url_for("products.department_product_year",
+                    department=a.department_id))
+        self.assertEquals(len(response.json["data"]), 4)
 
         # But not when we query for 2012
         response = self.client.get(
-            api.url_for(DepartmentProductYearByDepartmentAPI,
-                        department=a.department_id,
-                        year=2012))
-        self.assertEquals(len(response.json), 3)
-
+            url_for("products.department_product_year",
+                    department=a.department_id,
+                    year=2012))
+        self.assertEquals(len(response.json["data"]), 3)
 
     def test_get_department_product_year_by_product(self):
 
@@ -177,12 +178,13 @@ class TestMetadataAPIs(ChassisTestCase):
         db.session.commit()
 
         response = self.client.get(
-            api.url_for(DepartmentProductYearByProductAPI,
+            url_for("products.department_product_year_by_product",
                         product=a.product_id,
                         year=2012))
         self.assert_200(response)
-        self.assertEquals(len(response.json), 3)
-        for result in response.json:
+        response_data = response.json["data"]
+        self.assertEquals(len(response_data), 3)
+        for result in response_data:
             self.assertIn(result["import_value"],
                           [x.import_value for x in entries])
             self.assertIn(result["export_value"],
@@ -202,12 +204,13 @@ class TestMetadataAPIs(ChassisTestCase):
 
         # Should get it when we query for all years
         response = self.client.get(
-            "/trade/products/{0}/".format(a.product_id))
-        self.assertEquals(len(response.json), 4)
+            url_for("products.department_product_year_by_product",
+                    product=a.product_id))
+        self.assertEquals(len(response.json["data"]), 4)
 
         # But not when we query for 2012
         response = self.client.get(
-            api.url_for(DepartmentProductYearByProductAPI,
-                        product=a.product_id,
-                        year=2012))
-        self.assertEquals(len(response.json), 3)
+            url_for("products.department_product_year_by_product",
+                    product=a.product_id,
+                    year=2012))
+        self.assertEquals(len(response.json["data"]), 3)

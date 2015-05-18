@@ -20,7 +20,6 @@ functionality to generate API docs from comments.
 
     rest
     models
-    mixins
 
 
 Indices and tables

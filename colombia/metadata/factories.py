@@ -1,5 +1,5 @@
-from colombia.models import db
-from colombia import models
+from ..core import db
+from . import models
 
 from faker import Factory as Fake
 from factory.alchemy import SQLAlchemyModelFactory
@@ -63,21 +63,3 @@ class Department(SQLAlchemyModelFactory):
     population = fuzzy.FuzzyInteger(1000, 12000000)
     gdp = fuzzy.FuzzyInteger(1000000, 12000000000)
 
-
-class DepartmentProductYear(SQLAlchemyModelFactory):
-    class Meta:
-        model = models.DepartmentProductYear
-        sqlalchemy_session = db.session
-
-    id = factory.Sequence(lambda n: n)
-
-    department = factory.SubFactory(Department)
-    product = factory.SubFactory(HSProduct)
-    year = fuzzy.FuzzyInteger(1999, 2013)
-
-    import_value = fuzzy.FuzzyInteger(10**5, 10**11)
-    export_value = fuzzy.FuzzyInteger(10**5, 10**11)
-    export_rca = fuzzy.FuzzyFloat(0, 1)
-    distance = fuzzy.FuzzyFloat(0, 8)
-    cog = fuzzy.FuzzyFloat(-1, 1)
-    coi = fuzzy.FuzzyFloat(-1, 1)
