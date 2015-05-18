@@ -4,7 +4,7 @@ from colombia.models import (HSProduct, Department, DepartmentProductYear,
 from colombia.api_schemas import marshal
 import colombia.api_schemas as schemas
 
-from atlas_core import db
+from .core import db
 
 
 metadata_app = Blueprint("metadata", __name__)

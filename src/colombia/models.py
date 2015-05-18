@@ -1,9 +1,9 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from atlas_core import db
 from atlas_core.sqlalchemy import BaseModel
 from atlas_core.model_mixins import IDMixin, LanguageMixin
 
+from .core import db
 
 # On hierarchy trees: there are two types. One is where each element is the
 # same regardless of position in the hierarchy, the other has different

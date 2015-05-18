@@ -1,29 +1,14 @@
-from flask.ext.cache import Cache
-from raven.contrib.flask import Sentry
-
 import atlas_core
 from colombia.views import (products_app, metadata_app)
 
-
-class ext(object):
-    """Flask extensions."""
-
-    sentry = Sentry()
-    cache = Cache()
-
-    @classmethod
-    def reset(cls):
-        """To use in unittest teardowns - reset all extensions."""
-        cls.sentry = Sentry()
-        cls.cache = Cache()
-
+from .core import db, cache
 
 def create_app(config={}):
 
     # Create base app from atlas_core
     app = atlas_core.create_app(additional_config=config, name="colombia")
 
-    ext.cache.init_app(app)
+    cache.init_app(app)
 
     # API Endpoints
     app.register_blueprint(metadata_app)
@@ -39,10 +24,10 @@ def create_app(config={}):
     with app.app_context():
         # Register sqlalchemy model base so that models in this project that
         # use it are also registered
-        atlas_core.db.register_base(atlas_core.sqlalchemy.BaseModel)
+        db.register_base(atlas_core.sqlalchemy.BaseModel)
 
         # Create empty databases if not created
         if app.debug:
-            atlas_core.create_db(app, atlas_core.db)
+            atlas_core.create_db(app, db)
 
     return app

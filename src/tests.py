@@ -2,12 +2,11 @@ from flask import url_for
 from flask.ext.testing import TestCase
 
 from colombia import create_app
-from colombia import ext
+from colombia.core import db
 from colombia.models import Municipality, HSProduct, DepartmentProductYear
 
 import factories
 
-from atlas_core import db
 
 
 class ChassisTestCase(TestCase):
@@ -26,7 +25,6 @@ class ChassisTestCase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        ext.reset()
 
 
 class TestModels(ChassisTestCase):
