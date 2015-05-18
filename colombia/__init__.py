@@ -8,7 +8,8 @@ from .core import db, cache
 def create_app(config={}):
 
     # Create base app from atlas_core
-    app = atlas_core.create_app(additional_config=config, name="colombia")
+    app = atlas_core.create_app(additional_config=config, name="colombia",
+                                standalone=True)
 
     cache.init_app(app)
 
