@@ -14,8 +14,8 @@ def create_app(config={}):
     cache.init_app(app)
 
     # API Endpoints
-    app.register_blueprint(metadata_app)
-    app.register_blueprint(products_app)
+    app.register_blueprint(metadata_app, url_prefix="/metadata")
+    app.register_blueprint(products_app, url_prefix="/data")
 
     # CORS hook for debug reasons.
     @app.after_request
