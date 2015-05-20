@@ -2,10 +2,11 @@ from flask import url_for
 
 from colombia import factories
 from colombia.core import db
-from colombia.tests import ChassisTestCase
+
+from . import BaseTestCase
 
 
-class TestMetadataAPIs(ChassisTestCase):
+class TestMetadataAPIs(BaseTestCase):
 
     SQLALCHEMY_DATABASE_URI = "sqlite://"
 
