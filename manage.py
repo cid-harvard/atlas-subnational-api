@@ -1,4 +1,4 @@
-from colombia import create_app, models, factories
+from colombia import create_app, models, core, factories
 from flask.ext.script import Manager, Shell
 
 import random
@@ -8,7 +8,7 @@ manager = Manager(app)
 
 
 def _make_context():
-        return dict(app=app, db=models.db, models=models, factories=factories)
+        return dict(app=app, db=core, models=models, factories=factories)
 
 manager.add_command("shell", Shell(make_context=_make_context))
 
