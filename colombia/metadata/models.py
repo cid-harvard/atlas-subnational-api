@@ -3,6 +3,7 @@ from atlas_core.model_mixins import IDMixin, LanguageMixin
 
 from ..core import db
 
+from sqlalchemy.ext.hybrid import hybrid_method
 
 # On hierarchy trees: there are two types. One is where each element is the
 # same regardless of position in the hierarchy, the other has different
@@ -17,7 +18,7 @@ class I18nMixinBase(object):
     #name_short_en = db.Column(db.Unicode(50))
     #description_en = db.Column(db.UnicodeText)
 
-    #@hybrid_method
+    @hybrid_method
     def get_localized(self, field, lang):
         """Look up the language localized version of a field by looking up
         field_lang."""
@@ -30,7 +31,7 @@ class I18nMixinBase(object):
             for language in languages:
                 field_name = name + "_" + language
                 localized_fields[field_name] = db.Column(value)
-        return type(class_name, (object,), localized_fields)
+        return type(class_name, (I18nMixinBase,), localized_fields)
 
 
 I18nMixin = I18nMixinBase.create(
