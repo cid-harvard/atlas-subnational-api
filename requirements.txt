@@ -1,8 +1,9 @@
-Flask==0.10.1
-SQLAlchemy==0.9.8
 raven==5.1.1
-flask-script==2.0.5
 flask-cache==0.13.1
+
+# Atlas Core
+git+https://github.com/cid-harvard/atlas_core.git@v0.2.3#egg=atlas_core
+
+# Override atlas_core dependencies
+git+https://github.com/nickw444/flask-sqlalchemy.git@a801e50035009c107a6628937320a0fd4957d86c#egg=flask-sqlalchemy
 git+https://github.com/marshmallow-code/marshmallow.git@16cb352c80318d01ec3aff4c62863153bbdfec04#egg=marshmallow
-git+https://github.com/cid-harvard/atlas_core.git@v0.2.1#egg=atlas_core
--e git+https://github.com/nickw444/flask-sqlalchemy.git@a801e50035009c107a6628937320a0fd4957d86c#egg=flask-sqlalchemy
