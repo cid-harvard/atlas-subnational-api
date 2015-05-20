@@ -30,9 +30,13 @@ class HSProduct(SQLAlchemyModelFactory):
         sqlalchemy_session = db.session
 
     id = factory.Sequence(lambda n: n)
-    aggregation = fuzzy.FuzzyChoice(models.HSProduct.AGGREGATIONS)
-    name = factory.Sequence(lambda n: PRODUCT_NAMES[n % len(PRODUCT_NAMES)])
-    code = fuzzy.FuzzyInteger(0, 9999)
+    code = factory.Sequence(lambda n: str(1000+n))
+    level = fuzzy.FuzzyChoice(models.HSProduct.LEVELS)
+    parent_id = None
+
+    name_en = "A very very very very very long english name"
+    name_short_en = factory.Sequence(lambda n: PRODUCT_NAMES[n % len(PRODUCT_NAMES)])
+    description_en = "A very very very long description in english."
 
 
 class Municipality(SQLAlchemyModelFactory):

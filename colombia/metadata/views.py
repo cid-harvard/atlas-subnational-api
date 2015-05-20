@@ -17,7 +17,7 @@ def product(product_id):
     """
     q = HSProduct.query.filter_by(id=product_id)\
         .first_or_abort(product_id)
-    return marshal(schemas.hs_product, q, many=False)
+    return marshal(schemas.metadata, q, many=False)
 
 
 @metadata_app.route("/products/")
@@ -28,11 +28,11 @@ def products():
       :py:class:`colombia.models.HSProduct.aggregation` if specified.
     """
 
-    aggregation = request.args.get("aggregation", None)
+    level = request.args.get("level", None)
     q = HSProduct.query\
-        .filter_by_enum(HSProduct.aggregation, aggregation)
+        .filter_by_enum(HSProduct.level, level)
 
-    return marshal(schemas.hs_product, q)
+    return marshal(schemas.metadata, q)
 
 
 @metadata_app.route("/departments/<int:department_id>")

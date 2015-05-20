@@ -9,39 +9,66 @@ from ..core import db
 # elements for each level of hierarchy.
 
 
-class HSProduct(BaseModel, IDMixin, LanguageMixin):
+
+class I18nMixinBase(object):
+
+
+    #name_en = db.Column(db.UnicodeText)
+    #name_short_en = db.Column(db.Unicode(50))
+    #description_en = db.Column(db.UnicodeText)
+
+    #@hybrid_method
+    def get_localized(self, field, lang):
+        """Look up the language localized version of a field by looking up
+        field_lang."""
+        return getattr(self, field + "_" + lang)
+
+    @staticmethod
+    def create(fields, languages=["en"], class_name="I18nMixin"):
+        localized_fields = {}
+        for name, value in fields.items():
+            for language in languages:
+                field_name = name + "_" + language
+                localized_fields[field_name] = db.Column(value)
+        return type(class_name, (object,), localized_fields)
+
+
+I18nMixin = I18nMixinBase.create(
+    languages=["en", "es", "de"],
+    fields={
+        "name": db.UnicodeText,
+        "name_short": db.Unicode(50),
+        "description": db.UnicodeText
+    })
+
+
+class Metadata(BaseModel, IDMixin, I18nMixin):
+    """Baseclass for all entity metadata models. Any subclass of this class
+    must have two fields:
+        - a LEVELS = [] list that contains all the classification levels as
+        strings
+        - a db.Column(db.Enum(*LEVELS)) enum field
+    """
+
+    __abstract__ = True
+
+    code = db.Column(db.Unicode(25))
+    parent_id = db.Column(db.Integer)
+
+
+class HSProduct(Metadata):
     """A product according to the HS4 (Harmonized System) classification.
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
     """
     __tablename__ = "product"
 
     #: Possible aggregation levels
-    AGGREGATIONS = [
+    LEVELS = [
         "section",
         "2digit",
         "4digit"
     ]
-    #: Enum that contains level of aggregation - how many "digits" of detail
-    aggregation = db.Column(db.Enum(*AGGREGATIONS))
-
-    #: Canonical name of the product - in non_colloquial english (i.e. name vs
-    #: name_en)
-    name = db.Column(db.String(50))
-
-    #: HS4 code of the product, in the level of aggregation described in
-    #: :py:class:`.aggregation`.
-    code = db.Column(db.String(6))
-
-    #: HS4 section of the product, this is deprecated and shouldn't be used.
-    #: EVER. I had to stick this in for the alpha demo.
-    section_code = db.Column(db.String(6))
-    #: HS4 section name of the product, this is deprecated and shouldn't be used.
-    #: EVER. I had to stick this in for the alpha demo.
-    section_name = db.Column(db.String(6))
-    section_name_es = db.Column(db.String(6))
-
-    def __repr__(self):
-        return "<HSProduct: %d, %s>" % (self.id or -1, self.name or None)
+    level = db.Column(db.Enum(*LEVELS))
 
 
 class Location(BaseModel, IDMixin):

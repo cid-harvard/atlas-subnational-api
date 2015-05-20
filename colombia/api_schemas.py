@@ -26,13 +26,6 @@ class DepartmentProductYearSchema(ma.Schema):
                   "cog", "coi", "department_id", "product_id", "year")
 
 
-class HSProductSchema(ma.Schema):
-
-    class Meta:
-        fields = ("code", "section_code", "section_name", "section_name_es",
-                  "id", "name", "en", "es", "aggregation")
-
-
 class DepartmentSchema(ma.Schema):
 
     class Meta:
@@ -45,7 +38,25 @@ class ProductYearSchema(ma.Schema):
         fields = ("pci", "id", "product_id", "year")
 
 
+class MetadataSchema(ma.Schema):
+    """Base serialization schema for metadata APIs."""
+
+    class Meta:
+        additional = ("id", "code", "level", "parent_id")
+
+
+class ColombiaMetadataSchema(MetadataSchema):
+
+    name_en = ma.fields.Str(required=False)
+    name_short_en = ma.fields.Str(required=False)
+    description_en = ma.fields.Str(required=False)
+
+    name_es = ma.fields.Str(required=False)
+    name_short_es = ma.fields.Str(required=False)
+    description_es = ma.fields.Str(required=False)
+
+
 department_product_year = DepartmentProductYearSchema(many=True)
 product_year = ProductYearSchema(many=True)
-hs_product = HSProductSchema(many=True)
 department = DepartmentSchema(many=True)
+metadata = ColombiaMetadataSchema(many=True)

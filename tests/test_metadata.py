@@ -10,46 +10,92 @@ class TestMetadataAPIs(BaseTestCase):
 
     SQLALCHEMY_DATABASE_URI = "sqlite://"
 
-    def test_get_hsproduct(self):
+    def assert_metadata_api(self, api_url):
 
-        product = factories.HSProduct()
-        db.session.commit()
-
-        response = self.client.get(url_for("metadata.product",
-                                           product_id=product.id))
+        response = self.client.get(api_url)
         self.assert_200(response)
         response_json = response.json["data"]
-        self.assertEquals(response_json["code"], product.code)
-        self.assertEquals(response_json["name"], product.name)
+
+        for field in ["id", "code", "level", "parent_id"]:
+            assert field in response_json
+
+        return response_json
+
+    def assert_json_matches_object(self, json, obj, fields_to_check):
+
+        for field_name in fields_to_check:
+
+            assert field_name in json
+            assert hasattr(obj, field_name)
+
+            field_value = getattr(obj, field_name)
+            assert field_value == json[field_name]
+
+    def test_get_hsproduct(self):
+        product = factories.HSProduct(
+            id=132,
+            code="0302",
+            level="4digit",
+            parent_id=None,
+            name_en="Fish, fresh or chilled, excluding fish fillets and other fish meat of heading 0304",
+            name_short_en="Fish, excluding fillets",
+            description_en="This is a description of fish.",
+            name_es="El pescado, excepto los filetes"
+        )
+        db.session.commit()
+
+        api_url = url_for("metadata.product",
+                          product_id=product.id)
+
+        response_json = self.assert_metadata_api(api_url)
+        self.assert_json_matches_object(response_json, product,
+                                        ["id", "code", "level", "parent_id",
+                                         "name_en", "name_short_en",
+                                         "description_en"])
 
     def test_get_hsproducts(self):
+        p1 = factories.HSProduct(id=1, level="section", code="A",
+                                 parent_id=None)
+        p2 = factories.HSProduct(id=2, level="2digit", code="11", parent_id=1)
+        p3 = factories.HSProduct(id=3, level="4digit", code="1108",
+                                 parent_id=2)
+        products = {1: p1, 2: p2, 3: p3}
+        db.session.commit()
 
-        p1 = factories.HSProduct(aggregation="2digit", code="22")
-        p2 = factories.HSProduct(aggregation="4digit", code="6208",
-                                 section_code="416", section_name="Textiles")
-        p3 = factories.HSProduct(aggregation="section", code="A")
+        response = self.client.get(url_for("metadata.products"))
+        self.assert_200(response)
+
+        response_json = response.json["data"]
+        assert len(response_json) == 3
+
+        for product_json in response_json:
+            p = products[product_json["id"]]
+            self.assert_json_matches_object(product_json, p,
+                                            ["id", "code", "level",
+                                             "parent_id", "name_en",
+                                             "name_short_en",
+                                             "description_en"])
+
+    def test_get_hsproducts_levels(self):
+        """Test that filtering by classification levels works."""
+
+        p1 = factories.HSProduct(id=1, level="section", code="A", parent_id=None)
+        p2 = factories.HSProduct(id=2, level="2digit", code="11", parent_id=1)
+        p3 = factories.HSProduct(id=3, level="4digit", code="1108", parent_id=2)
         db.session.commit()
 
         for p in [p1, p2, p3]:
             response = self.client.get(url_for("metadata.products",
-                                               aggregation=p.aggregation))
+                                               level=p.level))
             self.assert_200(response)
 
             response_json = response.json["data"]
             self.assertEquals(len(response_json), 1)
-            self.assertEquals(response_json[0]["code"], p.code)
-
-        # TODO: do parent mapping properly
-        response = self.client.get(url_for("metadata.products"))
-        for item in response_json:
-            # Find product object with given id
-            obj = [x for x in [p1, p2, p3] if item["id"] == x.id][0]
-            self.assertEquals(item["section_code"], obj.section_code)
-            self.assertEquals(item["section_name"], obj.section_name)
-
-        response = self.client.get(url_for("metadata.products"))
-        self.assert_200(response)
-        self.assertEquals(len(response.json["data"]), 3)
+            self.assert_json_matches_object(response_json[0], p,
+                                            ["id", "code", "level",
+                                             "parent_id", "name_en",
+                                             "name_short_en",
+                                             "description_en"])
 
     def test_get_department(self):
 
