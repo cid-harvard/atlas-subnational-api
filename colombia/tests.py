@@ -123,6 +123,11 @@ class TestMetadataAPIs(ChassisTestCase):
         self.assertEquals(set(x["code"] for x in response_json),
                           set(["22", "24", "26"]))
 
+
+class TestDataAPIs(ChassisTestCase):
+
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
+
     def test_get_department_product_year_by_department(self):
 
         a = factories.DepartmentProductYear(year=2012)
