@@ -27,7 +27,7 @@ dev: virtualenv
 	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" $(PYTHON_EXECUTABLE) runserver.py
 
 test: virtualenv
-	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" py.test --cov colombia colombia/tests.py
+	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" py.test --cov colombia tests/
 
 shell: virtualenv
 	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" $(PYTHON_EXECUTABLE) manage.py shell
