@@ -8,31 +8,24 @@ metadata_app = Blueprint("metadata", __name__)
 
 
 @metadata_app.route("/products/<int:product_id>")
+@metadata_app.route("/products/", defaults={"product_id": None})
 def product(product_id):
-    """Get a :py:class:`~colombia.models.HSProduct` with the given code.
+    """Get all :py:class:`~colombia.models.HSProduct` s or a single one with the
+    given id.
 
-    :param code: See :py:class:`colombia.models.HSProduct.code`
-    :type code: int
+    :param id: Entity id, see :py:class:`colombia.models.Metadata.id`
+    :type id: int
     :code 404: product doesn't exist
     """
-    q = HSProduct.query.filter_by(id=product_id)\
-        .first_or_abort(product_id)
-    return marshal(schemas.metadata, q, many=False)
+    q = HSProduct.query
+    if product_id:
+        q = q.first_or_abort(product_id)
+        return marshal(schemas.metadata, q, many=False)
+    else:
+        level = request.args.get("level", None)
+        q = q.filter_by_enum(HSProduct.level, level)
+        return marshal(schemas.metadata, q)
 
-
-@metadata_app.route("/products/")
-def products():
-    """Get all the :py:class:`~colombia.models.HSProduct` s.
-
-    :query aggregation:  Filter by
-      :py:class:`colombia.models.HSProduct.aggregation` if specified.
-    """
-
-    level = request.args.get("level", None)
-    q = HSProduct.query\
-        .filter_by_enum(HSProduct.level, level)
-
-    return marshal(schemas.metadata, q)
 
 
 @metadata_app.route("/departments/<int:department_id>")
