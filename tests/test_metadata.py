@@ -51,7 +51,8 @@ class TestMetadataAPIs(BaseTestCase):
         self.assert_json_matches_object(response_json, product,
                                         ["id", "code", "level", "parent_id",
                                          "name_en", "name_short_en",
-                                         "description_en"])
+                                         "description_en", "name_es",
+                                         "name_short_es", "description_es"])
 
     def test_get_hsproducts(self):
         p1 = factories.HSProduct(id=1, level="section", code="A",
@@ -62,7 +63,7 @@ class TestMetadataAPIs(BaseTestCase):
         products = {1: p1, 2: p2, 3: p3}
         db.session.commit()
 
-        response = self.client.get(url_for("metadata.products"))
+        response = self.client.get(url_for("metadata.product"))
         self.assert_200(response)
 
         response_json = response.json["data"]
@@ -85,7 +86,7 @@ class TestMetadataAPIs(BaseTestCase):
         db.session.commit()
 
         for p in [p1, p2, p3]:
-            response = self.client.get(url_for("metadata.products",
+            response = self.client.get(url_for("metadata.product",
                                                level=p.level))
             self.assert_200(response)
 
@@ -99,29 +100,45 @@ class TestMetadataAPIs(BaseTestCase):
 
     def test_get_department(self):
 
-        dept = factories.Department()
+        dept = factories.Department(
+            id=14,
+            code="18",
+            level="department",
+            parent_id=None,
+            name_en="Atlantico",
+            name_short_en="Atlantico",
+            description_en="The region of Atlantico",
+            name_es="Atlantico"
+        )
         db.session.commit()
 
-        response = self.client.get(url_for("metadata.department",
-                                           department_id=dept.id))
-        self.assert_200(response)
-        response_json = response.json["data"]
-        self.assertEquals(response_json["code"], dept.code)
-        self.assertEquals(response_json["name"], dept.name)
-        self.assertEquals(response_json["population"], dept.population)
-        self.assertEquals(response_json["gdp"], dept.gdp)
+        api_url = url_for("metadata.product",
+                          product_id=product.id)
+        response_json = self.assert_metadata_api(api_url)
+        self.assert_json_matches_object(response_json, dept,
+                                        ["id", "code", "level", "parent_id",
+                                         "name_en", "name_short_en",
+                                         "description_en", "name_es",
+                                         "name_short_es", "description_es"])
 
     def test_get_departments(self):
 
-        factories.Department(code="22")
-        factories.Department(code="24")
-        factories.Department(code="26")
+        d1 = factories.Department(id=1, code="03", level="department")
+        d2 = factories.Department(id=2, code="03222", parent_id=1, level="municipality")
+        d3 = factories.Department(id=7, code="04555", level="municipality")
+        depts = {1: d1, 2: d2, 7: d3}
         db.session.commit()
 
-        response = self.client.get(url_for("metadata.departments"))
+        response = self.client.get(url_for("metadata.department"))
         self.assert_200(response)
 
         response_json = response.json["data"]
-        self.assertEquals(len(response_json), 3)
-        self.assertEquals(set(x["code"] for x in response_json),
-                          set(["22", "24", "26"]))
+        assert len(response_json) == 3
+
+        for dept_json in response_json:
+            d = depts[dept_json["id"]]
+            self.assert_json_matches_object(dept_json, d,
+                                            ["id", "code", "level",
+                                             "parent_id", "name_en",
+                                             "name_short_en",
+                                             "description_en"])
