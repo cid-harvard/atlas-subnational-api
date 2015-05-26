@@ -54,31 +54,14 @@ class Location(Metadata):
     name_short_en = factory.LazyAttribute(lambda x: faker.city())
 
 
-class Municipality(SQLAlchemyModelFactory):
+class Municipality(Location):
     class Meta:
         model = models.Municipality
-        sqlalchemy_session = db.session
-
-    id = factory.Sequence(lambda n: n)
-    name = factory.LazyAttribute(lambda x: faker.city())
-    code = fuzzy.FuzzyInteger(10000, 99999)
-    aggregation = "municipality"
-
-    size = fuzzy.FuzzyChoice(models.Municipality.SIZE)
-    population = fuzzy.FuzzyInteger(1000, 12000000)
-    nbi = fuzzy.FuzzyDecimal(0, 1)
 
 
-class Department(SQLAlchemyModelFactory):
+
+class Department(Location):
     class Meta:
         model = models.Department
-        sqlalchemy_session = db.session
 
-    id = factory.Sequence(lambda n: n)
-    name = factory.LazyAttribute(lambda x: faker.state())
-    code = fuzzy.FuzzyInteger(10, 99)
-    aggregation = "department"
-
-    population = fuzzy.FuzzyInteger(1000, 12000000)
-    gdp = fuzzy.FuzzyInteger(1000000, 12000000000)
 

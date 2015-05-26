@@ -45,7 +45,7 @@ class TestMetadataAPIs(BaseTestCase):
         db.session.commit()
 
         api_url = url_for("metadata.product",
-                          product_id=product.id)
+                          entity_id=product.id)
 
         response_json = self.assert_metadata_api(api_url)
         self.assert_json_matches_object(response_json, product,
@@ -98,9 +98,9 @@ class TestMetadataAPIs(BaseTestCase):
                                              "name_short_en",
                                              "description_en"])
 
-    def test_get_department(self):
+    def test_get_location(self):
 
-        dept = factories.Department(
+        dept = factories.Location(
             id=14,
             code="18",
             level="department",
@@ -112,8 +112,8 @@ class TestMetadataAPIs(BaseTestCase):
         )
         db.session.commit()
 
-        api_url = url_for("metadata.product",
-                          product_id=product.id)
+        api_url = url_for("metadata.location",
+                          entity_id=dept.id)
         response_json = self.assert_metadata_api(api_url)
         self.assert_json_matches_object(response_json, dept,
                                         ["id", "code", "level", "parent_id",
@@ -121,15 +121,15 @@ class TestMetadataAPIs(BaseTestCase):
                                          "description_en", "name_es",
                                          "name_short_es", "description_es"])
 
-    def test_get_departments(self):
+    def test_get_locations(self):
 
-        d1 = factories.Department(id=1, code="03", level="department")
-        d2 = factories.Department(id=2, code="03222", parent_id=1, level="municipality")
-        d3 = factories.Department(id=7, code="04555", level="municipality")
+        d1 = factories.Location(id=1, code="03", level="department")
+        d2 = factories.Location(id=2, code="03222", parent_id=1, level="municipality")
+        d3 = factories.Location(id=7, code="04555", level="municipality")
         depts = {1: d1, 2: d2, 7: d3}
         db.session.commit()
 
-        response = self.client.get(url_for("metadata.department"))
+        response = self.client.get(url_for("metadata.location"))
         self.assert_200(response)
 
         response_json = response.json["data"]
@@ -138,6 +138,28 @@ class TestMetadataAPIs(BaseTestCase):
         for dept_json in response_json:
             d = depts[dept_json["id"]]
             self.assert_json_matches_object(dept_json, d,
+                                            ["id", "code", "level",
+                                             "parent_id", "name_en",
+                                             "name_short_en",
+                                             "description_en"])
+
+    def test_get_location_levels(self):
+
+        l1 = factories.Location(id=1, code="03", level="department")
+        l2 = factories.Location(id=2, code="03222", parent_id=1, level="municipality")
+        l3 = factories.Location(id=7, code="XYZ", level="country")
+        locs = [l1, l2, l3]
+        db.session.commit()
+
+        for l in locs:
+            response = self.client.get(url_for("metadata.location",
+                                               level=l.level))
+            self.assert_200(response)
+
+            response_json = response.json["data"]
+            assert len(response_json) == 1
+
+            self.assert_json_matches_object(response_json[0], l,
                                             ["id", "code", "level",
                                              "parent_id", "name_en",
                                              "name_short_en",
