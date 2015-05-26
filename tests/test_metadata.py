@@ -164,3 +164,22 @@ class TestMetadataAPIs(BaseTestCase):
                                              "parent_id", "name_en",
                                              "name_short_en",
                                              "description_en"])
+
+    def test_get_metadata_by_id_when_there_are_multiple(self):
+        """Tests for a bug I caught where .first() was being called instead of
+        .get()"""
+
+        factories.Location(id=1, code="03", level="department")
+        l = factories.Location(id=2, code="03222", parent_id=1, level="municipality")
+        db.session.commit()
+
+        response = self.client.get(url_for("metadata.location",
+                                           entity_id=l.id))
+        self.assert_200(response)
+
+        response_json = response.json["data"]
+        self.assert_json_matches_object(response_json, l,
+                                        ["id", "code", "level",
+                                         "parent_id", "name_en",
+                                         "name_short_en",
+                                         "description_en"])

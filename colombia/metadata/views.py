@@ -23,7 +23,7 @@ def make_metadata_api(metadata_class):
         q = metadata_class.query
 
         if entity_id:
-            q = q.first_or_abort(entity_id)
+            q = q.get_or_abort(entity_id)
             return marshal(schemas.metadata, q, many=False)
         else:
             level = request.args.get("level", None)
