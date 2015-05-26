@@ -24,19 +24,34 @@ PRODUCT_NAMES = ["Petroleum", "Horses", "Cut flowers", "Gold", "Cars",
 random.shuffle(PRODUCT_NAMES)
 
 
-class HSProduct(SQLAlchemyModelFactory):
+class Metadata(SQLAlchemyModelFactory):
     class Meta:
-        model = models.HSProduct
         sqlalchemy_session = db.session
 
     id = factory.Sequence(lambda n: n)
     code = factory.Sequence(lambda n: str(1000+n))
-    level = fuzzy.FuzzyChoice(models.HSProduct.LEVELS)
+    level = "a_classification_level"
     parent_id = None
 
     name_en = "A very very very very very long english name"
-    name_short_en = factory.Sequence(lambda n: PRODUCT_NAMES[n % len(PRODUCT_NAMES)])
+    name_short_en = "A short name"
     description_en = "A very very very long description in english."
+
+
+class HSProduct(Metadata):
+    class Meta:
+        model = models.HSProduct
+
+    level = fuzzy.FuzzyChoice(models.HSProduct.LEVELS)
+    name_short_en = factory.Sequence(lambda n: PRODUCT_NAMES[n % len(PRODUCT_NAMES)])
+
+
+class Location(Metadata):
+    class Meta:
+        model = models.Location
+
+    level = fuzzy.FuzzyChoice(models.Location.LEVELS)
+    name_short_en = factory.LazyAttribute(lambda x: faker.city())
 
 
 class Municipality(SQLAlchemyModelFactory):
