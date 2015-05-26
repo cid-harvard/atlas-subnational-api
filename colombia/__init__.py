@@ -1,4 +1,5 @@
 import atlas_core
+from atlas_core.helpers.flask import handle_api_error, APIError
 from .metadata.views import metadata_app
 from .data.views import products_app
 
@@ -23,6 +24,9 @@ def create_app(config={}):
         if app.debug:
             response.headers.add('Access-Control-Allow-Origin', '*')
         return response
+
+    # Register error handler to return proper json-api errors on abort()
+    app.errorhandler(APIError)(handle_api_error)
 
     with app.app_context():
         # Register sqlalchemy model base so that models in this project that
