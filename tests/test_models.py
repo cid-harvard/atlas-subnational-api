@@ -1,6 +1,6 @@
 from colombia import factories
 from colombia.core import db
-from colombia.models import Municipality, HSProduct, DepartmentProductYear
+from colombia.models import Location, HSProduct, DepartmentProductYear
 
 from . import BaseTestCase
 
@@ -18,7 +18,7 @@ class TestModels(BaseTestCase):
         self.assertEquals(db.session.query(model).count(), 1)
 
     def test_locations(self):
-        self.try_model(factories.Municipality, Municipality)
+        self.try_model(factories.Location, Location)
 
     def test_products(self):
         self.try_model(factories.HSProduct, HSProduct)

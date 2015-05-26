@@ -73,7 +73,15 @@ class HSProduct(Metadata):
 
 
 class Location(Metadata):
-    """A geographical location."""
+    """A geographical location. Locations have multiple levels:
+
+    A municipality is the smallest unit of location we have and has a 5-digit
+    code. Cities often contain multiple municipalities, but there are also
+    standalone municipalities that are not part of any city.
+
+    A department is a grouping of municipalities to create 32ish areas of the
+    country. Departments in Colombia have 2 digit codes, which are the first 2
+    digits of the 5-digit codes of the constituent municipalities."""
     __tablename__ = "location"
 
     #: Possible aggregation levels
@@ -83,49 +91,3 @@ class Location(Metadata):
         "department",
     ]
     level = db.Column(db.Enum(*LEVELS))
-
-
-
-class Municipality(Location):
-    """A municipality that has a 5-digit code. Cities often contain multiple
-    municipalities, but there are also standalone municipalities that are not
-    part of any city."""
-
-    __tablename__ = "municipality"
-    __mapper_args__ = {
-        'polymorphic_identity': 'municipality',
-    }
-
-    id = db.Column(db.Integer,
-                   db.ForeignKey('location.id'), primary_key=True)
-
-    #: Possible sizes of a municipality
-    SIZE = [
-        "city",
-        "midsize",
-        "rural"
-    ]
-    #: Size of the municipality
-    size = db.Column(db.Enum(*SIZE))
-
-    population = db.Column(db.Integer)
-    nbi = db.Column(db.Numeric)
-
-
-class Department(Location):
-    """A grouping of municipalities to create 32ish areas of the country.
-    Departments in Colombia have 2 digit codes, which are the first 2 digits of
-    the 5-digit codes of the constituent municipalities."""
-
-    __tablename__ = "department"
-    __mapper_args__ = {
-        'polymorphic_identity': 'department',
-    }
-
-    id = db.Column(db.Integer,
-                   db.ForeignKey('location.id'), primary_key=True)
-
-    population = db.Column(db.Integer)
-    gdp = db.Column(db.Integer)
-
-

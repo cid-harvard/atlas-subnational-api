@@ -1,6 +1,6 @@
 from ..core import db
 from . import models
-from ..metadata.factories import Department, HSProduct
+from ..metadata.factories import Location, HSProduct
 
 
 from faker import Factory as Fake
@@ -24,7 +24,7 @@ class DepartmentProductYear(SQLAlchemyModelFactory):
 
     id = factory.Sequence(lambda n: n)
 
-    department = factory.SubFactory(Department)
+    department = factory.SubFactory(Location)
     product = factory.SubFactory(HSProduct)
     year = fuzzy.FuzzyInteger(1999, 2013)
 

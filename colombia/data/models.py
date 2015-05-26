@@ -5,17 +5,17 @@ from atlas_core.model_mixins import IDMixin
 
 from ..core import db
 
-from ..metadata.models import (Department, HSProduct)
+from ..metadata.models import (Location, HSProduct)
 
 class DepartmentProductYear(BaseModel, IDMixin):
 
     __tablename__ = "department_product_year"
 
-    department_id = db.Column(db.Integer, db.ForeignKey(Department.id))
+    department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
 
-    department = db.relationship(Department)
+    department = db.relationship(Location)
     product = db.relationship(HSProduct)
 
     import_value = db.Column(db.Integer)
@@ -38,10 +38,10 @@ class DepartmentYear(BaseModel, IDMixin):
 
     __tablename__ = "department_year"
 
-    department_id = db.Column(db.Integer, db.ForeignKey(Department.id))
+    department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     year = db.Column(db.Integer)
 
-    department = db.relationship(Department)
+    department = db.relationship(Location)
 
     eci = db.Column(db.Float)
     eci_rank = db.Column(db.Integer)

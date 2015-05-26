@@ -52,16 +52,3 @@ class Location(Metadata):
 
     level = fuzzy.FuzzyChoice(models.Location.LEVELS)
     name_short_en = factory.LazyAttribute(lambda x: faker.city())
-
-
-class Municipality(Location):
-    class Meta:
-        model = models.Municipality
-
-
-
-class Department(Location):
-    class Meta:
-        model = models.Department
-
-
