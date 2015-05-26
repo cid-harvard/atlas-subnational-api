@@ -39,7 +39,7 @@ def register_metadata_apis():
     for entity_name, settings in metadata_apis.items():
 
         # Generate handler function for entity
-        api_func = make_metadata_api(settings["entity_class"])
+        api_func = make_metadata_api(settings["entity_model"])
 
         # Singular endpoint e.g. /entity/7
         metadata_app.add_url_rule(
@@ -60,11 +60,11 @@ def register_metadata_apis():
 
 metadata_apis = {
     "product": {
-        "entity_class": HSProduct,
+        "entity_model": HSProduct,
         "plural": "products",
     },
     "location": {
-        "entity_class": Location,
+        "entity_model": Location,
         "plural": "locations",
     },
 }
