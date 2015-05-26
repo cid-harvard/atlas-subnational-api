@@ -72,29 +72,18 @@ class HSProduct(Metadata):
     level = db.Column(db.Enum(*LEVELS))
 
 
-class Location(BaseModel, IDMixin):
+class Location(Metadata):
     """A geographical location."""
     __tablename__ = "location"
-    type = db.Column(db.String(10))
-    __mapper_args__ = {
-        'polymorphic_identity': 'location',
-        'polymorphic_on': type
-    }
 
     #: Possible aggregation levels
-    AGGREGATIONS = [
+    LEVELS = [
+        "country",
         "municipality",
         "department",
     ]
-    #: Enum that contains level of aggregation - municipalities, cities,
-    #: regions, departments
-    aggregation = db.Column(db.Enum(*AGGREGATIONS))
+    level = db.Column(db.Enum(*LEVELS))
 
-    #: Name of the location in the most common language
-    name = db.Column(db.String(50))
-
-    #: Location code - zip code or DANE code, etc
-    code = db.Column(db.String(5))
 
 
 class Municipality(Location):

@@ -1,5 +1,5 @@
 from flask import request, Blueprint
-from .models import (HSProduct, Department)
+from .models import (HSProduct, Location)
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 
@@ -63,9 +63,9 @@ metadata_apis = {
         "entity_class": HSProduct,
         "plural": "products",
     },
-    "department": {
-        "entity_class": Department,
-        "plural": "departments",
+    "location": {
+        "entity_class": Location,
+        "plural": "locations",
     },
 }
 
