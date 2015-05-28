@@ -7,8 +7,8 @@ from io import StringIO
 
 from atlas_core.helpers.data_import import translate_columns
 from colombia import models, create_app
-from colombia.models import db
-from tests import ChassisTestCase
+from colombia.core import db
+from tests import BaseTestCase
 
 
 def make_cpy(department_map, product_map):
@@ -138,7 +138,7 @@ aduanas_to_atlas_import = {
 }
 
 
-class ImporterTestCase(ChassisTestCase):
+class ImporterTestCase(BaseTestCase):
 
     SQLALCHEMY_DATABASE_URI = "sqlite://"
 
