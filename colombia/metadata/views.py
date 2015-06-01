@@ -1,8 +1,11 @@
-from flask import request, Blueprint
+from flask import request, Blueprint, jsonify
 from .models import (HSProduct, Location)
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
+from ..core import db
 
+from atlas_core.helpers.flask import abort
+from sqlalchemy.orm import aliased
 
 metadata_app = Blueprint("metadata", __name__)
 
@@ -70,3 +73,23 @@ metadata_apis = {
 }
 
 register_metadata_apis()
+
+
+@metadata_app.route("/<string:entity_name>/hierarchy")
+def hierarchy(entity_name):
+
+    from_level = request.args.get("from_level", None)
+    to_level = request.args.get("to_level", None)
+
+    if entity_name == "products":
+        if from_level == "4digit" and to_level == "section":
+            p, p2, p3 = HSProduct, aliased(HSProduct), aliased(HSProduct)
+            q = db.session.query(p.id, p3.id)\
+                .join(p2, p2.id == p.parent_id)\
+                .join(p3, p3.id == p2.parent_id)\
+                .all()
+            return jsonify(data=dict(q))
+
+    raise abort(400, body="""This API is still a fixture, try
+                ?from_level=4digit&to_level=section.""")
+
