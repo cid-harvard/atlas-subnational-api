@@ -97,7 +97,6 @@ def index(product_id=None):
         location_type = Location.query.get_or_404(location_id).level
 
     if location_id is not None and year is not None:
-        #return marshal(schemas.department_product_year, DepartmentProductYear.query.all())
         if location_type == "department":
             q = DepartmentProductYear.query\
                 .filter_by(year=year, department_id=location_id)
