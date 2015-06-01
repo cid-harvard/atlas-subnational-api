@@ -22,11 +22,29 @@ def dummy(n=10):
     # Generate a set of products and departments.
     departments = []
     for x in range(0, 6):
-        departments.append(factories.Location())
+        departments.append(factories.Location(level="department"))
+
+    sections = []
+    for x in range(0, 4):
+        sections.append(factories.HSProduct(level="section"))
+
+    core.db.session.commit()
+
+    two_digits = []
+    for x in range(0, 8):
+        parent_id = random.choice(sections).id
+        two_digits.append(factories.HSProduct(level="2digit",
+                                              parent_id=parent_id))
+
+    core.db.session.commit()
 
     products = []
     for x in range(0, 20):
-        products.append(factories.HSProduct())
+        parent_id = random.choice(two_digits).id
+        products.append(factories.HSProduct(level="4digit",
+                                            parent_id=parent_id))
+
+    core.db.session.commit()
 
     # Generate what products exist in which departments and by how much
     for d in departments:

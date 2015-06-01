@@ -1,9 +1,10 @@
-from flask import Blueprint
-from .models import (DepartmentProductYear, ProductYear)
+from flask import Blueprint, request
+from .models import (DepartmentProductYear, ProductYear, Location)
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 
 from ..core import db
+from atlas_core.helpers.flask import abort
 
 
 products_app = Blueprint("products", __name__)
@@ -82,3 +83,24 @@ def product_year(year):
         q = q.filter_by(year=year)
 
     return marshal(schemas.product_year, q)
+
+
+@products_app.route("/products")
+@products_app.route("/products/<int:product_id>")
+def index(product_id=None):
+
+    location_id = request.args.get("location", None)
+    year = request.args.get("year", None)
+
+    # Find type of location
+    if location_id:
+        location_type = Location.query.get_or_404(location_id).level
+
+    if location_id is not None and year is not None:
+        #return marshal(schemas.department_product_year, DepartmentProductYear.query.all())
+        if location_type == "department":
+            q = DepartmentProductYear.query\
+                .filter_by(year=year, department_id=location_id)
+            return marshal(schemas.department_product_year, q)
+
+    raise abort(400, body="Could not find data with the given parameters.")
