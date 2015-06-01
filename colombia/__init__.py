@@ -1,7 +1,7 @@
 import atlas_core
 from atlas_core.helpers.flask import handle_api_error, APIError
 from .metadata.views import metadata_app
-from .data.views import products_app
+from .data.views import products_app, departments_app
 
 from .core import db, cache
 
@@ -17,6 +17,7 @@ def create_app(config={}):
     # API Endpoints
     app.register_blueprint(metadata_app, url_prefix="/metadata")
     app.register_blueprint(products_app, url_prefix="/data")
+    app.register_blueprint(departments_app, url_prefix="/data")
 
     # CORS hook for debug reasons.
     @app.after_request
