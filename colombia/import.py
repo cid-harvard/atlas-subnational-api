@@ -11,6 +11,19 @@ from colombia.core import db
 from tests import BaseTestCase
 
 
+def classification_to_models(classification, model):
+    models = []
+    for index, row in classification.table.iterrows():
+        m = model()
+        m.id = index
+        m.code = row["code"]
+        m.name_en = row["name"]
+        m.parent_id = row["parent_id"]
+        models.append(m)
+
+    return models
+
+
 def make_cpy(department_map, product_map):
     def inner(line):
         dpy = models.DepartmentProductYear()
@@ -365,7 +378,6 @@ if __name__ == "__main__":
 
         with app.app_context():
             departments_file = "/Users/makmana/ciddata/mali_metadata/location_table_with_pop.txt"
-            products_file = "/Users/makmana/ciddata/mali_metadata/hs4_translations.tsv"
 
             # Load departments
             departments = pd.read_table(departments_file, encoding="utf-16",
@@ -376,17 +388,14 @@ if __name__ == "__main__":
 
             department_map = {d.code: d for d in departments}
 
-
             # Load products
-            products = pd.read_table(products_file, encoding="utf-8",
-                                 dtype={"code": np.object})
-            section, two_digit, four_digit = process_product(products)
-            db.session.add_all(section)
-            db.session.add_all(two_digit)
-            db.session.add_all(four_digit)
+            from linnaeus import classification
+            product_classification = classification.load("product/HS/Atlas/out/hs92_atlas.csv")
+            products = classification_to_models(c, models.HSProduct)
+            db.session.add_all(products)
             db.session.commit()
 
-            product_map = {p.code: p for p in section + two_digit + four_digit}
+            product_map = {p.code: p for p in products}
 
             dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
             dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
