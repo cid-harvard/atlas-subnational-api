@@ -387,6 +387,12 @@ if __name__ == "__main__":
             db.session.add_all(products)
             db.session.commit()
 
+            location_classification = classification.load("location/Colombia/DANE/out/locations_colombia_dane.csv")
+            locations = classification_to_models(location_classification,
+                                                models.Location)
+            db.session.add_all(locations)
+            db.session.commit()
+
             import sys
             sys.exit(0)
 
