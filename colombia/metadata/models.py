@@ -89,6 +89,6 @@ class Location(Metadata):
         "country",
         "municipality",
         "department",
-        "populated_area"
+        "population_center"
     ]
     level = db.Column(db.Enum(*LEVELS))
