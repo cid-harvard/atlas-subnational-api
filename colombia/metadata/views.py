@@ -1,13 +1,13 @@
 from flask import request, Blueprint, jsonify
-from .models import (HSProduct, Location)
+from .models import HSProduct
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 from ..core import db
 
+from ..entities import metadata_apis
+
 from atlas_core.helpers.flask import abort
 from sqlalchemy.orm import aliased
-
-metadata_app = Blueprint("metadata", __name__)
 
 
 def make_metadata_api(metadata_class):
@@ -35,7 +35,7 @@ def make_metadata_api(metadata_class):
     return metadata_api
 
 
-def register_metadata_apis():
+def register_metadata_apis(metadata_apis):
     """Given an entity class, generate an API handler and register URL routes
     with flask. """
 
@@ -61,18 +61,8 @@ def register_metadata_apis():
         settings["api"] = api_func
 
 
-metadata_apis = {
-    "product": {
-        "entity_model": HSProduct,
-        "plural": "products",
-    },
-    "location": {
-        "entity_model": Location,
-        "plural": "locations",
-    },
-}
-
-register_metadata_apis()
+metadata_app = Blueprint("metadata", __name__)
+register_metadata_apis(metadata_apis)
 
 
 @metadata_app.route("/<string:entity_name>/hierarchy")

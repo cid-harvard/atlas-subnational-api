@@ -6,9 +6,6 @@ from .. import api_schemas as schemas
 from ..core import db
 from atlas_core.helpers.flask import abort, jsonify
 
-from itertools import zip_longest, repeat
-
-
 products_app = Blueprint("products", __name__)
 departments_app = Blueprint("departments", __name__)
 

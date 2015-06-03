@@ -19,6 +19,7 @@ def create_app(config={}):
     app.register_blueprint(products_app, url_prefix="/data")
     app.register_blueprint(departments_app, url_prefix="/data")
 
+
     # CORS hook for debug reasons.
     @app.after_request
     def cors(response):
