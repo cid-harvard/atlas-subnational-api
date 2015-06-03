@@ -183,3 +183,22 @@ class TestMetadataAPIs(BaseTestCase):
                                          "parent_id", "name_en",
                                          "name_short_en",
                                          "description_en"])
+
+    def test_get_metadata_by_id_zero(self):
+        """Tests for a bug Quinn caught - 'if not entity_id' vs if entity_id is
+        not None"""
+
+        l = factories.Location(id=0, code="03", level="department")
+        factories.Location(id=2, code="03222", parent_id=0, level="municipality")
+        db.session.commit()
+
+        response = self.client.get(url_for("metadata.location",
+                                           entity_id=0))
+        self.assert_200(response)
+
+        response_json = response.json["data"]
+        self.assert_json_matches_object(response_json, l,
+                                        ["id", "code", "level",
+                                         "parent_id", "name_en",
+                                         "name_short_en",
+                                         "description_en"])

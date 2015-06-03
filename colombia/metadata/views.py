@@ -25,7 +25,7 @@ def make_metadata_api(metadata_class):
         """
         q = metadata_class.query
 
-        if entity_id:
+        if entity_id is not None:
             q = q.get_or_abort(entity_id)
             return marshal(schemas.metadata, q, many=False)
         else:
