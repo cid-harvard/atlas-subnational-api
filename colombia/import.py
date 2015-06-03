@@ -387,27 +387,15 @@ if __name__ == "__main__":
             db.session.add_all(products)
             db.session.commit()
 
+            product_map = {p.code: p for p in products}
+
             location_classification = classification.load("location/Colombia/DANE/out/locations_colombia_dane.csv")
             locations = classification_to_models(location_classification,
                                                 models.Location)
             db.session.add_all(locations)
             db.session.commit()
 
-            import sys
-            sys.exit(0)
-
-            product_map = {p.code: p for p in products}
-            departments_file = "/Users/makmana/ciddata/mali_metadata/location_table_with_pop.txt"
-
-            # Load departments
-            departments = pd.read_table(departments_file, encoding="utf-16",
-                                        dtype={"department_code": np.object})
-            departments = process_department(departments)
-            db.session.add_all(departments)
-            db.session.commit()
-
-            department_map = {d.code: d for d in departments}
-
+            location_map = {l.code: l for l in locations}
 
             dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
             dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
@@ -437,7 +425,7 @@ if __name__ == "__main__":
                                imports_dpy,
                                on=["department", "product"], how="inner")
 
-                cy, py, cpy = process_cpy(dpy, product_map, department_map)
+                cy, py, cpy = process_cpy(dpy, product_map, location_map)
                 db.session.add_all(cy)
                 db.session.add_all(py)
                 db.session.add_all(cpy)
