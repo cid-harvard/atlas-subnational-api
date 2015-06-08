@@ -2,7 +2,10 @@ raven==5.1.1
 flask-cache==0.13.1
 
 # Atlas Core
-git+https://github.com/cid-harvard/atlas_core.git@v0.2.3#egg=atlas_core
+git+https://github.com/cid-harvard/atlas_core.git@v0.2.5#egg=atlas_core
+
+# Classifications
+git+https://github.com/cid-harvard/classifications.git@v0.0.4#egg=linnaeus
 
 # Override atlas_core dependencies
 git+https://github.com/nickw444/flask-sqlalchemy.git@a801e50035009c107a6628937320a0fd4957d86c#egg=flask-sqlalchemy

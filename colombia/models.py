@@ -1,2 +1,2 @@
-from .metadata.models import HSProduct, Department, Municipality, Location
-from .data.models import DepartmentProductYear
+from .metadata.models import HSProduct, Location
+from .data.models import DepartmentProductYear, DepartmentYear, ProductYear

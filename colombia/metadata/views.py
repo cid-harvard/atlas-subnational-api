@@ -1,56 +1,85 @@
-from flask import request, Blueprint
-from .models import (HSProduct, Department)
+from flask import request, Blueprint, jsonify
+from .models import HSProduct
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
+from ..core import db
+
+from ..entities import metadata_apis
+
+from atlas_core.helpers.flask import abort
+from sqlalchemy.orm import aliased
+
+
+def make_metadata_api(metadata_class):
+    """Since all metadata APIs look very similar, this function just generates
+    the function that'll handle the API endpoint for an entity. It generates a
+    function that handles both /metadata/entity/ and /metadata/entity/<id>."""
+
+    def metadata_api(entity_id):
+        """Get all :py:class:`~colombia.models.Metadata` s or a single one with the
+        given id.
+
+        :param id: Entity id, see :py:class:`colombia.models.Metadata.id`
+        :type id: int
+        :code 404: Entity doesn't exist
+        """
+        q = metadata_class.query
+
+        if entity_id is not None:
+            q = q.get_or_abort(entity_id)
+            return marshal(schemas.metadata, q, many=False)
+        else:
+            level = request.args.get("level", None)
+            q = q.filter_by_enum(metadata_class.level, level)
+            return marshal(schemas.metadata, q)
+    return metadata_api
+
+
+def register_metadata_apis(metadata_apis):
+    """Given an entity class, generate an API handler and register URL routes
+    with flask. """
+
+    for entity_name, settings in metadata_apis.items():
+
+        # Generate handler function for entity
+        api_func = make_metadata_api(settings["entity_model"])
+
+        # Singular endpoint e.g. /entity/7
+        metadata_app.add_url_rule(
+            "/{entity_name}/<int:entity_id>".format(
+                entity_name=settings["plural"]),
+            endpoint=entity_name,
+            view_func=api_func)
+
+        # List endpoint e.g. /entity/
+        metadata_app.add_url_rule(
+            "/{entity_name}/".format(entity_name=settings["plural"]),
+            endpoint=entity_name,
+            view_func=api_func,
+            defaults={"entity_id": None})
+
+        settings["api"] = api_func
 
 
 metadata_app = Blueprint("metadata", __name__)
+register_metadata_apis(metadata_apis)
 
 
-@metadata_app.route("/products/<int:product_id>")
-def product(product_id):
-    """Get a :py:class:`~colombia.models.HSProduct` with the given code.
+@metadata_app.route("/<string:entity_name>/hierarchy")
+def hierarchy(entity_name):
 
-    :param code: See :py:class:`colombia.models.HSProduct.code`
-    :type code: int
-    :code 404: product doesn't exist
-    """
-    q = HSProduct.query.filter_by(id=product_id)\
-        .first_or_abort(product_id)
-    return marshal(schemas.hs_product, q, many=False)
+    from_level = request.args.get("from_level", None)
+    to_level = request.args.get("to_level", None)
 
+    if entity_name == "products":
+        if from_level == "4digit" and to_level == "section":
+            p, p2, p3 = HSProduct, aliased(HSProduct), aliased(HSProduct)
+            q = db.session.query(p.id, p3.id)\
+                .join(p2, p2.id == p.parent_id)\
+                .join(p3, p3.id == p2.parent_id)\
+                .all()
+            return jsonify(data=dict(q))
 
-@metadata_app.route("/products/")
-def products():
-    """Get all the :py:class:`~colombia.models.HSProduct` s.
-
-    :query aggregation:  Filter by
-      :py:class:`colombia.models.HSProduct.aggregation` if specified.
-    """
-
-    aggregation = request.args.get("aggregation", None)
-    q = HSProduct.query\
-        .filter_by_enum(HSProduct.aggregation, aggregation)
-
-    return marshal(schemas.hs_product, q)
-
-
-@metadata_app.route("/departments/<int:department_id>")
-def department(department_id):
-    """Get a :py:class:`~colombia.models.Department` with the given code.
-
-    :param code: See :py:class:`colombia.models.Department.code`
-    :type code: int
-    :code 404: department doesn't exist
-    """
-    q = Department.query.filter_by(id=department_id)\
-        .first_or_abort(department_id)
-    return marshal(schemas.department, q, many=False)
-
-
-@metadata_app.route("/departments/")
-def departments():
-    """Get all the :py:class:`~colombia.models.Department` s."""
-    q = Department.query.all()
-    return marshal(schemas.department, q)
+    raise abort(400, body="""This API is still a fixture, try
+                ?from_level=4digit&to_level=section.""")
 

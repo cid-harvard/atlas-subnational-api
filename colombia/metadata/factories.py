@@ -24,42 +24,31 @@ PRODUCT_NAMES = ["Petroleum", "Horses", "Cut flowers", "Gold", "Cars",
 random.shuffle(PRODUCT_NAMES)
 
 
-class HSProduct(SQLAlchemyModelFactory):
+class Metadata(SQLAlchemyModelFactory):
+    class Meta:
+        sqlalchemy_session = db.session
+
+    id = factory.Sequence(lambda n: n)
+    code = factory.Sequence(lambda n: str(1000+n))
+    level = "a_classification_level"
+    parent_id = None
+
+    name_en = "A very very very very very long english name"
+    name_short_en = "A short name"
+    description_en = "A very very very long description in english."
+
+
+class HSProduct(Metadata):
     class Meta:
         model = models.HSProduct
-        sqlalchemy_session = db.session
 
-    id = factory.Sequence(lambda n: n)
-    aggregation = fuzzy.FuzzyChoice(models.HSProduct.AGGREGATIONS)
-    name = factory.Sequence(lambda n: PRODUCT_NAMES[n % len(PRODUCT_NAMES)])
-    code = fuzzy.FuzzyInteger(0, 9999)
+    level = fuzzy.FuzzyChoice(models.HSProduct.LEVELS)
+    name_short_en = factory.Sequence(lambda n: PRODUCT_NAMES[n % len(PRODUCT_NAMES)])
 
 
-class Municipality(SQLAlchemyModelFactory):
+class Location(Metadata):
     class Meta:
-        model = models.Municipality
-        sqlalchemy_session = db.session
+        model = models.Location
 
-    id = factory.Sequence(lambda n: n)
-    name = factory.LazyAttribute(lambda x: faker.city())
-    code = fuzzy.FuzzyInteger(10000, 99999)
-    aggregation = "municipality"
-
-    size = fuzzy.FuzzyChoice(models.Municipality.SIZE)
-    population = fuzzy.FuzzyInteger(1000, 12000000)
-    nbi = fuzzy.FuzzyDecimal(0, 1)
-
-
-class Department(SQLAlchemyModelFactory):
-    class Meta:
-        model = models.Department
-        sqlalchemy_session = db.session
-
-    id = factory.Sequence(lambda n: n)
-    name = factory.LazyAttribute(lambda x: faker.state())
-    code = fuzzy.FuzzyInteger(10, 99)
-    aggregation = "department"
-
-    population = fuzzy.FuzzyInteger(1000, 12000000)
-    gdp = fuzzy.FuzzyInteger(1000000, 12000000000)
-
+    level = fuzzy.FuzzyChoice(models.Location.LEVELS)
+    name_short_en = factory.LazyAttribute(lambda x: faker.city())
