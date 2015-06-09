@@ -1,12 +1,12 @@
 from flask import Flask, url_for, request
+from unittest.mock import Mock
+import pytest
 
 from colombia import factories
 from colombia.core import db
 from colombia.data import routing
 
 from . import BaseTestCase
-
-import pytest
 
 
 class TestDataAPIs(BaseTestCase):
@@ -142,17 +142,29 @@ class TestDataRouting(BaseTestCase):
             with pytest.raises(ValueError):
                 parameters = routing.extract_route_params(request)
 
+    def test_lookup_classification_level(self):
+        p1 = factories.HSProduct(level="2digit")
+        p2 = factories.HSProduct(level="section")
+        db.session.commit()
 
-    def test_data_routing(self):
+        p1_level = routing.lookup_classification_level("product", p1.id)
+        p2_level = routing.lookup_classification_level("product", p2.id)
 
-        from unittest.mock import Mock
+        assert p1_level == "2digit"
+        assert p2_level == "section"
+
+    def test_data_route_add(self):
+        b = Flask("test_flask")
+        routing.add_routes(b, {})
+
+        assert "entity_handler_individual" in b.view_functions
+        assert "entity_handler_many" in b.view_functions
+
+    def test_data_route_match(self):
         endpoint = Mock(return_value="cats")
-        endpoint.methods = ["GET"]
-        endpoint.required_methods = ["GET"]
-
-        from flask import Flask
 
         b = Flask("test_flask")
+        b.debug = True
 
         route = {
             "product": {
@@ -163,24 +175,10 @@ class TestDataRouting(BaseTestCase):
             }
         }
 
-        def add_routes(app, route):
-
-            for entity_name, subroutes in route.items():
-                def entity_endpoint(*args, **kwargs):
-
-                    route["product"][(("location", "department"),("year", None))]["action"](location=2, department=7)
-                    return "Blah"
-                app.add_url_rule("/" + entity_name, entity_name,
-                                 entity_endpoint, methods=["GET"])
-                for route_keys, route_options in subroutes:
-                    pass
-
-        add_routes(b, route)
-
-        assert "product" in b.view_functions
+        routing.add_routes(b, route)
 
         response = b.test_client().get("/product?location=2&department=7")
         assert response.status_code == 200
-        assert response.data == b"Blah"
+        assert response.data == b"cats"
         endpoint.assert_called_with(location=2, department=7)
 

@@ -1,4 +1,5 @@
-from ..entities import entities
+from ..entities import entities, metadata_apis
+from .. import models
 
 from collections import defaultdict
 import re
@@ -38,3 +39,23 @@ def extract_route_params(request):
 
     params.update(range_params)
     return params
+
+
+def make_entity_endpoint(route):
+    def entity_endpoint(entity_name, entity_id):
+        route_params = (("location", "department"), ("year", None))
+        entity_config = route[entity_name]
+        current_route = entity_config[route_params]
+        return current_route["action"](location=2, department=7)
+    return entity_endpoint
+
+
+def add_routes(app, route):
+    """Add an entity handling route to a flask app / blueprint."""
+    url_rule = "/<any({}):entity_name>".format(",".join(route.keys()))
+    app.add_url_rule(url_rule, "entity_handler_many",
+                     make_entity_endpoint(route), methods=["GET"], defaults={"entity_id": None})
+    url_rule = "/<any({}):entity_name>/<int:entity_id>".format(",".join(route.keys()))
+    app.add_url_rule(url_rule, "entity_handler_individual",
+                     make_entity_endpoint(route), methods=["GET"])
+    return app
