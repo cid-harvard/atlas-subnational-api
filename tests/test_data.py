@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request
+from flask import Flask, url_for, request, Response
 from unittest.mock import Mock
 import pytest
 
@@ -163,8 +163,8 @@ class TestDataRouting(BaseTestCase):
     def test_data_route_match(self):
         endpoint = Mock(return_value="cats")
 
-        b = Flask("test_flask")
-        b.debug = True
+        f = self.app
+        f.debug = True
 
         route = {
             "product": {
@@ -172,13 +172,18 @@ class TestDataRouting(BaseTestCase):
                     "name": "department_product_year",
                     "action": endpoint
                 },
+            },
+            "year": {
             }
         }
 
-        routing.add_routes(b, route)
+        routing.add_routes(f, route)
 
-        response = b.test_client().get("/product?location=2&department=7")
-        assert response.status_code == 200
-        assert response.data == b"cats"
-        endpoint.assert_called_with(location=2, department=7)
+        factories.Location(level="department", id=2)
+        db.session.commit()
 
+        with f.test_client() as c:
+            response = c.get("/product?location=2&year=2007")
+            assert response.status_code == 200
+            assert response.data == b"cats"
+            endpoint.assert_called_with(location=2, year=2007)

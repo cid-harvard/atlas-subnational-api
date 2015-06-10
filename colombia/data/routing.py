@@ -1,8 +1,10 @@
 from ..entities import entities, metadata_apis
 from .. import models
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import re
+
+from flask import request
 
 RANGE_RE = r"^(from|to)_(.+)$"
 
@@ -41,21 +43,52 @@ def extract_route_params(request):
     return params
 
 
+def lookup_classification_level(entity_type, entity_id):
+    """Example: is this product_id a 2digit or 4digit product? Is this location
+    id a department or a municipality?"""
+    entity_class = metadata_apis[entity_type]["entity_model"]
+    assert issubclass(entity_class, models.Metadata)
+    return entity_class.query.get_or_404(entity_id).level
+
+
 def make_entity_endpoint(route):
-    def entity_endpoint(entity_name, entity_id):
-        route_params = (("location", "department"), ("year", None))
-        entity_config = route[entity_name]
-        current_route = entity_config[route_params]
-        return current_route["action"](location=2, department=7)
+    def entity_endpoint(main_entity_name, main_entity_id):
+
+        # Extract params from URL query string
+        route_params = extract_route_params(request)
+
+        # Find which classification level is being used for each entity
+        route_key = {}
+        for entity_name, entity_id in route_params.items():
+
+            if entity_name == "year":
+                entity_level = None
+            else:
+                entity_level = lookup_classification_level(entity_name, entity_id)
+
+            route_key[entity_name] = entity_level
+
+        route_key = tuple(sorted(route_key.items(), key=lambda x: x[0]))
+
+        entity_config = route[main_entity_name]
+        current_route = entity_config[route_key]
+
+        return current_route["action"](**route_params)
     return entity_endpoint
 
 
 def add_routes(app, route):
     """Add an entity handling route to a flask app / blueprint."""
-    url_rule = "/<any({}):entity_name>".format(",".join(route.keys()))
+
+    # Sort routes by key: TODO: sort routes, not entities
+    route = OrderedDict(sorted(route.items(), key=lambda x: x[0]))
+
+    possible_entity_strings = ",".join("'" + key + "'" for key in route.keys())
+
+    url_rule = "/<any({}):main_entity_name>".format(possible_entity_strings)
     app.add_url_rule(url_rule, "entity_handler_many",
-                     make_entity_endpoint(route), methods=["GET"], defaults={"entity_id": None})
-    url_rule = "/<any({}):entity_name>/<int:entity_id>".format(",".join(route.keys()))
+                     make_entity_endpoint(route), methods=["GET"], defaults={"main_entity_id": None})
+    url_rule = "/<any({}):main_entity_name>/<int:main_entity_id>".format(possible_entity_strings)
     app.add_url_rule(url_rule, "entity_handler_individual",
                      make_entity_endpoint(route), methods=["GET"])
     return app
