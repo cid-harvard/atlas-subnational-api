@@ -1,7 +1,7 @@
 from ..entities import entities, metadata_apis
 from .. import models
 
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 import re
 
 from flask import request
@@ -52,6 +52,8 @@ def lookup_classification_level(entity_type, entity_id):
 
 
 def make_entity_endpoint(route):
+    """Autogenerates a flask endpoint that'll handle querystring-based
+    routing."""
     def entity_endpoint(main_entity_name, main_entity_id):
 
         # Extract params from URL query string
@@ -80,15 +82,20 @@ def make_entity_endpoint(route):
 def add_routes(app, route):
     """Add an entity handling route to a flask app / blueprint."""
 
-    # Sort routes by key: TODO: sort routes, not entities
-    route = OrderedDict(sorted(route.items(), key=lambda x: x[0]))
+    # Sort route keys to make sure order doesn't matter and they always match
+    sorted_route = {}
+    for entity_name, entity_route in route.items():
+        sorted_route[entity_name] = {}
+        for route_key, route_config in entity_route.items():
+            route_key = tuple(sorted(route_key, key=lambda x: x[0]))
+            sorted_route[entity_name][route_key] = route_config
 
     possible_entity_strings = ",".join("'" + key + "'" for key in route.keys())
 
     url_rule = "/<any({}):main_entity_name>".format(possible_entity_strings)
     app.add_url_rule(url_rule, "entity_handler_many",
-                     make_entity_endpoint(route), methods=["GET"], defaults={"main_entity_id": None})
+                     make_entity_endpoint(sorted_route), methods=["GET"], defaults={"main_entity_id": None})
     url_rule = "/<any({}):main_entity_name>/<int:main_entity_id>".format(possible_entity_strings)
     app.add_url_rule(url_rule, "entity_handler_individual",
-                     make_entity_endpoint(route), methods=["GET"])
+                     make_entity_endpoint(sorted_route), methods=["GET"])
     return app

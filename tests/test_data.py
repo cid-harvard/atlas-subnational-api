@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, Response
+from flask import Flask, url_for, request
 from unittest.mock import Mock
 import pytest
 
@@ -168,7 +168,7 @@ class TestDataRouting(BaseTestCase):
 
         route = {
             "product": {
-                (("location", "department"), ("year", None)): {
+                (("year", None), ("location", "department")): {
                     "name": "department_product_year",
                     "action": endpoint
                 },
