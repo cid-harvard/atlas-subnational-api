@@ -10,7 +10,18 @@ count=10
 
 
 PYTHON_EXECUTABLE=python3
-VIRTUALENV_EXECUTABLE=pyvenv
+UNAME_S := $(shell uname -s)
+$(warning os is UNAME_S)
+ifeq ($(UNAME_S),Linux)
+    VIRTUALENV_EXECUTABLE=virtualenv -p /usr/bin/python3
+endif
+
+ifeq ($(UNAME_S), Darwin)
+# Not sure if it works for all Mac. Please check
+    VIRTUALENV_EXECUTABLE=pyvenv
+endif
+# Nothing for windows
+
 CONF="../conf/dev.py"
 
 
