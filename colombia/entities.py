@@ -12,7 +12,7 @@ metadata_apis = {
 }
 
 
-{
+entities = {
     "product": {
         (("location", "department"), ("year", None)): {
             "name": "department_product_year",
@@ -24,5 +24,7 @@ metadata_apis = {
             "name": "department_year",
             "action": lambda x: "dogs"
         }
+    },
+    "year":{
     }
 }
