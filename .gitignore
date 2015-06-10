@@ -26,3 +26,6 @@ nosetests.xml
 doc/_build/
 
 .DS_Store
+
+# swp file
+*.swp
