@@ -9,6 +9,10 @@ metadata_apis = {
         "entity_model": models.Location,
         "plural": "locations",
     },
+    "industry": {
+        "entity_model": models.Industry,
+        "plural": "industries",
+    },
 }
 
 

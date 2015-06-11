@@ -397,6 +397,15 @@ if __name__ == "__main__":
 
             location_map = {l.code: l for l in locations}
 
+            industry_classification = classification.load("industry/ISIC/Colombia/out/isic_ac_4.0.csv")
+            industries = classification_to_models(industry_classification,
+                                                  models.Industry)
+            db.session.add_all(industries)
+            db.session.commit()
+
+            industry_map = {i.code: i for i in industries}
+
+
             dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
             dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
             for i in range(8, 14):

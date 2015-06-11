@@ -19,7 +19,7 @@ ifeq ($(UNAME_S), Darwin)
     VIRTUALENV_EXECUTABLE=pyvenv
 endif
 
-CONF="../conf/dev.py"
+CONF=../conf/dev.py
 
 
 requirements = requirements.txt requirements-dev.txt
@@ -42,6 +42,9 @@ shell: virtualenv
 
 dummy: virtualenv
 	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" $(PYTHON_EXECUTABLE) manage.py dummy -n $(count)
+
+import: virtualenv
+	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" PYTHONPATH=. $(PYTHON_EXECUTABLE) colombia/import.py
 
 submodule:
 	test -d doc/_themes/ || git submodule add git://github.com/kennethreitz/kr-sphinx-themes.git doc/_themes
