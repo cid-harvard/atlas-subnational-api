@@ -92,3 +92,17 @@ class Location(Metadata):
         "population_center"
     ]
     level = db.Column(db.Enum(*LEVELS))
+
+
+class Industry(Metadata):
+    """An ISIC 4 industry."""
+    __tablename__ = "industry"
+
+    #: Possible aggregation levels
+    LEVELS = [
+        "section",
+        "division",
+        "group",
+        "class"
+    ]
+    level = db.Column(db.Enum(*LEVELS))
