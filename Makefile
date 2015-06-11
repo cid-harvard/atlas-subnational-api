@@ -19,7 +19,7 @@ ifeq ($(UNAME_S), Darwin)
     VIRTUALENV_EXECUTABLE=pyvenv
 endif
 
-CONF="../conf/dev.py"
+CONF=../conf/dev.py
 
 
 requirements = requirements.txt requirements-dev.txt
