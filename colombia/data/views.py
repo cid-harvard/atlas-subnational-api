@@ -101,6 +101,11 @@ def products_index(product_id=None):
             q = DepartmentProductYear.query\
                 .filter_by(year=year, department_id=location_id)
             return marshal(schemas.department_product_year, q)
+    elif location_id is not None:
+        if location_type == "department":
+            q = DepartmentProductYear.query\
+                .filter_by(department_id=location_id)
+            return marshal(schemas.department_product_year, q)
 
     raise abort(400, body="Could not find data with the given parameters.")
 
