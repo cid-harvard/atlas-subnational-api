@@ -1,5 +1,6 @@
 from flask import Blueprint, request
-from .models import (DepartmentProductYear, ProductYear, Location)
+from .models import (DepartmentProductYear, DepartmentIndustryYear,
+                     ProductYear, Location)
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 
@@ -8,6 +9,7 @@ from atlas_core.helpers.flask import abort, jsonify
 
 products_app = Blueprint("products", __name__)
 departments_app = Blueprint("departments", __name__)
+industries_app = Blueprint("industries", __name__)
 
 
 @products_app.route("/trade/departments/<int:department>/",
@@ -126,5 +128,30 @@ def departments_index(department_id=None):
             .all()
 
         return jsonify(data=[x._asdict() for x in q])
+
+    raise abort(400, body="Could not find data with the given parameters.")
+
+
+@industries_app.route("/industries")
+@industries_app.route("/industries/<int:industry_id>")
+def industries_index(product_id=None):
+
+    location_id = request.args.get("location", None)
+    year = request.args.get("year", None)
+
+    # Find type of location
+    if location_id:
+        location_type = Location.query.get_or_404(location_id).level
+
+    if location_id is not None and year is not None:
+        if location_type == "department":
+            q = DepartmentIndustryYear.query\
+                .filter_by(year=year, department_id=location_id)
+            return marshal(schemas.department_industry_year, q)
+    elif location_id is not None:
+        if location_type == "department":
+            q = DepartmentIndustryYear.query\
+                .filter_by(department_id=location_id)
+            return marshal(schemas.department_industry_year, q)
 
     raise abort(400, body="Could not find data with the given parameters.")
