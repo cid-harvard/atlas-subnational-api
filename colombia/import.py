@@ -442,25 +442,27 @@ if __name__ == "__main__":
 
 
             # Department - industry - year
-            df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ciy_2008-2012_rev3_stata13.dta")
-            df = df[["year", "r", "i", "E_yir", "W_yir"]]
+            df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")
+            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi"]]
             df = df[df.i != "."]
 
             df = df.merge(industry_classification.table, left_on="i",
                           right_on="code", how="inner")
 
-            df["d"] = df.r.str[:2]
-            df.groupby(["year", "d", "i"]).agg({"E_yir": np.sum,
-                                                "W_yir": np.sum})
-
             def make_diy():
                 def inner(line):
                     dpy = models.DepartmentIndustryYear()
                     dpy.industry = industry_map[line["i"]]
-                    dpy.department = location_map[line["d"]]
+                    dpy.department = location_map[line["r"]]
                     dpy.year = line["year"]
                     dpy.employment = line["E_yir"]
                     dpy.wages = line["W_yir"]
+
+                    dpy.rca = line["rca"]
+                    dpy.density = line["density"]
+                    dpy.cog = line["cog"]
+                    dpy.coi = line["coi"]
+
                     return dpy
                 return inner
             cpy_out = df.apply(make_diy(), axis=1)

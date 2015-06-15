@@ -21,6 +21,7 @@ class DepartmentProductYear(BaseModel, IDMixin):
 
     import_value = db.Column(db.Integer)
     export_value = db.Column(db.Integer)
+
     export_rca = db.Column(db.Integer)
     density = db.Column(db.Float)
     cog = db.Column(db.Float)
@@ -75,3 +76,16 @@ class DepartmentIndustryYear(BaseModel, IDMixin):
 
     employment = db.Column(db.Integer)
     wages = db.Column(db.Integer)
+
+    rca = db.Column(db.Integer)
+    density = db.Column(db.Float)
+    cog = db.Column(db.Float)
+    coi = db.Column(db.Float)
+
+    @hybrid_property
+    def distance(self):
+        return 1.0 - self.density
+
+    @distance.expression
+    def distance(cls):
+        return (1.0 - cls.density).label("distance")
