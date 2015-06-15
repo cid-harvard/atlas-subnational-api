@@ -29,8 +29,8 @@ class DepartmentProductYearSchema(ma.Schema):
 class DepartmentIndustryYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("employment", "wages", "department_id", "industry_id",
-                  "year")
+        fields = ("employment", "wages", "rca", "distance", "cog", "coi",
+                  "department_id", "industry_id", "year")
 
 
 class DepartmentSchema(ma.Schema):
