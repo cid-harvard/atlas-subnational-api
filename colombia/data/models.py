@@ -63,6 +63,18 @@ class ProductYear(BaseModel, IDMixin):
     pci_rank = db.Column(db.Integer)
 
 
+class IndustryYear(BaseModel, IDMixin):
+
+    __tablename__ = "industry_year"
+
+    industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
+    year = db.Column(db.Integer)
+
+    industry = db.relationship(Industry)
+
+    complexity = db.Column(db.Float)
+
+
 class DepartmentIndustryYear(BaseModel, IDMixin):
 
     __tablename__ = "department_industry_year"

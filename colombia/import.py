@@ -66,6 +66,16 @@ def make_py(product_map):
     return inner
 
 
+def make_iy(industry_map):
+    def inner(line):
+        iy = models.IndustryYear()
+        iy.industry = industry_map[line["i"]]
+        iy.year = int(line["year"])
+        iy.pci = line["pci"]
+        return iy
+    return inner
+
+
 def process_cpy(cpy, product_map, department_map):
     """Take a dataframe and return
 
@@ -304,7 +314,7 @@ if __name__ == "__main__":
 
             # Department - industry - year
             df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")
-            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi"]]
+            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi", "pci"]]
             df = df[df.i != "."]
 
             df = df.merge(industry_classification.table, left_on="i",
@@ -328,5 +338,10 @@ if __name__ == "__main__":
                 return inner
             cpy_out = df.apply(make_diy(), axis=1)
             db.session.add_all(cpy_out)
-            db.session.commit()
 
+            iy = df.groupby(["i", "year"])[["pci"]].first().reset_index()
+            iy_out = iy.apply(make_iy(industry_map), axis=1)
+            db.session.add_all(iy_out)
+
+
+            db.session.commit()
