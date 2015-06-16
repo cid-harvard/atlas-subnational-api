@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
             location_map = {l.code: l for l in locations}
 
-            industry_classification = classification.load("industry/ISIC/Colombia/out/isic_ac_4.0.csv")
+            industry_classification = classification.load("industry/ISIC/Colombia/out/isic_ac_3.0.csv")
             industries = classification_to_models(industry_classification,
                                                   models.Industry)
             db.session.add_all(industries)
