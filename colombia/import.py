@@ -71,7 +71,7 @@ def make_iy(industry_map):
         iy = models.IndustryYear()
         iy.industry = industry_map[line["i"]]
         iy.year = int(line["year"])
-        iy.pci = line["pci"]
+        iy.complexity = line["pci"]
         return iy
     return inner
 
