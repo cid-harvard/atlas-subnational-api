@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from .models import (DepartmentProductYear, DepartmentIndustryYear,
-                     ProductYear, Location)
+                     ProductYear, Location, IndustryYear)
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 
@@ -153,5 +153,42 @@ def industries_index(product_id=None):
             q = DepartmentIndustryYear.query\
                 .filter_by(department_id=location_id)
             return marshal(schemas.department_industry_year, q)
+
+    raise abort(400, body="Could not find data with the given parameters.")
+
+
+@industries_app.route("/<string:entity_type>/scatterplot")
+def scatterplot(entity_type):
+
+    location_id = int(request.args.get("location", None))
+    year = int(request.args.get("year", None))
+
+    # Find type of location
+    if location_id is None:
+        raise abort(400, body="Must specify ?location=")
+
+    location = Location.query.get_or_404(location_id)
+
+    if location.level != "department":
+        raise abort(400, body="""Scatterplots are only available for
+                    departments.""")
+
+    if entity_type == "industries":
+        q = db.session.query(DepartmentIndustryYear.distance,
+                             IndustryYear.complexity,
+                             IndustryYear.industry_id
+                             )\
+            .filter_by(year=year, department_id=location_id)\
+            .join(IndustryYear, (DepartmentIndustryYear.industry_id == IndustryYear.id) & (DepartmentIndustryYear.year == IndustryYear.year))
+        return jsonify(data=[x._asdict() for x in q])
+    elif entity_type == "products":
+        q = db.session.query(DepartmentProductYear.distance,
+                             ProductYear.pci.label("complexity"),
+                             ProductYear.product_id
+                             )\
+            .filter_by(year=year, department_id=location_id)\
+            .join(ProductYear, (DepartmentProductYear.product_id == ProductYear.id) & (DepartmentProductYear.year == ProductYear.year))
+        return jsonify(data=[x._asdict() for x in q])
+
 
     raise abort(400, body="Could not find data with the given parameters.")
