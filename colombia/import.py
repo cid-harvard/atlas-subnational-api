@@ -32,7 +32,7 @@ def make_cpy(department_map, product_map):
         dpy.department = department
         product = product_map[line["product"]]
         dpy.product = product
-        dpy.import_value = line["import_value"]
+        # dpy.import_value = line["import_value"]
         dpy.export_value = line["export_value"]
         dpy.export_rca = line["export_rca"]
         dpy.density = line["density"]
@@ -50,7 +50,7 @@ def make_cy(department_map):
         dy.department = department
         dy.year = line["year"]
         dy.eci = line["eci"]
-        dy.diversity = line["diversity"]
+        # dy.diversity = line["diversity"]
         return dy
     return inner
 
@@ -97,18 +97,18 @@ def process_cpy(cpy, product_map, department_map):
 # u'density', u'eci', u'pci', u'diversity', u'ubiquity', u'coi', u'cog',
 # u'rca']
 aduanas_to_atlas = {
-    "department": "department",
-    "hs4": "product",
-    "year": "year",
-    "dollar": "export_value",
-    "density": "density",
-    "eci": "eci",
+    "r": "department",
+    "p": "product",
+    "yr": "year",
+    "X_rpy_p": "export_value",
+    "density_natl": "density",
+    "X_py_c": "eci",
     "pci": "pci",
-    "diversity": "diversity",
-    "ubiquity": "ubiquity",
-    "coi": "coi",
-    "cog": "cog",
-    "rca": "export_rca"
+    #"diversity": "diversity",
+    #"ubiquity": "ubiquity",
+    "coi_natl": "coi",
+    "cog_natl": "cog",
+    "RCA_natl": "export_rca"
 }
 aduanas_to_atlas_import = {
     "department": "department",
@@ -276,41 +276,16 @@ if __name__ == "__main__":
 
             industry_map = {i.code: i for i in industries}
 
+            # Department product year
+            df = pd.read_stata("/Users/makmana/ciddata/Aduanas/exp_ecomplexity_dpto_oldstata.dta")
+            df.p = df.p.astype(int).astype(str).str.zfill(4)
+            df = translate_columns(df, aduanas_to_atlas)
 
-            dpy_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_{0}_dollar.dta"
-            dpy_import_file_template = "/Users/makmana/ciddata/Aduanas/ecomplexity_from_cepii_imp_{0}_dollar.dta"
-            for i in range(8, 14):
-
-                print(i)
-
-                def parse_dpy(dpy_file, translation_table):
-                    dpy = pd.read_stata(dpy_file)
-                    dpy["year"] = 2000 + i
-
-                    dpy = translate_columns(dpy, translation_table)
-                    dpy = dpy[~dpy.department.isin([0, 1])]
-                    dpy["product"] = dpy["product"].map(lambda x: str(int(x)).zfill(4)).astype(str)
-                    dpy["department"] = dpy.department.map(lambda x: str(int(x)).zfill(2))
-                    return dpy
-
-                filename = dpy_file_template.format(str(i).zfill(2))
-                dpy = parse_dpy(filename, aduanas_to_atlas)
-
-                filename = dpy_import_file_template.format(str(i).zfill(2))
-                imports_dpy = parse_dpy(filename, aduanas_to_atlas_import)
-                imports_dpy = imports_dpy[["department", "product", "import_value"]]
-
-                # Merge in imports with exports
-                dpy = pd.merge(dpy,
-                               imports_dpy,
-                               on=["department", "product"], how="inner")
-
-                cy, py, cpy = process_cpy(dpy, product_map, location_map)
-                db.session.add_all(cy)
-                db.session.add_all(py)
-                db.session.add_all(cpy)
-                db.session.commit()
-
+            cy, py, cpy = process_cpy(df, product_map, location_map)
+            db.session.add_all(cy)
+            db.session.add_all(py)
+            db.session.add_all(cpy)
+            db.session.commit()
 
             # Department - industry - year
             df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")
