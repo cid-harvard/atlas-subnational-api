@@ -1,5 +1,5 @@
 from flask import request, Blueprint, jsonify
-from .models import HSProduct
+from .models import HSProduct, Industry
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 from ..core import db
@@ -79,7 +79,15 @@ def hierarchy(entity_name):
                 .join(p3, p3.id == p2.parent_id)\
                 .all()
             return jsonify(data=dict(q))
+    elif entity_name == "industries":
+        if from_level == "4digit" and to_level == "section":
+            i, i2, i3, i4 = Industry, aliased(Industry), aliased(Industry), aliased(Industry)
+            q = db.session.query(i.id, i4.id)\
+                .join(i2, i2.id == i.parent_id)\
+                .join(i3, i3.id == i2.parent_id)\
+                .join(i4, i4.id == i3.parent_id)\
+                .all()
+            return jsonify(data=dict(q))
 
     raise abort(400, body="""This API is still a fixture, try
                 ?from_level=4digit&to_level=section.""")
-
