@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from .models import (DepartmentProductYear, DepartmentIndustryYear,
-                     ProductYear, Location, IndustryYear)
+                     ProductYear, Location, IndustryYear, DepartmentYear)
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 
@@ -113,8 +113,7 @@ def products_index(product_id=None):
 
 
 @departments_app.route("/departments")
-@departments_app.route("/departments/<int:department_id>")
-def departments_index(department_id=None):
+def departments_index():
 
     year = request.args.get("year", None)
 
@@ -130,6 +129,23 @@ def departments_index(department_id=None):
         return jsonify(data=[x._asdict() for x in q])
 
     raise abort(400, body="Could not find data with the given parameters.")
+
+
+@departments_app.route("/departments/departmentyear/")
+@departments_app.route("/departments/departmentyear/<int:department_id>")
+def departments_departmentyear(department_id=None):
+
+    q = db.session\
+        .query(DepartmentYear.department_id,
+               DepartmentYear.year,
+               DepartmentYear.gdp_nominal,
+               DepartmentYear.gdp_real,
+               DepartmentYear.gdp_pc_nominal,
+               DepartmentYear.gdp_pc_real,
+               DepartmentYear.population)\
+        .all()
+
+    return jsonify(data=[x._asdict() for x in q])
 
 
 @industries_app.route("/industries")

@@ -3,12 +3,19 @@
 import pandas as pd
 import numpy as np
 
-from io import StringIO
 
 from atlas_core.helpers.data_import import translate_columns
 from colombia import models, create_app
 from colombia.core import db
 from tests import BaseTestCase
+
+
+def fillin(df, entities):
+    """STATA style "fillin", make sure all permutations of entities in the
+    index are in the dataset."""
+    df = df.set_index(entities)
+    return df.reindex(
+        pd.MultiIndex.from_product(df.index.levels, names=df.index.names))
 
 
 def classification_to_models(classification, model):
@@ -51,6 +58,11 @@ def make_cy(department_map):
         dy.year = line["year"]
         dy.eci = line["eci"]
         # dy.diversity = line["diversity"]
+        dy.gdp_nominal = line["gdp_nominal"]
+        dy.gdp_real = line["gdp_real"]
+        dy.gdp_pc_nominal = line["gdp_pc_nominal"]
+        dy.gdp_pc_real = line["gdp_pc_real"]
+        dy.population = line["population"]
         return dy
     return inner
 
@@ -281,10 +293,42 @@ if __name__ == "__main__":
             df.p = df.p.astype(int).astype(str).str.zfill(4)
             df = translate_columns(df, aduanas_to_atlas)
 
-            cy, py, cpy = process_cpy(df, product_map, location_map)
-            db.session.add_all(cy)
-            db.session.add_all(py)
+            cpy = df.apply(make_cpy(location_map, product_map), axis=1)
             db.session.add_all(cpy)
+
+            py = df.groupby(["product", "year"]).first().reset_index()
+            py = py.apply(make_py(product_map), axis=1)
+            db.session.add_all(py)
+
+            # GDP data
+            gdp_df = pd.read_stata("/Users/makmana/ciddata/metadata/Annual GDP (nominal)/COL_nomrealgdp_dept_annual1990-2012.dta")
+            gdp_df = gdp_df[["depcode", "year", "depgdpn", "gdpkmultipliedbydeflator"]]
+            gdp_df.columns = ["department", "year", "gdp_real", "gdp_nominal"]
+            gdp_df.gdp_real = gdp_df.gdp_real * (10 ** 6)
+            gdp_df.gdp_nominal = gdp_df.gdp_nominal * (10 ** 6)
+            gdp_df.department = gdp_df.department.astype(str).str.zfill(2)
+
+            # Pop data
+            pop_df = pd.read_stata("/Users/makmana/ciddata/metadata/Population/COL_pop_deptmunicip_1985-2012.dta")
+            pop_df = pop_df[["year", "dp", "popdept"]]
+            pop_df.columns = ["year", "department", "population"]
+            pop_df.department = pop_df.department.astype(str).str.zfill(2)
+            pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2013)]
+            pop_df = pop_df[~pop_df.duplicated()]
+
+            cy = df.groupby(["department", "year"]).first().reset_index()
+            cy = fillin(cy, ["department", "year"]).reset_index()
+            cy = cy.merge(gdp_df,
+                          on=["department", "year"],
+                          how="left")
+            cy = cy.merge(pop_df,
+                          on=["department", "year"],
+                          how="left")
+            cy["gdp_pc_real"] = cy.gdp_real / cy.population
+            cy["gdp_pc_nominal"] = cy.gdp_nominal / cy.population
+            cy = cy.apply(make_cy(location_map), axis=1)
+
+            db.session.add_all(cy)
             db.session.commit()
 
             # Department - industry - year
@@ -320,3 +364,4 @@ if __name__ == "__main__":
 
 
             db.session.commit()
+
