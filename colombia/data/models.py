@@ -49,6 +49,12 @@ class DepartmentYear(BaseModel, IDMixin):
     eci_rank = db.Column(db.Integer)
     diversity = db.Column(db.Float)
 
+    gdp_nominal = db.Column(db.Integer)
+    gdp_real = db.Column(db.Integer)
+    gdp_pc_nominal = db.Column(db.Integer)
+    gdp_pc_real = db.Column(db.Integer)
+
+    population = db.Column(db.Integer)
 
 class ProductYear(BaseModel, IDMixin):
 
