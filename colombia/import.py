@@ -362,6 +362,30 @@ if __name__ == "__main__":
             iy_out = iy.apply(make_iy(industry_map), axis=1)
             db.session.add_all(iy_out)
 
-
             db.session.commit()
 
+            # Municipality - industry - year
+            df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_mun.dta")
+            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi", "pci"]]
+            df = df[df.i != "."]
+
+            # Classification.merge_to_table
+            # Classification.merge_index
+
+            def merge_to_table(classification, classification_name, df, merge_on):
+                code_to_id = classification.reset_index()[["code", "index"]]
+                code_to_id.columns = ["code", classification_name]
+                code_to_id =  code_to_id.set_index("code")
+                return df.merge(code_to_id, left_on=merge_on,
+                                right_index=True, how="left")
+
+            df = merge_to_table(industry_classification.level("class"),
+                                "industry_id", df, "i")
+            df = merge_to_table(location_classification.level("municipality"),
+                                "municipality_id", df, "r")
+
+            df = df.rename(columns={"E_yir": "employment", "W_yir": "wages"})
+            df = df[["municipality_id", "industry_id", "year", "employment",
+                     "wages", "rca", "density", "cog", "coi"]]
+            df.to_sql("municipality_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
