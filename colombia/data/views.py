@@ -194,26 +194,31 @@ def scatterplot(entity_type):
 
     location = Location.query.get_or_404(location_id)
 
-    if location.level != "department":
-        raise abort(400, body="""Scatterplots are only available for
-                    departments.""")
-
-    if entity_type == "industries":
-        q = db.session.query(DepartmentIndustryYear.distance,
-                             IndustryYear.complexity,
-                             IndustryYear.industry_id
-                             )\
-            .filter_by(year=year, department_id=location_id)\
-            .join(IndustryYear, (DepartmentIndustryYear.industry_id == IndustryYear.id) & (DepartmentIndustryYear.year == IndustryYear.year))
-        return jsonify(data=[x._asdict() for x in q])
-    elif entity_type == "products":
-        q = db.session.query(DepartmentProductYear.distance,
-                             ProductYear.pci.label("complexity"),
-                             ProductYear.product_id
-                             )\
-            .filter_by(year=year, department_id=location_id)\
-            .join(ProductYear, (DepartmentProductYear.product_id == ProductYear.id) & (DepartmentProductYear.year == ProductYear.year))
-        return jsonify(data=[x._asdict() for x in q])
-
+    if location.level == "department":
+        if entity_type == "industries":
+            q = db.session.query(DepartmentIndustryYear.distance,
+                                 IndustryYear.complexity,
+                                 IndustryYear.industry_id
+                                 )\
+                .filter_by(year=year, department_id=location_id)\
+                .join(IndustryYear, (DepartmentIndustryYear.industry_id == IndustryYear.id) & (DepartmentIndustryYear.year == IndustryYear.year))
+            return jsonify(data=[x._asdict() for x in q])
+        elif entity_type == "products":
+            q = db.session.query(DepartmentProductYear.distance,
+                                 ProductYear.pci.label("complexity"),
+                                 ProductYear.product_id
+                                 )\
+                .filter_by(year=year, department_id=location_id)\
+                .join(ProductYear, (DepartmentProductYear.product_id == ProductYear.id) & (DepartmentProductYear.year == ProductYear.year))
+            return jsonify(data=[x._asdict() for x in q])
+    elif location.level == "municipality":
+        if entity_type == "industries":
+            q = db.session.query(MunicipalityIndustryYear.distance,
+                                 IndustryYear.complexity,
+                                 IndustryYear.industry_id
+                                 )\
+                .filter_by(year=year, municipality_id=location_id)\
+                .join(IndustryYear, (MunicipalityIndustryYear.industry_id == IndustryYear.id) & (MunicipalityIndustryYear.year == IndustryYear.year))
+            return jsonify(data=[x._asdict() for x in q])
 
     raise abort(400, body="Could not find data with the given parameters.")
