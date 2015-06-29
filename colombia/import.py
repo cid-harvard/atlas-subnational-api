@@ -18,6 +18,16 @@ def fillin(df, entities):
         pd.MultiIndex.from_product(df.index.levels, names=df.index.names))
 
 
+# Classification.merge_to_table
+# Classification.merge_index
+def merge_to_table(classification, classification_name, df, merge_on):
+    code_to_id = classification.reset_index()[["code", "index"]]
+    code_to_id.columns = ["code", classification_name]
+    code_to_id = code_to_id.set_index("code")
+    return df.merge(code_to_id, left_on=merge_on,
+                    right_index=True, how="left")
+
+
 def classification_to_models(classification, model):
     models = []
     for index, row in classification.table.iterrows():
@@ -30,69 +40,6 @@ def classification_to_models(classification, model):
         m.parent_id = row["parent_id"]
         models.append(m)
     return models
-
-
-def make_cpy(department_map, product_map):
-    def inner(line):
-        dpy = models.DepartmentProductYear()
-        department = department_map[line["department"]]
-        dpy.department = department
-        product = product_map[line["product"]]
-        dpy.product = product
-        # dpy.import_value = line["import_value"]
-        dpy.export_value = line["export_value"]
-        dpy.export_rca = line["export_rca"]
-        dpy.density = line["density"]
-        dpy.cog = line["cog"]
-        dpy.coi = line["coi"]
-        dpy.year = line["year"]
-        return dpy
-    return inner
-
-
-def make_cy(department_map):
-    def inner(line):
-        dy = models.DepartmentYear()
-        department = department_map[line["department"]]
-        dy.department = department
-        dy.year = line["year"]
-        dy.eci = line["eci"]
-        # dy.diversity = line["diversity"]
-        dy.gdp_nominal = line["gdp_nominal"]
-        dy.gdp_real = line["gdp_real"]
-        dy.gdp_pc_nominal = line["gdp_pc_nominal"]
-        dy.gdp_pc_real = line["gdp_pc_real"]
-        dy.population = line["population"]
-        return dy
-    return inner
-
-
-def make_py(product_map):
-    def inner(line):
-        py = models.ProductYear()
-        product = product_map[line["product"]]
-        py.product = product
-        py.year = line["year"]
-        py.pci = line["pci"]
-        return py
-    return inner
-
-
-def process_cpy(cpy, product_map, department_map):
-    """Take a dataframe and return
-
-    """
-
-    cpy_out = cpy.apply(make_cpy(department_map, product_map), axis=1)
-
-    cy = cpy.groupby(["department", "year"]).first().reset_index()
-    cy_out = cy.apply(make_cy(department_map), axis=1)
-
-    py = cpy.groupby(["product", "year"]).first().reset_index()
-    py_out = py.apply(make_py(product_map), axis=1)
-
-    return [cy_out, py_out, cpy_out]
-
 
 # Taken from ecomplexity_from_cepii_xx_dollar.dta
 # Sample: [u'department', u'hs4', u'peso', u'dollar', u'__000001', u'M',
@@ -283,12 +230,19 @@ if __name__ == "__main__":
             df.p = df.p.astype(int).astype(str).str.zfill(4)
             df = translate_columns(df, aduanas_to_atlas)
 
-            cpy = df.apply(make_cpy(location_map, product_map), axis=1)
-            db.session.add_all(cpy)
+            df = fillin(df, ["department", "product", "year"]).reset_index()
+            from IPython import embed; embed()
 
-            py = df.groupby(["product", "year"]).first().reset_index()
-            py = py.apply(make_py(product_map), axis=1)
-            db.session.add_all(py)
+            df = merge_to_table(product_classification.level("4digit"),
+                                "product_id", df, "product")
+            df = merge_to_table(location_classification.level("department"),
+                                "department_id", df, "department")
+
+
+            py = df.groupby(["product_id", "year"])[["pci"]].first().reset_index()
+            py.to_sql("product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
 
             # GDP data
             gdp_df = pd.read_stata("/Users/makmana/ciddata/metadata/Annual GDP (nominal)/COL_nomrealgdp_dept_annual1990-2012.dta")
@@ -306,7 +260,7 @@ if __name__ == "__main__":
             pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2013)]
             pop_df = pop_df[~pop_df.duplicated()]
 
-            cy = df.groupby(["department", "year"]).first().reset_index()
+            cy = df.groupby(["department", "year"])[["eci", "department_id"]].first().reset_index()
             cy = fillin(cy, ["department", "year"]).reset_index()
             cy = cy.merge(gdp_df,
                           on=["department", "year"],
@@ -316,20 +270,17 @@ if __name__ == "__main__":
                           how="left")
             cy["gdp_pc_real"] = cy.gdp_real / cy.population
             cy["gdp_pc_nominal"] = cy.gdp_nominal / cy.population
-            cy = cy.apply(make_cy(location_map), axis=1)
 
-            db.session.add_all(cy)
-            db.session.commit()
+            cy = cy.drop("department", axis=1)
+            cy.to_sql("department_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
-            # Classification.merge_to_table
-            # Classification.merge_index
 
-            def merge_to_table(classification, classification_name, df, merge_on):
-                code_to_id = classification.reset_index()[["code", "index"]]
-                code_to_id.columns = ["code", classification_name]
-                code_to_id =  code_to_id.set_index("code")
-                return df.merge(code_to_id, left_on=merge_on,
-                                right_index=True, how="left")
+            df = df[["department_id", "product_id", "year", "export_value",
+                     "export_rca", "density", "cog", "coi"]]
+            df.to_sql("department_product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
 
             # Department - industry - year
             df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")
