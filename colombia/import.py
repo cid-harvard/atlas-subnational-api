@@ -78,16 +78,6 @@ def make_py(product_map):
     return inner
 
 
-def make_iy(industry_map):
-    def inner(line):
-        iy = models.IndustryYear()
-        iy.industry = industry_map[line["i"]]
-        iy.year = int(line["year"])
-        iy.complexity = line["pci"]
-        return iy
-    return inner
-
-
 def process_cpy(cpy, product_map, department_map):
     """Take a dataframe and return
 
@@ -331,44 +321,6 @@ if __name__ == "__main__":
             db.session.add_all(cy)
             db.session.commit()
 
-            # Department - industry - year
-            df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")
-            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi", "pci"]]
-            df = df[df.i != "."]
-
-            df = df.merge(industry_classification.table, left_on="i",
-                          right_on="code", how="inner")
-
-            def make_diy():
-                def inner(line):
-                    dpy = models.DepartmentIndustryYear()
-                    dpy.industry = industry_map[line["i"]]
-                    dpy.department = location_map[line["r"]]
-                    dpy.year = line["year"]
-                    dpy.employment = line["E_yir"]
-                    dpy.wages = line["W_yir"]
-
-                    dpy.rca = line["rca"]
-                    dpy.density = line["density"]
-                    dpy.cog = line["cog"]
-                    dpy.coi = line["coi"]
-
-                    return dpy
-                return inner
-            cpy_out = df.apply(make_diy(), axis=1)
-            db.session.add_all(cpy_out)
-
-            iy = df.groupby(["i", "year"])[["pci"]].first().reset_index()
-            iy_out = iy.apply(make_iy(industry_map), axis=1)
-            db.session.add_all(iy_out)
-
-            db.session.commit()
-
-            # Municipality - industry - year
-            df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_mun.dta")
-            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi", "pci"]]
-            df = df[df.i != "."]
-
             # Classification.merge_to_table
             # Classification.merge_index
 
@@ -378,6 +330,35 @@ if __name__ == "__main__":
                 code_to_id =  code_to_id.set_index("code")
                 return df.merge(code_to_id, left_on=merge_on,
                                 right_index=True, how="left")
+
+            # Department - industry - year
+            df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")
+            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi", "pci"]]
+            df = df[df.i != "."]
+
+            df = merge_to_table(industry_classification.level("class"),
+                                "industry_id", df, "i")
+            df = merge_to_table(location_classification.level("department"),
+                                "department_id", df, "r")
+
+            # Industry - Year
+            iy = df.groupby(["industry_id", "year"])[["pci"]].first().reset_index()
+            iy = iy.rename(columns={"pci": "complexity"})
+            iy.to_sql("industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # Department - industry - year
+            df = df.rename(columns={"E_yir": "employment", "W_yir": "wages"})
+            df = df[["department_id", "industry_id", "year", "employment",
+                     "wages", "rca", "density", "cog", "coi"]]
+            df.to_sql("department_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+
+            # Municipality - industry - year
+            df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_mun.dta")
+            df = df[["year", "r", "i", "E_yir", "W_yir", "rca", "density", "cog", "coi", "pci"]]
+            df = df[df.i != "."]
 
             df = merge_to_table(industry_classification.level("class"),
                                 "industry_id", df, "i")
