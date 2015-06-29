@@ -33,6 +33,13 @@ class DepartmentIndustryYearSchema(ma.Schema):
                   "department_id", "industry_id", "year")
 
 
+class MunicipalityIndustryYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("employment", "wages", "rca", "distance", "cog", "coi",
+                  "municipality_id", "industry_id", "year")
+
+
 class DepartmentSchema(ma.Schema):
 
     class Meta:
@@ -65,6 +72,7 @@ class ColombiaMetadataSchema(MetadataSchema):
 
 department_product_year = DepartmentProductYearSchema(many=True)
 department_industry_year = DepartmentIndustryYearSchema(many=True)
+municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
 product_year = ProductYearSchema(many=True)
 department = DepartmentSchema(many=True)
 metadata = ColombiaMetadataSchema(many=True)

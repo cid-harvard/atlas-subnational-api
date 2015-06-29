@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from .models import (DepartmentProductYear, DepartmentIndustryYear,
-                     ProductYear, Location, IndustryYear, DepartmentYear)
+                     MunicipalityIndustryYear, ProductYear, Location,
+                     IndustryYear, DepartmentYear)
 from ..api_schemas import marshal
 from .. import api_schemas as schemas
 
@@ -164,11 +165,19 @@ def industries_index(product_id=None):
             q = DepartmentIndustryYear.query\
                 .filter_by(year=year, department_id=location_id)
             return marshal(schemas.department_industry_year, q)
+        elif location_type == "municipality":
+            q = MunicipalityIndustryYear.query\
+                .filter_by(year=year, municipality_id=location_id)
+            return marshal(schemas.municipality_industry_year, q)
     elif location_id is not None:
         if location_type == "department":
             q = DepartmentIndustryYear.query\
                 .filter_by(department_id=location_id)
             return marshal(schemas.department_industry_year, q)
+        elif location_type == "municipality":
+            q = MunicipalityIndustryYear.query\
+                .filter_by(municipality_id=location_id)
+            return marshal(schemas.municipality_industry_year, q)
 
     raise abort(400, body="Could not find data with the given parameters.")
 
