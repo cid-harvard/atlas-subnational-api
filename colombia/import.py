@@ -47,7 +47,7 @@ aduanas_to_atlas = {
     "yr": "year",
     "X_rpy_p": "export_value",
     "density_natl": "density",
-    "X_py_c": "eci",
+    "eci_natl": "eci",
     "pci": "pci",
     "coi_natl": "coi",
     "cog_natl": "cog",
