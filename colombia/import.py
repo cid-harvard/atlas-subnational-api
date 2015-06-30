@@ -41,10 +41,6 @@ def classification_to_models(classification, model):
         models.append(m)
     return models
 
-# Taken from ecomplexity_from_cepii_xx_dollar.dta
-# Sample: [u'department', u'hs4', u'peso', u'dollar', u'__000001', u'M',
-# u'density', u'eci', u'pci', u'diversity', u'ubiquity', u'coi', u'cog',
-# u'rca']
 aduanas_to_atlas = {
     "r": "department",
     "p": "product",
@@ -53,16 +49,9 @@ aduanas_to_atlas = {
     "density_natl": "density",
     "X_py_c": "eci",
     "pci": "pci",
-    #"diversity": "diversity",
-    #"ubiquity": "ubiquity",
     "coi_natl": "coi",
     "cog_natl": "cog",
     "RCA_natl": "export_rca"
-}
-aduanas_to_atlas_import = {
-    "department": "department",
-    "hs4": "product",
-    "dollar": "import_value",
 }
 
 
