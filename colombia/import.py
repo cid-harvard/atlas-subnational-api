@@ -224,6 +224,30 @@ if __name__ == "__main__":
             df.p = df.p.astype(int).astype(str).str.zfill(4)
             df = translate_columns(df, aduanas_to_atlas)
 
+            # Cleaning notes
+            # ==============
+            # Fix column names
+            # Rectangularize by entity fields
+            # Fix types
+            # Fill digit numbers on classification fields if necessary
+            # Merge classification fields, convert from code to ID
+
+            # Group by entities to get subdata
+            # Aggregate each subdata
+            # - eci / pci first()
+            # - generate rank fields rank(method='dense')
+            # - export_value sum()
+            # Load subdata to given model
+
+
+            # Dataset:
+            # - actual names to db names
+            # - Which ones are entity fields
+            # - numpy / db types of fields
+            # - mappings to classification object
+            # - field group + how to aggregate each data field in that group
+
+
             df = fillin(df, ["department", "product", "year"]).reset_index()
             from IPython import embed; embed()
 
