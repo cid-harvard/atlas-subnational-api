@@ -199,7 +199,7 @@ if __name__ == "__main__":
 
         with app.app_context():
 
-            # Load products
+            # Load classifications
             from linnaeus import classification
             product_classification = classification.load("product/HS/Atlas/out/hs92_atlas.csv")
             products = classification_to_models(product_classification,
@@ -207,23 +207,17 @@ if __name__ == "__main__":
             db.session.add_all(products)
             db.session.commit()
 
-            product_map = {p.code: p for p in products}
-
             location_classification = classification.load("location/Colombia/DANE/out/locations_colombia_dane.csv")
             locations = classification_to_models(location_classification,
                                                 models.Location)
             db.session.add_all(locations)
             db.session.commit()
 
-            location_map = {l.code: l for l in locations}
-
             industry_classification = classification.load("industry/ISIC/Colombia/out/isic_ac_3.0.csv")
             industries = classification_to_models(industry_classification,
                                                   models.Industry)
             db.session.add_all(industries)
             db.session.commit()
-
-            industry_map = {i.code: i for i in industries}
 
             # Department product year
             df = pd.read_stata("/Users/makmana/ciddata/Aduanas/exp_ecomplexity_dpto_oldstata.dta")
