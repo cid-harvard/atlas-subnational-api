@@ -1,6 +1,21 @@
 import pandas as pd
+import numpy as np
 
 from atlas_core.helpers.data_import import translate_columns
+
+
+def classification_to_models(classification, model):
+    models = []
+    for index, row in classification.table.iterrows():
+        row = row.replace([np.nan], [None])
+        m = model()
+        m.id = index.item()
+        m.code = row["code"]
+        m.name_en = row["name"]
+        m.level = row["level"]
+        m.parent_id = row["parent_id"]
+        models.append(m)
+    return models
 
 
 def fillin(df, entities):
@@ -31,6 +46,9 @@ def process_dataset(dataset):
     df = dataset["read_function"]()
     df = translate_columns(df, dataset["field_mapping"])
     df = cut_columns(df, dataset["field_mapping"].values())
+
+    if "hook_pre_merge" in dataset:
+        df = dataset["hook_pre_merge"](df)
 
     # Zero-pad digits of n-digit codes
     for field, length in dataset["digit_padding"].items():
