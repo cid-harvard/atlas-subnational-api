@@ -101,7 +101,6 @@ if __name__ == "__main__":
             df["product"] = df["product"].astype(int).astype(str).str.zfill(4)
 
 
-            import ipdb; ipdb.set_trace()
             ret = process_dataset(trade4digit_department)
 
 
@@ -157,6 +156,7 @@ if __name__ == "__main__":
             df.to_sql("department_product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            import ipdb; ipdb.set_trace()
 
             # Department - industry - year
             df = pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")

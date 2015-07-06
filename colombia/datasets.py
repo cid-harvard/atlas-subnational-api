@@ -43,15 +43,15 @@ trade4digit_department = {
     },
     "facet_fields": ["department", "product", "year"],
     "facets": {
-        ("department", "year"): {
+        ("department_id", "year"): {
             "eci": first,
             "export_value": lambda x: x.sum()
         },
-        ("product", "year"): {
+        ("product_id", "year"): {
             "pci": first,
             "export_value": lambda x: x.sum()
         },
-        ("department", "product", "year"): {
+        ("department_id", "product_id", "year"): {
             "export_value": first,
             "export_rca": first,
             "density": first,
