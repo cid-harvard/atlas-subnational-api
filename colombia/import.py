@@ -121,35 +121,123 @@ if __name__ == "__main__":
 
             # Cleaning notes
             # ==============
-            # Fix column names
-            # Cut columns
-            # Fix types
+            # [OK] Fix column names
+            # [OK] Cut columns
+            # Check / Fix types
 
-            # Prefiltering
+            # [] Prefiltering if needed
 
-            # Rectangularize by facet fields? If this comes from classification, do this later
-            # Fill digit numbers on classification fields if necessary
-            # Merge classification fields, convert from code to ID
+            # [OK] Fill digit numbers on classification fields if necessary
+            # [OK] Rectangularize by facet fields? If this comes from classification, do this later
+            # [OK] Merge classification fields, convert from code to ID
 
-            # Group by entities to get facets
-            # Aggregate each facets
-            # - eci / pci first()
-            # - generate rank fields rank(method='dense')
-            # - export_value sum()
-            # Filterations on facets
+            # [OK] Group by entities to get facets
+            # [OK] Aggregate each facets
+            # [OK] - eci / pci first()
+            # [OK] - export_value sum()
+            # []   - generate rank fields rank(method='dense')??
+            # [] Filtrations on facets???
+            # [OK] Returns a dict of facet -> dataframe indexed by facet keys
 
-            # Merge similar facet data (DY datasets together, etc)
-            # Load merged facet to given model
+            # [] Merge similar facet data (DY datasets together, etc)
+            # [] Function to generate other cross-dataset columns: gdp per capita
 
-            # Generate other cross-dataset columns: gdp per capita
+            # [] Save merged facets into hdf5 file
+            # [] Load merged facet to given model
 
 
-            # Dataset:
-            # - actual names to db names
-            # - Which ones are entity fields
-            # - numpy / db types of fields
-            # - mappings to classification object
-            # - field group + how to aggregate each data field in that group
+            first = lambda x: x.nth(0)
+
+            dataset = {
+                "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/Aduanas/exp_ecomplexity_dpto_oldstata.dta"),
+                "field_mapping": {
+                    "r": "department",
+                    "p": "product",
+                    "yr": "year",
+                    "X_rpy_p": "export_value",
+                    "density_natl": "density",
+                    "eci_natl": "eci",
+                    "pci": "pci",
+                    "coi_natl": "coi",
+                    "cog_natl": "cog",
+                    "RCA_natl": "export_rca"
+                },
+                "classification_fields": {
+                    "department": {
+                        "classification": location_classification,
+                        "level": "department"
+                    },
+                    "product": {
+                        "classification": product_classification,
+                        "level": "4digit"
+                    },
+                },
+                "digit_padding": {
+                    "department": 2,
+                    "product": 4
+                },
+                "facet_fields": ["department", "product", "year"],
+                "facets": {
+                    ("department", "year"): {
+                        "eci": first,
+                        "export_value": lambda x: x.sum()
+                    },
+                    ("product", "year"): {
+                        "pci": first,
+                        "export_value": lambda x: x.sum()
+                    },
+                    ("department", "product", "year"): {
+                        "export_value": first,
+                        "export_rca": first,
+                        "density": first,
+                        "cog": first,
+                        "coi": first,
+                        "eci": first
+                    }
+                }
+            }
+
+            def proc(dataset):
+
+                # Read dataset and fix up columns
+                df = dataset["read_function"]()
+                df = translate_columns(df, dataset["field_mapping"])
+                df = cut_columns(df, dataset["field_mapping"].values())
+
+                # Zero-pad digits of n-digit codes
+                for field, length in dataset["digit_padding"].items():
+                    df[field] = df[field].astype(int).astype(str).str.zfill(length)
+
+                # Make sure the dataset is rectangularized by the facet fields
+                df = fillin(df, dataset["facet_fields"]).reset_index()
+
+                # Merge in IDs for entity codes
+                for field_name, c in dataset["classification_fields"].items():
+                    classification_table = c["classification"].level(c["level"])
+                    df = merge_to_table(classification_table,
+                                        field_name + "_id",
+                                        df, field_name)
+
+                # Gather each facet dataset (e.g. DY, PY, DPY variables from DPY dataset)
+                facet_outputs = {}
+                for facet_fields, aggregations in dataset["facets"].items():
+                    facet_groupby = df.groupby(facet_fields)
+
+                    # Do specified aggregations / groupings for each column
+                    # like mean, first, min, rank, etc
+                    agg_outputs = []
+                    for agg_field, agg_func in aggregations.items():
+                        agged_row = agg_func(facet_groupby[[agg_field]])
+                        agg_outputs.append(agged_row)
+
+                    facet = pd.concat(agg_outputs, axis=1)
+                    facet_outputs[facet_fields] = facet
+
+                return facet_outputs
+
+
+            import ipdb; ipdb.set_trace()
+            ret = proc(dataset)
 
 
             df = fillin(df, ["department", "product", "year"]).reset_index()
