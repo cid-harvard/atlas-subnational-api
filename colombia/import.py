@@ -4,31 +4,12 @@ import pandas as pd
 import numpy as np
 
 
-from atlas_core.helpers.data_import import translate_columns
 from colombia import models, create_app
 from colombia.core import db
-from tests import BaseTestCase
 
-
-def fillin(df, entities):
-    """STATA style "fillin", make sure all permutations of entities in the
-    index are in the dataset."""
-    df = df.set_index(entities)
-    return df.reindex(
-        pd.MultiIndex.from_product(df.index.levels, names=df.index.names))
-
-
-def cut_columns(df, columns):
-    return df[list(columns)]
-
-# Classification.merge_to_table
-# Classification.merge_index
-def merge_to_table(classification, classification_name, df, merge_on):
-    code_to_id = classification.reset_index()[["code", "index"]]
-    code_to_id.columns = ["code", classification_name]
-    code_to_id = code_to_id.set_index("code")
-    return df.merge(code_to_id, left_on=merge_on,
-                    right_index=True, how="left")
+from dataset_tools import (process_dataset, translate_columns, cut_columns,
+                           fillin, merge_to_table)
+from datasets import trade4digit_department
 
 
 def classification_to_models(classification, model):
@@ -94,20 +75,20 @@ if __name__ == "__main__":
         with app.app_context():
 
             # Load classifications
-            from linnaeus import classification
-            product_classification = classification.load("product/HS/Atlas/out/hs92_atlas.csv")
+            from datasets import (product_classification,
+                                  industry_classification,
+                                  location_classification)
+
             products = classification_to_models(product_classification,
                                                 models.HSProduct)
             db.session.add_all(products)
             db.session.commit()
 
-            location_classification = classification.load("location/Colombia/DANE/out/locations_colombia_dane.csv")
             locations = classification_to_models(location_classification,
                                                 models.Location)
             db.session.add_all(locations)
             db.session.commit()
 
-            industry_classification = classification.load("industry/ISIC/Colombia/out/isic_ac_3.0.csv")
             industries = classification_to_models(industry_classification,
                                                   models.Industry)
             db.session.add_all(industries)
@@ -119,125 +100,9 @@ if __name__ == "__main__":
             df = cut_columns(df, aduanas_to_atlas.values())
             df["product"] = df["product"].astype(int).astype(str).str.zfill(4)
 
-            # Cleaning notes
-            # ==============
-            # [OK] Fix column names
-            # [OK] Cut columns
-            # Check / Fix types
-
-            # [] Prefiltering if needed
-
-            # [OK] Fill digit numbers on classification fields if necessary
-            # [OK] Rectangularize by facet fields? If this comes from classification, do this later
-            # [OK] Merge classification fields, convert from code to ID
-
-            # [OK] Group by entities to get facets
-            # [OK] Aggregate each facets
-            # [OK] - eci / pci first()
-            # [OK] - export_value sum()
-            # []   - generate rank fields rank(method='dense')??
-            # [] Filtrations on facets???
-            # [OK] Returns a dict of facet -> dataframe indexed by facet keys
-
-            # [] Merge similar facet data (DY datasets together, etc)
-            # [] Function to generate other cross-dataset columns: gdp per capita
-
-            # [] Save merged facets into hdf5 file
-            # [] Load merged facet to given model
-
-
-            first = lambda x: x.nth(0)
-
-            dataset = {
-                "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/Aduanas/exp_ecomplexity_dpto_oldstata.dta"),
-                "field_mapping": {
-                    "r": "department",
-                    "p": "product",
-                    "yr": "year",
-                    "X_rpy_p": "export_value",
-                    "density_natl": "density",
-                    "eci_natl": "eci",
-                    "pci": "pci",
-                    "coi_natl": "coi",
-                    "cog_natl": "cog",
-                    "RCA_natl": "export_rca"
-                },
-                "classification_fields": {
-                    "department": {
-                        "classification": location_classification,
-                        "level": "department"
-                    },
-                    "product": {
-                        "classification": product_classification,
-                        "level": "4digit"
-                    },
-                },
-                "digit_padding": {
-                    "department": 2,
-                    "product": 4
-                },
-                "facet_fields": ["department", "product", "year"],
-                "facets": {
-                    ("department", "year"): {
-                        "eci": first,
-                        "export_value": lambda x: x.sum()
-                    },
-                    ("product", "year"): {
-                        "pci": first,
-                        "export_value": lambda x: x.sum()
-                    },
-                    ("department", "product", "year"): {
-                        "export_value": first,
-                        "export_rca": first,
-                        "density": first,
-                        "cog": first,
-                        "coi": first,
-                        "eci": first
-                    }
-                }
-            }
-
-            def proc(dataset):
-
-                # Read dataset and fix up columns
-                df = dataset["read_function"]()
-                df = translate_columns(df, dataset["field_mapping"])
-                df = cut_columns(df, dataset["field_mapping"].values())
-
-                # Zero-pad digits of n-digit codes
-                for field, length in dataset["digit_padding"].items():
-                    df[field] = df[field].astype(int).astype(str).str.zfill(length)
-
-                # Make sure the dataset is rectangularized by the facet fields
-                df = fillin(df, dataset["facet_fields"]).reset_index()
-
-                # Merge in IDs for entity codes
-                for field_name, c in dataset["classification_fields"].items():
-                    classification_table = c["classification"].level(c["level"])
-                    df = merge_to_table(classification_table,
-                                        field_name + "_id",
-                                        df, field_name)
-
-                # Gather each facet dataset (e.g. DY, PY, DPY variables from DPY dataset)
-                facet_outputs = {}
-                for facet_fields, aggregations in dataset["facets"].items():
-                    facet_groupby = df.groupby(facet_fields)
-
-                    # Do specified aggregations / groupings for each column
-                    # like mean, first, min, rank, etc
-                    agg_outputs = []
-                    for agg_field, agg_func in aggregations.items():
-                        agged_row = agg_func(facet_groupby[[agg_field]])
-                        agg_outputs.append(agged_row)
-
-                    facet = pd.concat(agg_outputs, axis=1)
-                    facet_outputs[facet_fields] = facet
-
-                return facet_outputs
-
 
             import ipdb; ipdb.set_trace()
-            ret = proc(dataset)
+            ret = process_dataset(trade4digit_department)
 
 
             df = fillin(df, ["department", "product", "year"]).reset_index()
