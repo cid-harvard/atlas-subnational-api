@@ -19,7 +19,7 @@ def classification_to_models(classification, model):
 
 
 def fillin(df, entities):
-    """STATA style "fillin", make sure all permutations of entities in the
+    """STATA style 'fillin', makes sure all combinations of entities in the
     index are in the dataset."""
     df = df.set_index(entities)
     return df.reindex(
@@ -33,6 +33,7 @@ def cut_columns(df, columns):
 # Classification.merge_to_table
 # Classification.merge_index
 def merge_to_table(classification, classification_name, df, merge_on):
+    """Merge a classification to a table, given the code field."""
     code_to_id = classification.reset_index()[["code", "index"]]
     code_to_id.columns = ["code", classification_name]
     code_to_id = code_to_id.set_index("code")
@@ -83,24 +84,6 @@ def process_dataset(dataset):
 
 # Cleaning notes
 # ==============
-# [OK] Fix column names
-# [OK] Cut columns
-# Check / Fix types
-
-# [] Prefiltering if needed
-
-# [OK] Fill digit numbers on classification fields if necessary
-# [OK] Rectangularize by facet fields? If this comes from classification, do this later
-# [OK] Merge classification fields, convert from code to ID
-
-# [OK] Group by entities to get facets
-# [OK] Aggregate each facets
-# [OK] - eci / pci first()
-# [OK] - export_value sum()
-# []   - generate rank fields rank(method='dense')??
-# [] Filtrations on facets???
-# [OK] Returns a dict of facet -> dataframe indexed by facet keys
-
 # [] Merge similar facet data (DY datasets together, etc)
 # [] Function to generate other cross-dataset columns: gdp per capita
 

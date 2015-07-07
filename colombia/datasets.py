@@ -12,7 +12,6 @@ def first(x):
     return x.nth(0)
 
 
-
 trade4digit_department = {
     "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/Aduanas/exp_ecomplexity_dpto_oldstata.dta"),
     "field_mapping": {
