@@ -132,6 +132,31 @@ def departments_index():
     raise abort(400, body="Could not find data with the given parameters.")
 
 
+@departments_app.route("/locations")
+def locations_index():
+
+    product = request.args.get("product", None)
+
+    if product is not None:
+        q = db.session\
+            .query(
+                DepartmentProductYear.import_value,
+                DepartmentProductYear.export_value,
+                DepartmentProductYear.export_rca,
+                DepartmentProductYear.distance,
+                DepartmentProductYear.cog,
+                DepartmentProductYear.coi,
+                DepartmentProductYear.department_id,
+                DepartmentProductYear.product_id,
+                DepartmentProductYear.year,
+            )\
+            .filter_by(product_id=int(product))\
+            .all()
+        return marshal(schemas.department_product_year, q)
+
+    raise abort(400, body="Could not find data with the given parameters.")
+
+
 @departments_app.route("/departments/departmentyear/")
 @departments_app.route("/departments/departmentyear/<int:department_id>")
 def departments_departmentyear(department_id=None):
