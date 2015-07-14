@@ -1,5 +1,4 @@
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import func
 
 from atlas_core.sqlalchemy import BaseModel
 from atlas_core.model_mixins import IDMixin
