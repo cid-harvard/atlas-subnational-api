@@ -17,9 +17,9 @@ if __name__ == "__main__":
                                   industry_classification,
                                   location_classification)
 
-            df = pd.read_excel("/Users/makmana/classifications/product/HS/Mexico/in/Mexico Short Names Final.xlsx")
-            df = df[["code", "hs4_name_spanish", "Spanish Short Name", "hs4_name_en (original short name)"]]
-            df.columns = ["code", "name_es", "name_short_es", "name_short_en"]
+            df = pd.read_excel("/Users/makmana/classifications/product/HS/Mexico/in/HS4_Spanish_English_Translations.xlsx")
+            df = df[["code", "hs4_name_spanish_full", "hs4_name_english_full", "hs4_name_en_short", "hs4_name_sp_short"]]
+            df.columns = ["code", "name_es", "name_en", "name_short_en", "name_short_es"]
             df.code = df.code.astype(str).str.zfill(4)
             product_classification.table = product_classification.table.merge(df, on="code", how="left")
 
