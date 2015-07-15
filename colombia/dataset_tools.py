@@ -12,6 +12,12 @@ def classification_to_models(classification, model):
         m.id = index.item()
         m.code = row["code"]
         m.name_en = row["name"]
+        if "name_es" in row:
+            m.name_es = row["name_es"]
+        if "name_short_en" in row:
+            m.name_short_en = row["name_short_en"]
+        if "name_short_es" in row:
+            m.name_short_es = row["name_short_es"]
         m.level = row["level"]
         m.parent_id = row["parent_id"]
         models.append(m)

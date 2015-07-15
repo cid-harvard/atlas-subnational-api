@@ -5,6 +5,8 @@ from dataset_tools import process_dataset, classification_to_models
 from datasets import (trade4digit_department, industry4digit_department,
                       industry4digit_municipality, population, gdp)
 
+import pandas as pd
+
 if __name__ == "__main__":
 
         app = create_app()
@@ -14,6 +16,12 @@ if __name__ == "__main__":
             from datasets import (product_classification,
                                   industry_classification,
                                   location_classification)
+
+            df = pd.read_excel("/Users/makmana/classifications/product/HS/Mexico/in/Mexico Short Names Final.xlsx")
+            df = df[["code", "hs4_name_spanish", "Spanish Short Name", "hs4_name_en (original short name)"]]
+            df.columns = ["code", "name_es", "name_short_es", "name_short_en"]
+            df.code = df.code.astype(str).str.zfill(4)
+            product_classification.table = product_classification.table.merge(df, on="code", how="left")
 
             products = classification_to_models(product_classification,
                                                 models.HSProduct)
