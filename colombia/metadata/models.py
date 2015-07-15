@@ -69,7 +69,7 @@ class HSProduct(Metadata):
         "2digit",
         "4digit"
     ]
-    level = db.Column(db.Enum(*LEVELS))
+    level = db.Column(db.Enum(*LEVELS, name="product_level"))
 
 
 class Location(Metadata):
@@ -91,7 +91,7 @@ class Location(Metadata):
         "department",
         "population_center"
     ]
-    level = db.Column(db.Enum(*LEVELS))
+    level = db.Column(db.Enum(*LEVELS, name="location_level"))
 
 
 class Industry(Metadata):
@@ -105,4 +105,4 @@ class Industry(Metadata):
         "group",
         "class"
     ]
-    level = db.Column(db.Enum(*LEVELS))
+    level = db.Column(db.Enum(*LEVELS, name="industry_level"))
