@@ -38,7 +38,7 @@ I18nMixin = I18nMixinBase.create(
     languages=["en", "es", "de"],
     fields={
         "name": db.UnicodeText,
-        "name_short": db.Unicode(50),
+        "name_short": db.Unicode(75),
         "description": db.UnicodeText
     })
 
