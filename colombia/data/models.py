@@ -19,8 +19,8 @@ class DepartmentProductYear(BaseModel, IDMixin):
     department = db.relationship(Location)
     product = db.relationship(HSProduct)
 
-    import_value = db.Column(db.Integer)
-    export_value = db.Column(db.Integer)
+    import_value = db.Column(db.BIGINT)
+    export_value = db.Column(db.BIGINT)
 
     export_rca = db.Column(db.Integer)
     density = db.Column(db.Float)
@@ -51,8 +51,8 @@ class DepartmentYear(BaseModel, IDMixin):
     eci_rank = db.Column(db.Integer)
     diversity = db.Column(db.Float)
 
-    gdp_nominal = db.Column(db.Integer)
-    gdp_real = db.Column(db.Integer)
+    gdp_nominal = db.Column(db.BIGINT)
+    gdp_real = db.Column(db.BIGINT)
     gdp_pc_nominal = db.Column(db.Integer)
     gdp_pc_real = db.Column(db.Integer)
 
@@ -95,7 +95,7 @@ class DepartmentIndustryYear(BaseModel, IDMixin):
     industry = db.relationship(Industry)
 
     employment = db.Column(db.Integer)
-    wages = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
 
     rca = db.Column(db.Integer)
     density = db.Column(db.Float)
@@ -125,7 +125,7 @@ class MunicipalityIndustryYear(BaseModel, IDMixin):
     industry = db.relationship(Industry)
 
     employment = db.Column(db.Integer)
-    wages = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
 
     rca = db.Column(db.Integer)
     density = db.Column(db.Float)
