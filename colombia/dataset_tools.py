@@ -67,6 +67,7 @@ indented = lambda: indent(4, quote=colored.cyan("> "))
 
 def process_dataset(dataset):
 
+    puts("=" * 80)
     good("Processing a new dataset!")
 
     # Read dataset and fix up columns
