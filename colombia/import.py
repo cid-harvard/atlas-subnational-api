@@ -2,8 +2,9 @@ from colombia import models, create_app
 from colombia.core import db
 
 from dataset_tools import process_dataset, classification_to_models
-from datasets import (trade4digit_department, industry4digit_department,
-                      industry4digit_municipality, population, gdp)
+from datasets import (trade4digit_department, trade4digit_municipality,
+                      industry4digit_department, industry4digit_municipality,
+                      population, gdp)
 
 import pandas as pd
 
