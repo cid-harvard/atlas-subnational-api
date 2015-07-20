@@ -116,12 +116,12 @@ def process_dataset(dataset):
          codes_missing, codes_unused) = assertions.matching_stats(df[field_name], classification_table)
 
         if p_nonmatch_rows > 0:
-            puts("When Merging field {}:".format(field_name))
+            bad("Errors when Merging field {}:".format(field_name))
             with indented():
-                bad("Percentage of nonmatching rows: {}".format(p_nonmatch_rows))
-                bad("Percentage of nonmatching codes: {}".format(p_nonmatch_unique))
-                bad("Codes missing in classification: {}".format(codes_missing))
-                bad("Codes unused: {}".format(codes_unused))
+                puts("Percentage of nonmatching rows: {}".format(p_nonmatch_rows))
+                puts("Percentage of nonmatching codes: {}".format(p_nonmatch_unique))
+                puts("Codes missing in classification:\n{}".format(codes_missing.reset_index(drop=True)))
+                puts("Codes unused:\n{}".format(codes_unused.reset_index(drop=True)))
 
         df = merge_to_table(classification_table,
                             field_name + "_id",
