@@ -52,7 +52,7 @@ def merge_to_table(classification, classification_name, df, merge_on):
 
 
 def good(msg):
-    return puts("[^‿^] " + colored.green(msg))
+    return puts("[^_^] " + colored.green(msg))
 
 
 def warn(msg):
