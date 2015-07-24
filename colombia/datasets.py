@@ -13,12 +13,12 @@ def first(x):
 
 
 trade4digit_department = {
-    "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/Aduanas/exp_ecomplexity_dpto_oldstata.dta"),
+    "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta"),
     "field_mapping": {
         "r": "department",
-        "p": "product",
+        "p4": "product",
         "yr": "year",
-        "X_rpy_p": "export_value",
+        "X_rpy_d": "export_value",
         "density_natl": "density",
         "eci_natl": "eci",
         "pci": "pci",
@@ -54,6 +54,39 @@ trade4digit_department = {
             "density": first,
             "cog": first,
             "coi": first
+        }
+    }
+}
+
+
+trade4digit_municipality = {
+    "read_function": lambda: pd.read_stata("/users/makmana/ciddata/subnationals/atlas/colombia/beta/trade/exp_rpy_r5_p4.dta"),
+    "field_mapping": {
+        "r": "location",
+        "p": "product",
+        "yr": "year",
+        "X_rpy_d": "export_value",
+        "NP_rpy": "num_plants"
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "municipality"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+    },
+    "digit_padding": {
+        "location": 2,
+        "product": 4
+    },
+    "facet_fields": ["location", "product", "year"],
+    "facets": {
+        ("location_id", "product_id", "year"): {
+            "export_value": first,
+            "num_plants": first
         }
     }
 }
