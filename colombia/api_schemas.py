@@ -49,7 +49,20 @@ class DepartmentSchema(ma.Schema):
 class ProductYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("pci", "id", "product_id", "year")
+        fields = ("pci", "product_id", "year")
+
+
+class IndustryYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("complexity", "industry_id", "year")
+
+
+class DepartmentYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("department_id", "year", "eci", "diversity", "gdp_nominal",
+                  "gdp_real", "gdp_pc_nominal", "gdp_pc_real", "population")
 
 
 class MetadataSchema(ma.Schema):
@@ -74,5 +87,7 @@ department_product_year = DepartmentProductYearSchema(many=True)
 department_industry_year = DepartmentIndustryYearSchema(many=True)
 municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
 product_year = ProductYearSchema(many=True)
+industry_year = IndustryYearSchema(many=True)
+department_year = DepartmentYearSchema(many=True)
 department = DepartmentSchema(many=True)
 metadata = ColombiaMetadataSchema(many=True)
