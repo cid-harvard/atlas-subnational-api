@@ -62,14 +62,14 @@ trade4digit_department = {
 trade4digit_municipality = {
     "read_function": lambda: pd.read_stata("/users/makmana/ciddata/subnationals/atlas/colombia/beta/trade/exp_rpy_r5_p4.dta"),
     "field_mapping": {
-        "r": "location",
+        "r": "municipality",
         "p": "product",
         "yr": "year",
         "X_rpy_d": "export_value",
         "NP_rpy": "num_plants"
     },
     "classification_fields": {
-        "location": {
+        "municipality": {
             "classification": location_classification,
             "level": "municipality"
         },
@@ -79,12 +79,12 @@ trade4digit_municipality = {
         },
     },
     "digit_padding": {
-        "location": 2,
+        "municipality": 5,
         "product": 4
     },
-    "facet_fields": ["location", "product", "year"],
+    "facet_fields": ["municipality", "product", "year"],
     "facets": {
-        ("location_id", "product_id", "year"): {
+        ("municipality_id", "product_id", "year"): {
             "export_value": first,
             "num_plants": first
         }

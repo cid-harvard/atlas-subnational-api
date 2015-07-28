@@ -79,6 +79,14 @@ if __name__ == "__main__":
             dy.to_sql("department_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            # Municipality product year
+            ret = process_dataset(trade4digit_municipality)
+
+            df = ret[('municipality_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("municipality_product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
             # Department - industry - year
             ret = process_dataset(industry4digit_department)
 

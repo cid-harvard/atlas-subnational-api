@@ -26,6 +26,13 @@ class DepartmentProductYearSchema(ma.Schema):
                   "cog", "coi", "department_id", "product_id", "year")
 
 
+class MunicipalityProductYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("import_value", "export_value", "export_rca", "distance",
+                  "cog", "coi", "municipality_id", "product_id", "year")
+
+
 class DepartmentIndustryYearSchema(ma.Schema):
 
     class Meta:
@@ -84,6 +91,7 @@ class ColombiaMetadataSchema(MetadataSchema):
 
 
 department_product_year = DepartmentProductYearSchema(many=True)
+municipality_product_year = MunicipalityProductYearSchema(many=True)
 department_industry_year = DepartmentIndustryYearSchema(many=True)
 municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
 product_year = ProductYearSchema(many=True)

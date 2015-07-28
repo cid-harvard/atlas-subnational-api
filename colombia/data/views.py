@@ -1,7 +1,7 @@
 from flask import Blueprint, request
-from .models import (DepartmentProductYear, DepartmentIndustryYear,
-                     MunicipalityIndustryYear, ProductYear, IndustryYear,
-                     DepartmentYear)
+from .models import (DepartmentProductYear, MunicipalityProductYear,
+                     DepartmentIndustryYear, MunicipalityIndustryYear,
+                     ProductYear, IndustryYear, DepartmentYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -59,6 +59,11 @@ def eey_product_exporters(entity_type, entity_id, location_level):
             .filter_by(product_id=entity_id)\
             .all()
         return marshal(schemas.department_product_year, q)
+    elif location_level == "municipality":
+        q = MunicipalityProductYear.query\
+            .filter_by(product_id=entity_id)\
+            .all()
+        return marshal(schemas.municipality_product_year, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
@@ -74,6 +79,11 @@ def eey_location_trade(entity_type, entity_id, buildingblock_level):
             .filter_by(department_id=entity_id)\
             .all()
         return marshal(schemas.department_product_year, q)
+    elif location_level == "municipality":
+        q = MunicipalityProductYear.query\
+            .filter_by(municipality_id=entity_id)\
+            .all()
+        return marshal(schemas.municipality_product_year, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
