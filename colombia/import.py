@@ -43,10 +43,12 @@ if __name__ == "__main__":
             ret = process_dataset(trade4digit_department)
 
             df = ret[('product_id', 'year')].reset_index()
+            df["level"] = "4digit"
             df.to_sql("product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             df = ret[('department_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
             df.to_sql("department_product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
@@ -81,15 +83,18 @@ if __name__ == "__main__":
             ret = process_dataset(industry4digit_department)
 
             df = ret[('industry_id', 'year')].reset_index()
+            df["level"] = "class"
             df.to_sql("industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             df = ret[('department_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
             df.to_sql("department_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # Municipality - industry - year
             ret = process_dataset(industry4digit_municipality)
             df = ret[('municipality_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
             df.to_sql("municipality_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
