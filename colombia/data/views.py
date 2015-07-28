@@ -70,7 +70,25 @@ def eey_product_exporters(entity_type, entity_id, location_level):
         abort(400, body=msg)
 
 
-def eey_location_trade(entity_type, entity_id, buildingblock_level):
+def eey_industry_participants(entity_type, entity_id, location_level):
+
+    if location_level == "department":
+        q = DepartmentIndustryYear.query\
+            .filter_by(industry_id=entity_id)\
+            .all()
+        return marshal(schemas.department_industry_year, q)
+    elif location_level == "municipality":
+        q = MunicipalityIndustryYear.query\
+            .filter_by(industry_id=entity_id)\
+            .all()
+        return marshal(schemas.municipality_industry_year, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
+def eey_location_products(entity_type, entity_id, buildingblock_level):
 
     location_level = lookup_classification_level("location", entity_id)
 
@@ -112,6 +130,11 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
 
 entity_entity_year = {
     "industry": {
+        "subdatasets": {
+            "participants": {
+                "func": eey_industry_participants
+            }
+        }
     },
     "product": {
         "subdatasets": {
@@ -122,8 +145,8 @@ entity_entity_year = {
     },
     "location": {
         "subdatasets": {
-            "trade": {
-                "func": eey_location_trade
+            "products": {
+                "func": eey_location_products
             },
             "industries": {
                 "func": eey_location_industries
