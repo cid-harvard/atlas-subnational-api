@@ -5,7 +5,8 @@ from atlas_core.model_mixins import IDMixin
 
 from ..core import db
 
-from ..metadata.models import (Location, HSProduct, Industry)
+from ..metadata.models import (Location, HSProduct, Industry, product_enum,
+                               industry_enum)
 
 
 class DepartmentProductYear(BaseModel, IDMixin):
@@ -15,6 +16,7 @@ class DepartmentProductYear(BaseModel, IDMixin):
     department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
+    level = db.Column(product_enum)
 
     department = db.relationship(Location)
     product = db.relationship(HSProduct)
@@ -58,17 +60,20 @@ class DepartmentYear(BaseModel, IDMixin):
 
     population = db.Column(db.Integer)
 
+
 class ProductYear(BaseModel, IDMixin):
 
     __tablename__ = "product_year"
 
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
+    level = db.Column(product_enum)
 
     product = db.relationship(HSProduct)
 
     pci = db.Column(db.Float)
     pci_rank = db.Column(db.Integer)
+
 
 
 class IndustryYear(BaseModel, IDMixin):
@@ -77,6 +82,7 @@ class IndustryYear(BaseModel, IDMixin):
 
     industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
     year = db.Column(db.Integer)
+    level = db.Column(industry_enum)
 
     industry = db.relationship(Industry)
 
@@ -90,6 +96,7 @@ class DepartmentIndustryYear(BaseModel, IDMixin):
     department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
     year = db.Column(db.Integer)
+    level = db.Column(industry_enum)
 
     department = db.relationship(Location)
     industry = db.relationship(Industry)
@@ -120,6 +127,7 @@ class MunicipalityIndustryYear(BaseModel, IDMixin):
     municipality_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
     year = db.Column(db.Integer)
+    level = db.Column(industry_enum)
 
     municipality = db.relationship(Location)
     industry = db.relationship(Industry)
