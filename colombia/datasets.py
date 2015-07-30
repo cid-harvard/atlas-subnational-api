@@ -1,4 +1,5 @@
 import pandas as pd
+import os.path
 
 from linnaeus import classification
 
@@ -12,8 +13,15 @@ def first(x):
     return x.nth(0)
 
 
+DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/"
+
+
+def prefix_path(to_prefix):
+    return os.path.join(DATASET_ROOT, to_prefix)
+
+
 trade4digit_department = {
-    "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta"),
+    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta")),
     "field_mapping": {
         "r": "department",
         "p4": "product",
@@ -60,7 +68,7 @@ trade4digit_department = {
 
 
 trade4digit_municipality = {
-    "read_function": lambda: pd.read_stata("/users/makmana/ciddata/subnationals/atlas/colombia/beta/trade/exp_rpy_r5_p4.dta"),
+    "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rpy_r5_p4.dta")),
     "field_mapping": {
         "r": "municipality",
         "p": "product",
@@ -109,7 +117,7 @@ pila_to_atlas_muni = dict(pila_to_atlas.items())
 pila_to_atlas_muni["r"] = "municipality"
 
 industry4digit_department = {
-    "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta"),
+    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")),
     "field_mapping": pila_to_atlas,
     "hook_pre_merge": lambda df: df[df.industry != "."],
     "classification_fields": {
@@ -147,7 +155,7 @@ industry4digit_department = {
 }
 
 industry4digit_municipality = {
-    "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_mun.dta"),
+    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_mun.dta")),
     "field_mapping": pila_to_atlas_muni,
     "hook_pre_merge": lambda df: df[df.industry != "."],
     "classification_fields": {
@@ -181,12 +189,12 @@ industry4digit_municipality = {
 }
 
 population = {
-    "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/metadata/Population/COL_pop_deptmunicip_1985-2012.dta"),
+    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_pop_muni_dept_natl_1985_2013.dta")),
     "hook_pre_merge": lambda df: df[~df[["department", "year", "population"]].duplicated()],
     "field_mapping": {
         "year": "year",
-        "dp": "department",
-        "popdept": "population"
+        "dept_code": "department",
+        "dept_pop": "population"
     },
     "classification_fields": {
         "department": {
@@ -207,11 +215,11 @@ population = {
 
 
 gdp = {
-    "read_function": lambda: pd.read_stata("/Users/makmana/ciddata/metadata/Annual GDP (nominal)/COL_nomrealgdp_dept_annual1990-2012.dta"),
+    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_nomgdp_muni_dept_natl_1990_2012.dta")),
     "field_mapping": {
-        "depcode": "department",
-        "depgdpn": "gdp_nominal",
-        "gdpkmultipliedbydeflator": "gdp_real",
+        "dept_code": "department",
+        "dept_gdp": "gdp_nominal",
+        "muni_gdp": "gdp_real",
         "year": "year"
     },
     "classification_fields": {
