@@ -62,7 +62,8 @@ class ProductYearSchema(ma.Schema):
 class IndustryYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("complexity", "industry_id", "year")
+        fields = ("complexity", "employment", "wages", "num_establishments",
+                  "industry_id", "year")
 
 
 class DepartmentYearSchema(ma.Schema):
