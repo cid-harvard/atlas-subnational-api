@@ -107,6 +107,14 @@ def process_dataset(dataset):
         warn("Dataset is not rectangularized on fields {}"
              .format(dataset["facet_fields"]))
 
+    try:
+        assertions.assert_entities_not_duplicated(df, dataset["facet_fields"])
+    except AssertionError:
+        bad("Dataset has duplicate rows for entity combination: {}"
+            .format(dataset["facet_fields"]))
+        bad(df[df.duplicated(subset=dataset["facet_fields"])])
+
+
     # Merge in IDs for entity codes
     for field_name, c in dataset["classification_fields"].items():
         classification_table = c["classification"].level(c["level"])
