@@ -6,6 +6,10 @@ from linnaeus import classification
 product_classification = classification.load("product/HS/Atlas/out/hs92_atlas.csv")
 location_classification = classification.load("location/Colombia/DANE/out/locations_colombia_dane.csv")
 industry_classification = classification.load("industry/ISIC/Colombia/out/isic_ac_3.0.csv")
+country_classification = classification.load("location/International/DANE/out/locations_international_dane.csv")
+
+
+country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
 
 
 def first(x):
@@ -99,6 +103,45 @@ trade4digit_municipality = {
     "facet_fields": ["municipality", "product", "year"],
     "facets": {
         ("municipality_id", "product_id", "year"): {
+            "export_value": first,
+            "num_plants": first
+        }
+    }
+}
+
+
+trade4digit_rcpy_municipality = {
+    "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rcpy_r5_p4.dta")),
+    "field_mapping": {
+        "r": "municipality",
+        "ctry_dest": "country",
+        "p": "product",
+        "yr": "year",
+        "X_rcpy_d": "export_value",
+        "NP_rcpy": "num_plants"
+    },
+    "classification_fields": {
+        "municipality": {
+            "classification": location_classification,
+            "level": "municipality"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+        "country": {
+            "classification": country_classification,
+            "level": "country"
+        },
+    },
+    "digit_padding": {
+        "municipality": 5,
+        "country": 3,
+        "product": 4
+    },
+    "facet_fields": ["municipality", "country", "product", "year"],
+    "facets": {
+        ("country_id", "municipality_id", "product_id", "year"): {
             "export_value": first,
             "num_plants": first
         }
