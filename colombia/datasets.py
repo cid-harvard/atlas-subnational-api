@@ -13,7 +13,13 @@ def first(x):
     return x.nth(0)
 
 
-DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/"
+def sumGroup(x):
+    """Get the sum for a pandas group by"""
+    return x.sum()
+
+
+DATASET_ROOT = "/Users/gregshap/Documents/gittles/hmdc/Subnationals/"
+
 
 
 def prefix_path(to_prefix):
@@ -236,6 +242,49 @@ gdp = {
         ("department_id", "year"): {
             "gdp_real": first,
             "gdp_nominal": first,
+        }
+    }
+}
+
+
+industry2digit_department = {
+    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Industries/output2008-2013_d2industrydescriptives.dta")),
+    "hook_pre_merge": lambda df: df[df.industry != ""].drop_duplicates(["department", "industry", "year"]),
+    "field_mapping": {
+
+        "state_code": "department",
+        "d2_code": "industry",
+        "year": "year",
+        "state_d2_establisments": "num_establishments",
+        "state_d2_annualwages": "wages",
+        "state_d2_employment": "employment"
+    },
+    "classification_fields": {
+        "department": {
+            "classification": location_classification,
+            "level": "department"
+        },
+        "industry": {
+            "classification": industry_classification,
+            "level": "division"
+        },
+    },
+    "digit_padding": {
+        "department": 2,
+        "industry": 2
+    },
+    "facet_fields": ["department", "industry", "year"],
+    "facets": {
+        ("industry_id","year"):{
+            "wages": sumGroup,
+            "employment": sumGroup,
+            "num_establishments": sumGroup,
+        },
+
+        ("department_id", "industry_id", "year"): {
+            "wages": first,
+            "employment": first,
+            "num_establishments": first,
         }
     }
 }

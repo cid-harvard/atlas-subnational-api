@@ -3,7 +3,8 @@ from colombia.core import db
 
 from dataset_tools import process_dataset, classification_to_models
 from datasets import (trade4digit_department, trade4digit_municipality,
-                      industry4digit_department, industry4digit_municipality,
+                      industry4digit_department, industry2digit_department,
+                      industry4digit_municipality,
                       population, gdp)
 
 import pandas as pd
@@ -98,9 +99,25 @@ if __name__ == "__main__":
             df.to_sql("department_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            # Department - industry - year
+            ret = process_dataset(industry2digit_department)
+
+            df = ret[('industry_id', 'year')].reset_index()
+            df["level"] = "division"
+            df.to_sql("industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            df = ret[('department_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "division"
+            df.to_sql("department_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+
             # Municipality - industry - year
             ret = process_dataset(industry4digit_municipality)
             df = ret[('municipality_id', 'industry_id', 'year')].reset_index()
             df["level"] = "class"
             df.to_sql("municipality_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+

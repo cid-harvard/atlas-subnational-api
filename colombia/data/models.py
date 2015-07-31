@@ -119,6 +119,10 @@ class IndustryYear(BaseModel, IDMixin):
 
     industry = db.relationship(Industry)
 
+    employment = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
+    num_establishments = db.Column(db.Integer)
+
     complexity = db.Column(db.Float)
 
 
@@ -136,6 +140,7 @@ class DepartmentIndustryYear(BaseModel, IDMixin):
 
     employment = db.Column(db.Integer)
     wages = db.Column(db.BIGINT)
+    num_establishments = db.Column(db.Integer)
 
     rca = db.Column(db.Integer)
     density = db.Column(db.Float)
