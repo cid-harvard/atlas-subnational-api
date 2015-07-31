@@ -222,6 +222,7 @@ population = {
 
 gdp = {
     "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_nomgdp_muni_dept_natl_1990_2012.dta")),
+    "hook_pre_merge": lambda df: df.drop_duplicates(["department", "year"]),
     "field_mapping": {
         "dept_code": "department",
         "dept_gdp": "gdp_nominal",
