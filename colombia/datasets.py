@@ -22,7 +22,7 @@ def sumGroup(x):
     return x.sum()
 
 
-DATASET_ROOT = "/Users/gregshap/Documents/gittles/hmdc/Subnationals/"
+DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/"
 
 
 
