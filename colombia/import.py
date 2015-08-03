@@ -7,6 +7,11 @@ from datasets import (trade4digit_department, trade4digit_municipality,
                       industry4digit_municipality,
                       population, gdp)
 
+from datasets import (product_classification,
+                      industry_classification,
+                      location_classification,
+                      country_classification)
+
 import pandas as pd
 
 if __name__ == "__main__":
@@ -14,10 +19,6 @@ if __name__ == "__main__":
         app = create_app()
         with app.app_context():
 
-            # Load classifications
-            from datasets import (product_classification,
-                                  industry_classification,
-                                  location_classification)
 
             df = pd.read_csv("/Users/makmana/classifications/product/HS/Mexico_Prospedia/out/products_mexico_prospedia.csv", dtype={"code": object})
             df = df[["code", "level", "name_es", "name_en", "name_short_en", "name_short_es"]]
@@ -37,6 +38,12 @@ if __name__ == "__main__":
                                                   models.Industry)
             db.session.add_all(industries)
             db.session.commit()
+
+            countries = classification_to_models(country_classification,
+                                                  models.Country)
+            db.session.add_all(countries)
+            db.session.commit()
+
 
             # Department product year
             ret = process_dataset(trade4digit_department)
