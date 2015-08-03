@@ -1,7 +1,9 @@
 from flask import Blueprint, request
 from .models import (DepartmentProductYear, MunicipalityProductYear,
                      DepartmentIndustryYear, MunicipalityIndustryYear,
-                     ProductYear, IndustryYear, DepartmentYear)
+                     ProductYear, IndustryYear, DepartmentYear,
+                     CountryMunicipalityProductYear,
+                     CountryDepartmentProductYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -64,6 +66,34 @@ def eey_product_exporters(entity_type, entity_id, location_level):
             .filter_by(product_id=entity_id)\
             .all()
         return marshal(schemas.municipality_product_year, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
+def eeey_location_products(entity_type, entity_id, buildingblock_level,
+                           sub_id):
+
+    if buildingblock_level != "4digit":
+        msg = "Data doesn't exist at level {}" .format(buildingblock_level)
+        abort(400, body=msg)
+
+    # Assert level of sub_id is same as entity_id
+    location_level = lookup_classification_level("location", entity_id)
+
+    if location_level == "municipality":
+        q = CountryMunicipalityProductYear.query\
+            .filter_by(municipality_id=entity_id)\
+            .filter_by(product_id=sub_id)\
+            .all()
+        return marshal(schemas.country_municipality_product_year, q)
+    elif location_level == "department":
+        q = CountryDepartmentProductYear.query\
+            .filter_by(department_id=entity_id)\
+            .filter_by(product_id=sub_id)\
+            .all()
+        return marshal(schemas.country_department_product_year, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
@@ -146,7 +176,8 @@ entity_entity_year = {
     "location": {
         "subdatasets": {
             "products": {
-                "func": eey_location_products
+                "func": eey_location_products,
+                "sub_func": eeey_location_products
             },
             "industries": {
                 "func": eey_location_industries
@@ -189,3 +220,13 @@ def entity_entity_year_handler(entity_type, entity_id, subdataset):
     subdataset_config = get_or_fail(subdataset, entity_config["subdatasets"])
 
     return subdataset_config["func"](entity_type, entity_id, buildingblock_level)
+
+
+@data_app.route("/<string:entity_type>/<int:entity_id>/<string:subdataset>/<int:sub_id>/")
+def entity_entity_entity_year_handler(entity_type, entity_id, subdataset, sub_id):
+
+    buildingblock_level = get_level()
+    entity_config = get_or_fail(entity_type, entity_entity_year)
+    subdataset_config = get_or_fail(subdataset, entity_config["subdatasets"])
+
+    return subdataset_config["sub_func"](entity_type, entity_id, buildingblock_level, sub_id)

@@ -110,6 +110,45 @@ trade4digit_municipality = {
 }
 
 
+trade4digit_rcpy_department = {
+    "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rcpy_r2_p4.dta")),
+    "field_mapping": {
+        "r": "department",
+        "ctry_dest": "country",
+        "p": "product",
+        "yr": "year",
+        "X_rcpy_d": "export_value",
+        "NP_rcpy": "num_plants"
+    },
+    "classification_fields": {
+        "department": {
+            "classification": location_classification,
+            "level": "department"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+        "country": {
+            "classification": country_classification,
+            "level": "country"
+        },
+    },
+    "digit_padding": {
+        "department": 2,
+        "country": 3,
+        "product": 4
+    },
+    "facet_fields": ["department", "country", "product", "year"],
+    "facets": {
+        ("country_id", "department_id", "product_id", "year"): {
+            "export_value": first,
+            "num_plants": first
+        }
+    }
+}
+
+
 trade4digit_rcpy_municipality = {
     "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rcpy_r5_p4.dta")),
     "field_mapping": {
@@ -321,7 +360,7 @@ industry2digit_department = {
     },
     "facet_fields": ["department", "industry", "year"],
     "facets": {
-        ("industry_id","year"):{
+        ("industry_id", "year"): {
             "wages": sumGroup,
             "employment": sumGroup,
             "num_establishments": sumGroup,

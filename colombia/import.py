@@ -4,8 +4,8 @@ from colombia.core import db
 from dataset_tools import process_dataset, classification_to_models
 from datasets import (trade4digit_department, trade4digit_municipality,
                       industry4digit_department, industry2digit_department,
-                      industry4digit_municipality,
-                      population, gdp)
+                      industry4digit_municipality, trade4digit_rcpy_municipality,
+                      trade4digit_rcpy_department, population, gdp)
 
 from datasets import (product_classification,
                       industry_classification,
@@ -92,6 +92,22 @@ if __name__ == "__main__":
             df["level"] = "4digit"
             df.to_sql("municipality_product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+            # Municipality - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_municipality)
+
+            df = ret[("country_id", "municipality_id", "product_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_municipality_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
+
+            # Department - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_department)
+
+            df = ret[("country_id", "department_id", "product_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_department_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
 
             # Department - industry - year
             ret = process_dataset(industry4digit_department)
