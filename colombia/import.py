@@ -99,7 +99,7 @@ if __name__ == "__main__":
             df.to_sql("department_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            # Department - industry - year
+            # Department - two digit industry - year
             ret = process_dataset(industry2digit_department)
 
             df = ret[('industry_id', 'year')].reset_index()
