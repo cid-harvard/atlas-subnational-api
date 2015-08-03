@@ -190,6 +190,8 @@ industry4digit_department = {
             "wages": lambda x: x.sum(),
         },
         ("industry_id", "year"): {
+            "employment": lambda x: x.sum(),
+            "wages": lambda x: x.sum(),
             "complexity": first
         },
         ("department_id", "industry_id", "year"): {
