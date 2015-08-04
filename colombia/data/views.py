@@ -75,7 +75,7 @@ def eey_product_exporters(entity_type, entity_id, location_level):
 def eeey_location_products(entity_type, entity_id, buildingblock_level,
                            sub_id):
 
-    if buildingblock_level != "4digit":
+    if buildingblock_level != "country":
         msg = "Data doesn't exist at level {}" .format(buildingblock_level)
         abort(400, body=msg)
 
