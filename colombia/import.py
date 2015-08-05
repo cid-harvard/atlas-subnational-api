@@ -19,11 +19,6 @@ if __name__ == "__main__":
         app = create_app()
         with app.app_context():
 
-
-            df = pd.read_csv("/Users/makmana/classifications/product/HS/Mexico_Prospedia/out/products_mexico_prospedia.csv", dtype={"code": object})
-            df = df[["code", "level", "name_es", "name_en", "name_short_en", "name_short_es"]]
-            product_classification.table = product_classification.table.merge(df, on=["code", "level"], how="left", suffixes=("", "_old")).reset_index()
-
             products = classification_to_models(product_classification,
                                                 models.HSProduct)
             db.session.add_all(products)
