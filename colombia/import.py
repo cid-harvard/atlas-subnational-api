@@ -3,8 +3,14 @@ from colombia.core import db
 
 from dataset_tools import process_dataset, classification_to_models
 from datasets import (trade4digit_department, trade4digit_municipality,
-                      industry4digit_department, industry4digit_municipality,
-                      population, gdp)
+                      industry4digit_department, industry2digit_department,
+                      industry4digit_municipality, trade4digit_rcpy_municipality,
+                      trade4digit_rcpy_department, population, gdp)
+
+from datasets import (product_classification,
+                      industry_classification,
+                      location_classification,
+                      country_classification)
 
 import pandas as pd
 
@@ -12,17 +18,6 @@ if __name__ == "__main__":
 
         app = create_app()
         with app.app_context():
-
-            # Load classifications
-            from datasets import (product_classification,
-                                  industry_classification,
-                                  location_classification)
-
-            df = pd.read_excel("/Users/makmana/classifications/product/HS/Mexico/in/HS4_Spanish_English_Translations.xlsx")
-            df = df[["code", "hs4_name_spanish_full", "hs4_name_english_full", "hs4_name_en_short", "hs4_name_sp_short"]]
-            df.columns = ["code", "name_es", "name_en", "name_short_en", "name_short_es"]
-            df.code = df.code.astype(str).str.zfill(4)
-            product_classification.table = product_classification.table.merge(df, on="code", how="left")
 
             products = classification_to_models(product_classification,
                                                 models.HSProduct)
@@ -39,14 +34,22 @@ if __name__ == "__main__":
             db.session.add_all(industries)
             db.session.commit()
 
+            countries = classification_to_models(country_classification,
+                                                  models.Country)
+            db.session.add_all(countries)
+            db.session.commit()
+
+
             # Department product year
             ret = process_dataset(trade4digit_department)
 
             df = ret[('product_id', 'year')].reset_index()
+            df["level"] = "4digit"
             df.to_sql("product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             df = ret[('department_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
             df.to_sql("department_product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
@@ -77,19 +80,62 @@ if __name__ == "__main__":
             dy.to_sql("department_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            # Municipality product year
+            ret = process_dataset(trade4digit_municipality)
+
+            df = ret[('municipality_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("municipality_product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # Municipality - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_municipality)
+
+            df = ret[("country_id", "municipality_id", "product_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_municipality_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
+
+            # Department - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_department)
+
+            df = ret[("country_id", "department_id", "product_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_department_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
+
             # Department - industry - year
             ret = process_dataset(industry4digit_department)
 
             df = ret[('industry_id', 'year')].reset_index()
+            df["level"] = "class"
             df.to_sql("industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             df = ret[('department_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
             df.to_sql("department_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+            # Department - two digit industry - year
+            ret = process_dataset(industry2digit_department)
+
+            df = ret[('industry_id', 'year')].reset_index()
+            df["level"] = "division"
+            df.to_sql("industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            df = ret[('department_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "division"
+            df.to_sql("department_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
 
             # Municipality - industry - year
             ret = process_dataset(industry4digit_municipality)
             df = ret[('municipality_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
             df.to_sql("municipality_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+

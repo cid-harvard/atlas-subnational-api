@@ -26,6 +26,26 @@ class DepartmentProductYearSchema(ma.Schema):
                   "cog", "coi", "department_id", "product_id", "year")
 
 
+class MunicipalityProductYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("import_value", "export_value", "export_rca", "distance",
+                  "cog", "coi", "municipality_id", "product_id", "year")
+
+
+class CountryMunicipalityProductYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("export_value", "country_id", "municipality_id",
+                  "product_id", "year")
+
+class CountryDepartmentProductYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("export_value", "country_id", "department_id",
+                  "product_id", "year")
+
+
 class DepartmentIndustryYearSchema(ma.Schema):
 
     class Meta:
@@ -49,7 +69,21 @@ class DepartmentSchema(ma.Schema):
 class ProductYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("pci", "id", "product_id", "year")
+        fields = ("pci", "product_id", "year")
+
+
+class IndustryYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("complexity", "employment", "wages", "num_establishments",
+                  "industry_id", "year")
+
+
+class DepartmentYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("department_id", "year", "eci", "diversity", "gdp_nominal",
+                  "gdp_real", "gdp_pc_nominal", "gdp_pc_real", "population")
 
 
 class MetadataSchema(ma.Schema):
@@ -71,8 +105,13 @@ class ColombiaMetadataSchema(MetadataSchema):
 
 
 department_product_year = DepartmentProductYearSchema(many=True)
+municipality_product_year = MunicipalityProductYearSchema(many=True)
+country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)
+country_department_product_year = CountryDepartmentProductYearSchema(many=True)
 department_industry_year = DepartmentIndustryYearSchema(many=True)
 municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
 product_year = ProductYearSchema(many=True)
+industry_year = IndustryYearSchema(many=True)
+department_year = DepartmentYearSchema(many=True)
 department = DepartmentSchema(many=True)
 metadata = ColombiaMetadataSchema(many=True)

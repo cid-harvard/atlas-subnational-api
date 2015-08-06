@@ -57,6 +57,35 @@ class Metadata(BaseModel, IDMixin, I18nMixin):
     parent_id = db.Column(db.Integer)
 
 
+product_levels = [
+    "section",
+    "2digit",
+    "4digit"
+]
+product_enum = db.Enum(*product_levels, name="product_level")
+
+location_levels = [
+    "country",
+    "department",
+    "msa",
+    "municipality",
+]
+location_enum = db.Enum(*location_levels, name="location_level")
+
+industry_levels = [
+    "section",
+    "division",
+    "group",
+    "class"
+]
+industry_enum = db.Enum(*industry_levels, name="industry_level")
+
+country_levels = [
+    "country"
+]
+country_enum = db.Enum(*country_levels, name="country_level")
+
+
 class HSProduct(Metadata):
     """A product according to the HS4 (Harmonized System) classification.
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
@@ -64,12 +93,8 @@ class HSProduct(Metadata):
     __tablename__ = "product"
 
     #: Possible aggregation levels
-    LEVELS = [
-        "section",
-        "2digit",
-        "4digit"
-    ]
-    level = db.Column(db.Enum(*LEVELS, name="product_level"))
+    LEVELS = product_levels
+    level = db.Column(product_enum)
 
 
 class Location(Metadata):
@@ -85,13 +110,8 @@ class Location(Metadata):
     __tablename__ = "location"
 
     #: Possible aggregation levels
-    LEVELS = [
-        "country",
-        "municipality",
-        "department",
-        "population_center"
-    ]
-    level = db.Column(db.Enum(*LEVELS, name="location_level"))
+    LEVELS = location_levels
+    level = db.Column(location_enum)
 
 
 class Industry(Metadata):
@@ -99,10 +119,14 @@ class Industry(Metadata):
     __tablename__ = "industry"
 
     #: Possible aggregation levels
-    LEVELS = [
-        "section",
-        "division",
-        "group",
-        "class"
-    ]
-    level = db.Column(db.Enum(*LEVELS, name="industry_level"))
+    LEVELS = industry_levels
+    level = db.Column(industry_enum)
+
+
+class Country(Metadata):
+    """A country."""
+    __tablename__ = "country"
+
+    #: Possible aggregation levels
+    LEVELS = country_levels
+    level = db.Column(country_enum)

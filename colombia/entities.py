@@ -13,6 +13,11 @@ metadata_apis = {
         "entity_model": models.Industry,
         "plural": "industries",
     },
+    "country": {
+        "entity_model": models.Country,
+        "plural": "countries",
+    },
+
 }
 
 
