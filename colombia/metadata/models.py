@@ -66,9 +66,9 @@ product_enum = db.Enum(*product_levels, name="product_level")
 
 location_levels = [
     "country",
-    "municipality",
     "department",
-    "population_center"
+    "msa",
+    "municipality",
 ]
 location_enum = db.Enum(*location_levels, name="location_level")
 
