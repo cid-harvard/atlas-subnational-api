@@ -130,6 +130,9 @@ def process_dataset(dataset):
                 puts("Codes missing in classification:\n{}".format(codes_missing.reset_index(drop=True)))
                 puts("Codes unused:\n{}".format(codes_unused.reset_index(drop=True)))
 
+            bad("Dropping nonmatching rows.")
+            df = df[~df[field_name].isin(codes_missing)]
+
         df = merge_to_table(classification_table,
                             field_name + "_id",
                             df, field_name)
