@@ -188,26 +188,21 @@ trade4digit_rcpy_municipality = {
 }
 
 
-pila_to_atlas = {
-    "r": "department",
-    "i": "industry",
-    "year": "year",
-    "E_yir": "employment",
-    "W_yir": "wages",
-    "rca": "rca",
-    "density": "density",
-    "cog": "cog",
-    "coi": "coi",
-    "pci": "complexity"
-}
-
-pila_to_atlas_muni = dict(pila_to_atlas.items())
-pila_to_atlas_muni["r"] = "municipality"
-
 industry4digit_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_dpto.dta")),
-    "field_mapping": pila_to_atlas,
-    "hook_pre_merge": lambda df: df[df.industry != "."],
+    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_state.hdf"), "data"),
+    "hook_pre_merge": lambda df: df.drop_duplicates(["department", "industry", "year"]),
+    "field_mapping": {
+        "state_code": "department",
+        "p_code": "industry",
+        "year": "year",
+        "state_p_emp": "employment",
+        "state_p_wage": "wages",
+        "state_p_wagemonth": "monthly_wages",
+        "state_p_rca": "rca",
+        "state_p_distance_ps_pred": "density",
+        "state_p_cog_ps_pred1": "cog",
+        "all_p_pci": "complexity"
+    },
     "classification_fields": {
         "department": {
             "classification": location_classification,
@@ -238,16 +233,22 @@ industry4digit_department = {
             "wages": first,
             "density": first,
             "cog": first,
-            "coi": first,
             "rca": first
         }
     }
 }
 
 industry4digit_municipality = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/PILA_andres/COL_PILA_ecomp-E_yir_2008-2012_rev3_mun.dta")),
-    "field_mapping": pila_to_atlas_muni,
-    "hook_pre_merge": lambda df: df[df.industry != "."],
+    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_muni.hdf"), "data"),
+    "hook_pre_merge": lambda df: df.drop_duplicates(["municipality", "industry", "year"]),
+    "field_mapping": {
+        "muni_code": "municipality",
+        "p_code": "industry",
+        "year": "year",
+        "muni_p_emp": "employment",
+        "muni_p_wage": "wages",
+        "muni_p_wagemonth": "monthly_wages",
+    },
     "classification_fields": {
         "municipality": {
             "classification": location_classification,
@@ -264,16 +265,10 @@ industry4digit_municipality = {
     },
     "facet_fields": ["municipality", "industry", "year"],
     "facets": {
-        ("industry_id", "year"): {
-            "complexity": first
-        },
         ("municipality_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
-            "density": first,
-            "cog": first,
-            "coi": first,
-            "rca": first
+            #"monthly_wages": first,
         }
     }
 }
@@ -333,16 +328,19 @@ gdp = {
 
 
 industry2digit_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Industries/output2008-2013_d2industrydescriptives.dta")),
-    "hook_pre_merge": lambda df: df[df.industry != ""].drop_duplicates(["department", "industry", "year"]),
+    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_state.hdf"), "data"),
+    "hook_pre_merge": lambda df: df.drop_duplicates(["department", "industry", "year"]),
     "field_mapping": {
-
         "state_code": "department",
-        "d2_code": "industry",
+        "d3_code": "industry",
         "year": "year",
-        "state_d2_establisments": "num_establishments",
-        "state_d2_annualwages": "wages",
-        "state_d2_employment": "employment"
+        "state_d3_est": "num_establishments",
+        "state_d3_wage": "wages",
+        "state_d3_emp": "employment",
+        #"state_d3_rca": "rca",
+        "state_d3_distance_ps_pred1": "density",
+        "state_d3_cog_ps_pred1": "cog",
+        "all_d3_pci": "complexity"
     },
     "classification_fields": {
         "department": {
@@ -364,12 +362,16 @@ industry2digit_department = {
             "wages": sumGroup,
             "employment": sumGroup,
             "num_establishments": sumGroup,
+            "complexity": first
         },
 
         ("department_id", "industry_id", "year"): {
             "wages": first,
             "employment": first,
             "num_establishments": first,
+            "density": first,
+            "cog": first,
+            #"rca": first
         }
     }
 }
