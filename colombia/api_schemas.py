@@ -39,6 +39,7 @@ class CountryMunicipalityProductYearSchema(ma.Schema):
         fields = ("export_value", "country_id", "municipality_id",
                   "product_id", "year")
 
+
 class CountryDepartmentProductYearSchema(ma.Schema):
 
     class Meta:
