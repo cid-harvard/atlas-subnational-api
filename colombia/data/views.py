@@ -125,11 +125,13 @@ def eey_location_products(entity_type, entity_id, buildingblock_level):
     if location_level == "department":
         q = DepartmentProductYear.query\
             .filter_by(department_id=entity_id)\
+            .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.department_product_year, q)
     elif location_level == "municipality":
         q = MunicipalityProductYear.query\
             .filter_by(municipality_id=entity_id)\
+            .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.municipality_product_year, q)
     else:
@@ -145,11 +147,13 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
     if location_level == "department":
         q = DepartmentIndustryYear.query\
             .filter_by(department_id=entity_id)\
+            .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.department_industry_year, q)
     elif location_level == "municipality":
         q = MunicipalityIndustryYear.query\
             .filter_by(municipality_id=entity_id)\
+            .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.municipality_industry_year, q)
     else:
