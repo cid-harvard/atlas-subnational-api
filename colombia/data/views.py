@@ -76,7 +76,7 @@ def eeey_location_products(entity_type, entity_id, buildingblock_level,
                            sub_id):
 
     if buildingblock_level != "country":
-        msg = "Data doesn't exist at level {}" .format(buildingblock_level)
+        msg = "Data doesn't exist at level {}. Try country.".format(buildingblock_level)
         abort(400, body=msg)
 
     # Assert level of sub_id is same as entity_id
