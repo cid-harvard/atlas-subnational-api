@@ -5,7 +5,7 @@ from linnaeus import classification
 
 product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
 location_classification = classification.load("location/Colombia/Prospedia/out/locations_colombia_prosperia.csv")
-industry_classification = classification.load("industry/ISIC/Colombia/out/isic_ac_3.0.csv")
+industry_classification = classification.load("industry/ISIC/Colombia_Prosperia/out/industries_colombia_isic_prosperia.csv")
 country_classification = classification.load("location/International/DANE/out/locations_international_dane.csv")
 
 
