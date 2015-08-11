@@ -65,6 +65,7 @@ trade4digit_department = {
         },
         ("product_id", "year"): {
             "pci": first,
+            "export_value": sumGroup,
         },
         ("department_id", "product_id", "year"): {
             "export_value": first,

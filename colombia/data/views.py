@@ -122,6 +122,11 @@ def eey_location_products(entity_type, entity_id, buildingblock_level):
 
     location_level = lookup_classification_level("location", entity_id)
 
+    if location_level == "country":
+        q = ProductYear.query\
+            .filter_by(level=buildingblock_level)\
+            .all()
+        return marshal(schemas.country_product_year, q)
     if location_level == "department":
         q = DepartmentProductYear.query\
             .filter_by(department_id=entity_id)\

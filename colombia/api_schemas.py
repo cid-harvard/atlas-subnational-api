@@ -19,18 +19,33 @@ def marshal(schema, data, json=True, many=True):
         return serialization_result.data
 
 
+XPY_FIELDS = ("import_value", "export_value", "export_rca", "distance", "cog",
+              "coi", "product_id", "year")
+
+
+class CountryProductYearSchema(ma.Schema):
+
+    country_id = ma.fields.Constant(0)
+    import_value = ma.fields.Constant(None)
+    export_rca = ma.fields.Constant(None)
+    distance = ma.fields.Constant(None)
+    cog = ma.fields.Constant(None)
+    coi = ma.fields.Constant(None)
+
+    class Meta:
+        fields = XPY_FIELDS + ("country_id", )
+
+
 class DepartmentProductYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("import_value", "export_value", "export_rca", "distance",
-                  "cog", "coi", "department_id", "product_id", "year")
+        fields = XPY_FIELDS + ("department_id", )
 
 
 class MunicipalityProductYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("import_value", "export_value", "export_rca", "distance",
-                  "cog", "coi", "municipality_id", "product_id", "year")
+        fields = XPY_FIELDS + ("municipality_id", )
 
 
 class CountryMunicipalityProductYearSchema(ma.Schema):
@@ -105,6 +120,7 @@ class ColombiaMetadataSchema(MetadataSchema):
     description_es = ma.fields.Str(required=False)
 
 
+country_product_year = CountryProductYearSchema(many=True)
 department_product_year = DepartmentProductYearSchema(many=True)
 municipality_product_year = MunicipalityProductYearSchema(many=True)
 country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)

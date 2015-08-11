@@ -140,6 +140,8 @@ class ProductYear(BaseModel, IDMixin):
     pci = db.Column(db.Float)
     pci_rank = db.Column(db.Integer)
 
+    export_value = db.Column(db.BIGINT)
+
 
 
 class IndustryYear(BaseModel, IDMixin):
