@@ -68,8 +68,8 @@ class CountryDepartmentProductYearSchema(ma.Schema):
                   "product_id", "year")
 
 
-XIY_FIELDS = ("employment", "wages", "rca", "distance", "cog", "coi",
-              "industry_id", "year")
+XIY_FIELDS = ("employment", "wages", "monthly_wages", "rca", "distance", "cog",
+              "coi", "industry_id", "year")
 
 
 class CountryIndustryYearSchema(ma.Schema):

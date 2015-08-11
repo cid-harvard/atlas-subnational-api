@@ -299,6 +299,7 @@ industry4digit_department = {
         ("department_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
+            "monthly_wages": first,
             "density": first,
             "cog": first,
             "rca": first
@@ -336,7 +337,7 @@ industry4digit_municipality = {
         ("municipality_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
-            #"monthly_wages": first,
+            "monthly_wages": first,
         }
     }
 }
