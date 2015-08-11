@@ -2,10 +2,11 @@ from colombia import models, create_app
 from colombia.core import db
 
 from dataset_tools import process_dataset, classification_to_models
-from datasets import (trade4digit_department, trade4digit_municipality,
-                      industry4digit_department, industry2digit_department,
-                      industry4digit_municipality, trade4digit_rcpy_municipality,
-                      trade4digit_rcpy_department, population, gdp)
+from datasets import (trade4digit_department, trade4digit_msa,
+                      trade4digit_municipality, industry4digit_department,
+                      industry2digit_department, industry4digit_municipality,
+                      trade4digit_rcpy_municipality,
+                      trade4digit_rcpy_department, population, gdp_department)
 
 from datasets import (product_classification,
                       industry_classification,
@@ -57,11 +58,8 @@ if __name__ == "__main__":
             dy = ret[('department_id', 'year')].reset_index()
 
             # GDP data
-            ret = process_dataset(gdp)
+            ret = process_dataset(gdp_department)
             gdp_df = ret[('department_id', 'year')].reset_index()
-
-            gdp_df.gdp_real = gdp_df.gdp_real * (10 ** 6)
-            gdp_df.gdp_nominal = gdp_df.gdp_nominal * (10 ** 6)
 
             # Pop data
             ret = process_dataset(population)
@@ -74,7 +72,6 @@ if __name__ == "__main__":
             dy = dy.merge(pop_df, on=["department_id", "year"], how="outer")
             dy = dy.merge(gdp_df, on=["department_id", "year"], how="outer")
 
-            dy["gdp_pc_real"] = dy.gdp_real / dy.population
             dy["gdp_pc_nominal"] = dy.gdp_nominal / dy.population
 
             dy.to_sql("department_year", db.engine, index=False,
