@@ -85,6 +85,15 @@ if __name__ == "__main__":
             df.to_sql("municipality_product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            # MSA product year
+            ret = process_dataset(trade4digit_msa)
+
+            df = ret[('msa_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("msa_product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+
             # Municipality - trade rcpy
             ret = process_dataset(trade4digit_rcpy_municipality)
 

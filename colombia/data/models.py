@@ -41,6 +41,38 @@ class DepartmentProductYear(BaseModel, IDMixin):
         return (1.0 - cls.density).label("distance")
 
 
+class MSAProductYear(BaseModel, IDMixin):
+
+    __tablename__ = "msa_product_year"
+
+    msa_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
+    year = db.Column(db.Integer)
+    level = db.Column(product_enum)
+
+    msa = db.relationship(Location)
+    product = db.relationship(HSProduct)
+
+    import_value = db.Column(db.BIGINT)
+    export_value = db.Column(db.BIGINT)
+    num_plants = db.Column(db.Integer)
+
+    export_rca = db.Column(db.Integer)
+    density = db.Column(db.Float)
+    cog = db.Column(db.Float)
+    coi = db.Column(db.Float)
+
+    @hybrid_property
+    def distance(self):
+        if self.density is None:
+            return None
+        return 1.0 - self.density
+
+    @distance.expression
+    def distance(cls):
+        return (1.0 - cls.density).label("distance")
+
+
 class MunicipalityProductYear(BaseModel, IDMixin):
 
     __tablename__ = "municipality_product_year"

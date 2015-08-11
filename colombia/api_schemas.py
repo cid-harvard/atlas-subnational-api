@@ -36,6 +36,12 @@ class CountryProductYearSchema(ma.Schema):
         fields = XPY_FIELDS + ("country_id", )
 
 
+class MSAProductYearSchema(ma.Schema):
+
+    class Meta:
+        fields = XPY_FIELDS + ("msa_id", )
+
+
 class DepartmentProductYearSchema(ma.Schema):
 
     class Meta:
@@ -137,6 +143,7 @@ class ColombiaMetadataSchema(MetadataSchema):
 
 country_product_year = CountryProductYearSchema(many=True)
 department_product_year = DepartmentProductYearSchema(many=True)
+msa_product_year = MSAProductYearSchema(many=True)
 municipality_product_year = MunicipalityProductYearSchema(many=True)
 
 country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)

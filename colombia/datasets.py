@@ -90,6 +90,61 @@ trade4digit_department = {
 }
 
 
+def load_trade4digit_msa():
+    prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_rcity.dta"))
+    descriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_ra_p4.dta"),
+                                             columns=["yr", "r", "p", "NP_rpy"])
+    # TODO: ask moncho about products in df but not df2
+    combo = prescriptives.merge(descriptives,
+                                left_on=["yr", "r", "p4"],
+                                right_on=["yr", "r", "p"])
+    return combo
+
+
+trade4digit_msa = {
+    "read_function": load_trade4digit_msa,
+    "field_mapping": {
+        "r": "msa",
+        "p": "product",
+        "yr": "year",
+        "X_rpy_d": "export_value",
+        "NP_rpy": "num_plants",
+        "density_natl": "density",
+        "eci_natl": "eci",
+        "pci": "pci",
+        "coi_natl": "coi",
+        "cog_natl": "cog",
+        "RCA_natl": "export_rca"
+    },
+    "classification_fields": {
+        "msa": {
+            "classification": location_classification,
+            "level": "msa"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+    },
+    "digit_padding": {
+        "product": 4
+    },
+    "facet_fields": ["msa", "product", "year"],
+    "facets": {
+        ("msa_id", "year"): {
+            "eci": first,
+        },
+        ("msa_id", "product_id", "year"): {
+            "export_value": first,
+            "num_plants": first,
+            "export_rca": first,
+            "density": first,
+            "cog": first,
+            "coi": first
+        }
+    }
+}
+
 trade4digit_municipality = {
     "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rpy_r5_p4.dta")),
     "field_mapping": {
