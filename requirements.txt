@@ -13,3 +13,4 @@ git+https://github.com/cid-harvard/reckoner.git@850e1322226107262a9c6a9af24b9440
 
 # Override atlas_core dependencies
 git+https://github.com/nickw444/flask-sqlalchemy.git@a801e50035009c107a6628937320a0fd4957d86c#egg=flask-sqlalchemy
+marshmallow==2.0.0b4
