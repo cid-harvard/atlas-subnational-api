@@ -149,7 +149,12 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
 
     location_level = lookup_classification_level("location", entity_id)
 
-    if location_level == "department":
+    if location_level == "country":
+        q = IndustryYear.query\
+            .filter_by(level=buildingblock_level)\
+            .all()
+        return marshal(schemas.country_industry_year, q)
+    elif location_level == "department":
         q = DepartmentIndustryYear.query\
             .filter_by(department_id=entity_id)\
             .filter_by(level=buildingblock_level)\

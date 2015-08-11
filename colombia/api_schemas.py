@@ -62,18 +62,33 @@ class CountryDepartmentProductYearSchema(ma.Schema):
                   "product_id", "year")
 
 
+XIY_FIELDS = ("employment", "wages", "rca", "distance", "cog", "coi",
+              "industry_id", "year")
+
+
+class CountryIndustryYearSchema(ma.Schema):
+
+    country_id = ma.fields.Constant(0)
+
+    distance = ma.fields.Constant(None)
+    cog = ma.fields.Constant(None)
+    coi = ma.fields.Constant(None)
+    rca = ma.fields.Constant(None)
+
+    class Meta:
+        fields = XIY_FIELDS + ("country_id", )
+
+
 class DepartmentIndustryYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("employment", "wages", "rca", "distance", "cog", "coi",
-                  "department_id", "industry_id", "year")
+        fields = XIY_FIELDS + ("department_id",)
 
 
 class MunicipalityIndustryYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("employment", "wages", "rca", "distance", "cog", "coi",
-                  "municipality_id", "industry_id", "year")
+        fields = XIY_FIELDS + ("municipality_id",)
 
 
 class DepartmentSchema(ma.Schema):
@@ -123,12 +138,17 @@ class ColombiaMetadataSchema(MetadataSchema):
 country_product_year = CountryProductYearSchema(many=True)
 department_product_year = DepartmentProductYearSchema(many=True)
 municipality_product_year = MunicipalityProductYearSchema(many=True)
+
 country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)
 country_department_product_year = CountryDepartmentProductYearSchema(many=True)
+
+country_industry_year = CountryIndustryYearSchema(many=True)
 department_industry_year = DepartmentIndustryYearSchema(many=True)
 municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
+
 product_year = ProductYearSchema(many=True)
 industry_year = IndustryYearSchema(many=True)
 department_year = DepartmentYearSchema(many=True)
+
 department = DepartmentSchema(many=True)
 metadata = ColombiaMetadataSchema(many=True)
