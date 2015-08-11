@@ -19,8 +19,8 @@ def marshal(schema, data, json=True, many=True):
         return serialization_result.data
 
 
-XPY_FIELDS = ("import_value", "export_value", "export_rca", "distance", "cog",
-              "coi", "product_id", "year")
+XPY_FIELDS = ("import_value", "export_value", "num_plants", "export_rca",
+              "distance", "cog", "coi", "product_id", "year")
 
 
 class CountryProductYearSchema(ma.Schema):

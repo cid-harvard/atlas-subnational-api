@@ -23,6 +23,7 @@ class DepartmentProductYear(BaseModel, IDMixin):
 
     import_value = db.Column(db.BIGINT)
     export_value = db.Column(db.BIGINT)
+    num_plants = db.Column(db.Integer)
 
     export_rca = db.Column(db.Integer)
     density = db.Column(db.Float)
@@ -141,6 +142,7 @@ class ProductYear(BaseModel, IDMixin):
     pci_rank = db.Column(db.Integer)
 
     export_value = db.Column(db.BIGINT)
+    num_plants = db.Column(db.Integer)
 
 
 

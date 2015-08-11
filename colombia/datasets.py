@@ -25,18 +25,28 @@ def sumGroup(x):
 DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/"
 
 
-
 def prefix_path(to_prefix):
     return os.path.join(DATASET_ROOT, to_prefix)
 
 
+def load_trade4digit_department():
+    prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta"))
+    descriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_r2_p4.dta"),
+                                             columns=["yr", "r", "p", "NP_rpy"])
+    # TODO: ask moncho about products in df but not df2
+    combo = prescriptives.merge(descriptives,
+                                left_on=["yr", "r", "p4"],
+                                right_on=["yr", "r", "p"])
+    return combo
+
 trade4digit_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta")),
+    "read_function": load_trade4digit_department,
     "field_mapping": {
         "r": "department",
         "p4": "product",
         "yr": "year",
         "X_rpy_d": "export_value",
+        "NP_rpy": "num_plants",
         "density_natl": "density",
         "eci_natl": "eci",
         "pci": "pci",
@@ -66,9 +76,11 @@ trade4digit_department = {
         ("product_id", "year"): {
             "pci": first,
             "export_value": sumGroup,
+            "num_plants": sumGroup
         },
         ("department_id", "product_id", "year"): {
             "export_value": first,
+            "num_plants": first,
             "export_rca": first,
             "density": first,
             "cog": first,
