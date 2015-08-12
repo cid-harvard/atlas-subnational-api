@@ -91,6 +91,12 @@ class DepartmentIndustryYearSchema(ma.Schema):
         fields = XIY_FIELDS + ("department_id",)
 
 
+class MSAIndustryYearSchema(ma.Schema):
+
+    class Meta:
+        fields = XIY_FIELDS + ("msa_id",)
+
+
 class MunicipalityIndustryYearSchema(ma.Schema):
 
     class Meta:
@@ -151,6 +157,7 @@ country_department_product_year = CountryDepartmentProductYearSchema(many=True)
 
 country_industry_year = CountryIndustryYearSchema(many=True)
 department_industry_year = DepartmentIndustryYearSchema(many=True)
+msa_industry_year = MSAIndustryYearSchema(many=True)
 municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
 
 product_year = ProductYearSchema(many=True)

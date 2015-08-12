@@ -307,6 +307,64 @@ industry4digit_department = {
     }
 }
 
+
+def hook_industry4digit_msa(df):
+    df = df.drop_duplicates(["msa", "industry", "year"])
+    # TODO: ask neave why there are empty msas?
+    df = df[df.msa.notnull()]
+    df.msa = df.msa.astype(int).astype(str).str.zfill(5) + "0"
+    return df
+
+industry4digit_msa = {
+    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_msa.hdf"), "data"),
+    "hook_pre_merge": hook_industry4digit_msa,
+    "field_mapping": {
+        "msa_code": "msa",
+        "p_code": "industry",
+        "year": "year",
+        "msa_p_emp": "employment",
+        "msa_p_wage": "wages",
+        "msa_p_wagemonth": "monthly_wages",
+        "msa_p_rca": "rca",
+        "msa_p_distance_hybrid": "density",
+        "msa_p_cog_ps_pred1": "cog",
+        "all_p_pci": "complexity"
+    },
+    "classification_fields": {
+        "msa": {
+            "classification": location_classification,
+            "level": "msa"
+        },
+        "industry": {
+            "classification": industry_classification,
+            "level": "class"
+        },
+    },
+    "digit_padding": {
+        "industry": 4
+    },
+    "facet_fields": ["msa", "industry", "year"],
+    "facets": {
+        ("msa_id", "year"): {
+            "employment": lambda x: x.sum(),
+            "wages": lambda x: x.sum(),
+        },
+        ("industry_id", "year"): {
+            "employment": lambda x: x.sum(),
+            "wages": lambda x: x.sum(),
+            "complexity": first
+        },
+        ("msa_id", "industry_id", "year"): {
+            "employment": first,
+            "wages": first,
+            "monthly_wages": first,
+            "density": first,
+            "cog": first,
+            "rca": first
+        }
+    }
+}
+
 industry4digit_municipality = {
     "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_muni.hdf"), "data"),
     "hook_pre_merge": lambda df: df.drop_duplicates(["municipality", "industry", "year"]),

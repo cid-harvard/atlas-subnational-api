@@ -4,7 +4,8 @@ from colombia.core import db
 from dataset_tools import process_dataset, classification_to_models
 from datasets import (trade4digit_department, trade4digit_msa,
                       trade4digit_municipality, industry4digit_department,
-                      industry2digit_department, industry4digit_municipality,
+                      industry4digit_msa, industry2digit_department,
+                      industry4digit_municipality,
                       trade4digit_rcpy_municipality,
                       trade4digit_rcpy_department, population, gdp_department)
 
@@ -12,8 +13,6 @@ from datasets import (product_classification,
                       industry_classification,
                       location_classification,
                       country_classification)
-
-import pandas as pd
 
 if __name__ == "__main__":
 
@@ -134,6 +133,14 @@ if __name__ == "__main__":
             df = ret[('department_id', 'industry_id', 'year')].reset_index()
             df["level"] = "division"
             df.to_sql("department_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # MSA - industry - year
+            ret = process_dataset(industry4digit_msa)
+
+            df = ret[('msa_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
+            df.to_sql("msa_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
 

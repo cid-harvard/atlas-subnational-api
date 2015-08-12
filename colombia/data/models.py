@@ -228,6 +228,39 @@ class DepartmentIndustryYear(BaseModel, IDMixin):
         return (1.0 - cls.density).label("distance")
 
 
+class MSAIndustryYear(BaseModel, IDMixin):
+
+    __tablename__ = "msa_industry_year"
+
+    msa_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
+    year = db.Column(db.Integer)
+    level = db.Column(industry_enum)
+
+    msa = db.relationship(Location)
+    industry = db.relationship(Industry)
+
+    employment = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
+    monthly_wages = db.Column(db.Integer)
+    num_establishments = db.Column(db.Integer)
+
+    rca = db.Column(db.Integer)
+    density = db.Column(db.Float)
+    cog = db.Column(db.Float)
+    coi = db.Column(db.Float)
+
+    @hybrid_property
+    def distance(self):
+        if self.density is None:
+            return None
+        return 1.0 - self.density
+
+    @distance.expression
+    def distance(cls):
+        return (1.0 - cls.density).label("distance")
+
+
 class MunicipalityIndustryYear(BaseModel, IDMixin):
 
     __tablename__ = "municipality_industry_year"

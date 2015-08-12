@@ -1,8 +1,9 @@
 from flask import Blueprint, request
 from .models import (DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
-                     MunicipalityIndustryYear, ProductYear, IndustryYear,
-                     DepartmentYear, CountryMunicipalityProductYear,
+                     MSAIndustryYear, MunicipalityIndustryYear, ProductYear,
+                     IndustryYear, DepartmentYear,
+                     CountryMunicipalityProductYear,
                      CountryDepartmentProductYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
@@ -112,6 +113,11 @@ def eey_industry_participants(entity_type, entity_id, location_level):
             .filter_by(industry_id=entity_id)\
             .all()
         return marshal(schemas.department_industry_year, q)
+    elif location_level == "msa":
+        q = MSAIndustryYear.query\
+            .filter_by(industry_id=entity_id)\
+            .all()
+        return marshal(schemas.msa_industry_year, q)
     elif location_level == "municipality":
         q = MunicipalityIndustryYear.query\
             .filter_by(industry_id=entity_id)\
@@ -171,6 +177,12 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
             .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.department_industry_year, q)
+    elif location_level == "msa":
+        q = MSAIndustryYear.query\
+            .filter_by(msa_id=entity_id)\
+            .filter_by(level=buildingblock_level)\
+            .all()
+        return marshal(schemas.msa_industry_year, q)
     elif location_level == "municipality":
         q = MunicipalityIndustryYear.query\
             .filter_by(municipality_id=entity_id)\
