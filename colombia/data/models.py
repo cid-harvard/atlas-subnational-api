@@ -159,6 +159,10 @@ class DepartmentYear(BaseModel, IDMixin):
 
     population = db.Column(db.Integer)
 
+    employment = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
+    monthly_wages = db.Column(db.Integer)
+
 
 class ProductYear(BaseModel, IDMixin):
 
@@ -175,7 +179,6 @@ class ProductYear(BaseModel, IDMixin):
 
     export_value = db.Column(db.BIGINT)
     num_plants = db.Column(db.Integer)
-
 
 
 class IndustryYear(BaseModel, IDMixin):
