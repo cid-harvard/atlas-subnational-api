@@ -193,6 +193,7 @@ class IndustryYear(BaseModel, IDMixin):
 
     employment = db.Column(db.Integer)
     wages = db.Column(db.BIGINT)
+    monthly_wages = db.Column(db.Integer)
     num_establishments = db.Column(db.Integer)
 
     complexity = db.Column(db.Float)
