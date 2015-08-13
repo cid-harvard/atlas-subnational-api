@@ -54,9 +54,10 @@ class MSAProductYear(BaseModel, IDMixin):
     msa = db.relationship(Location)
     product = db.relationship(HSProduct)
 
-    import_value = db.Column(db.BIGINT)
     export_value = db.Column(db.BIGINT)
-    num_plants = db.Column(db.Integer)
+    import_value = db.Column(db.BIGINT)
+    export_num_plants = db.Column(db.Integer)
+    import_num_plants = db.Column(db.Integer)
 
     export_rca = db.Column(db.Integer)
     density = db.Column(db.Float)
@@ -86,9 +87,10 @@ class MunicipalityProductYear(BaseModel, IDMixin):
     municipality = db.relationship(Location)
     product = db.relationship(HSProduct)
 
-    import_value = db.Column(db.BIGINT)
     export_value = db.Column(db.BIGINT)
-    num_plants = db.Column(db.Integer)
+    import_value = db.Column(db.BIGINT)
+    export_num_plants = db.Column(db.Integer)
+    import_num_plants = db.Column(db.Integer)
 
     export_rca = db.Column(db.Integer)
     density = db.Column(db.Float)
