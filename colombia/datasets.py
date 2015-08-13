@@ -185,14 +185,36 @@ trade4digit_msa = {
     }
 }
 
+
+def load_trade4digit_municipality():
+    exports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_r5_p4.dta"))
+    exports = exports.rename(columns={"X_rpy_d": "export_value",
+                                      "NP_rpy": "export_num_plants"})
+    imports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/imp_rpy_r5_p4.dta"))
+    imports = imports.rename(columns={"X_rpy_d": "import_value",
+                                      "NP_rpy": "import_num_plants"})
+    imports = imports[imports.yr.between(2007, 2013)]
+
+    descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
+    descriptives = descriptives.fillna({
+        "export_value": 0,
+        "export_num_plants": 0,
+        "import_value": 0,
+        "import_num_plants": 0,
+    })
+
+    return descriptives
+
 trade4digit_municipality = {
-    "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rpy_r5_p4.dta")),
+    "read_function": load_trade4digit_municipality,
     "field_mapping": {
         "r": "municipality",
         "p": "product",
         "yr": "year",
-        "X_rpy_d": "export_value",
-        "NP_rpy": "num_plants"
+        "export_value": "export_value",
+        "export_num_plants": "export_num_plants",
+        "import_value": "import_value",
+        "import_num_plants": "import_num_plants",
     },
     "classification_fields": {
         "municipality": {
@@ -212,7 +234,9 @@ trade4digit_municipality = {
     "facets": {
         ("municipality_id", "product_id", "year"): {
             "export_value": first,
-            "num_plants": first
+            "export_num_plants": first,
+            "import_value": first,
+            "import_num_plants": first
         }
     }
 }
