@@ -31,8 +31,22 @@ def prefix_path(to_prefix):
 
 def load_trade4digit_department():
     prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta"))
-    descriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_r2_p4.dta"),
-                                             columns=["yr", "r", "p", "NP_rpy"])
+
+    exports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_r2_p4.dta"))
+    exports = exports.rename(columns={"X_rpy_d": "export_value",
+                                      "NP_rpy": "export_num_plants"})
+    imports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/imp_rpy_r2_p4.dta"))
+    imports = imports.rename(columns={"X_rpy_d": "import_value",
+                                      "NP_rpy": "import_num_plants"})
+
+    descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
+    descriptives = descriptives.fillna({
+        "export_value": 0,
+        "export_num_plants": 0,
+        "import_value": 0,
+        "import_num_plants": 0,
+    })
+
     # TODO: ask moncho about products in df but not df2
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
@@ -45,8 +59,10 @@ trade4digit_department = {
         "r": "department",
         "p4": "product",
         "yr": "year",
-        "X_rpy_d": "export_value",
-        "NP_rpy": "num_plants",
+        "export_value": "export_value",
+        "export_num_plants": "export_num_plants",
+        "import_value": "import_value",
+        "import_num_plants": "import_num_plants",
         "density_natl": "density",
         "eci_natl": "eci",
         "pci": "pci",
@@ -76,11 +92,15 @@ trade4digit_department = {
         ("product_id", "year"): {
             "pci": first,
             "export_value": sumGroup,
-            "num_plants": sumGroup
+            "import_value": sumGroup,
+            "export_num_plants": sumGroup,
+            "import_num_plants": sumGroup
         },
         ("department_id", "product_id", "year"): {
             "export_value": first,
-            "num_plants": first,
+            "import_value": first,
+            "export_num_plants": first,
+            "import_num_plants": first,
             "export_rca": first,
             "density": first,
             "cog": first,
