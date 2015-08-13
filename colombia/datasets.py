@@ -491,6 +491,7 @@ industry2digit_department = {
     "facets": {
         ("industry_id", "year"): {
             "wages": sumGroup,
+            "monthly_wages": sumGroup,
             "employment": sumGroup,
             "num_establishments": sumGroup,
             "complexity": first
@@ -498,6 +499,7 @@ industry2digit_department = {
 
         ("department_id", "industry_id", "year"): {
             "wages": first,
+            "monthly_wages": first,
             "employment": first,
             "num_establishments": first,
             "density": first,
