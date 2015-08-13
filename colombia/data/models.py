@@ -162,6 +162,7 @@ class DepartmentYear(BaseModel, IDMixin):
     employment = db.Column(db.Integer)
     wages = db.Column(db.BIGINT)
     monthly_wages = db.Column(db.Integer)
+    num_establishments = db.Column(db.Integer)
 
 
 class ProductYear(BaseModel, IDMixin):
@@ -280,6 +281,7 @@ class MunicipalityIndustryYear(BaseModel, IDMixin):
     employment = db.Column(db.Integer)
     wages = db.Column(db.BIGINT)
     monthly_wages = db.Column(db.Integer)
+    num_establishments = db.Column(db.Integer)
 
     rca = db.Column(db.Integer)
     density = db.Column(db.Float)

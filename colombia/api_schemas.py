@@ -68,8 +68,8 @@ class CountryDepartmentProductYearSchema(ma.Schema):
                   "product_id", "year")
 
 
-XIY_FIELDS = ("employment", "wages", "monthly_wages", "rca", "distance", "cog",
-              "coi", "industry_id", "year")
+XIY_FIELDS = ("employment", "wages", "monthly_wages", "num_establishments",
+              "rca", "distance", "cog", "coi", "industry_id", "year")
 
 
 class CountryIndustryYearSchema(ma.Schema):
@@ -118,15 +118,16 @@ class ProductYearSchema(ma.Schema):
 class IndustryYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("complexity", "employment", "wages", "num_establishments",
-                  "industry_id", "year")
+        fields = ("complexity", "employment", "wages", "monthly_wages",
+                  "num_establishments", "industry_id", "year")
 
 
 class DepartmentYearSchema(ma.Schema):
 
     class Meta:
         fields = ("department_id", "year", "eci", "diversity", "gdp_nominal",
-                  "gdp_real", "gdp_pc_nominal", "gdp_pc_real", "population")
+                  "gdp_real", "gdp_pc_nominal", "gdp_pc_real", "population",
+                  "employment", "wages", "monthly_wages", "num_establishments")
 
 
 class MetadataSchema(ma.Schema):

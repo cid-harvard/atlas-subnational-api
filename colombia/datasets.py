@@ -266,6 +266,7 @@ industry4digit_department = {
         "state_p_emp": "employment",
         "state_p_wage": "wages",
         "state_p_wagemonth": "monthly_wages",
+        "state_p_est": "num_establishments",
         "state_p_rca": "rca",
         "state_p_distance_ps_pred": "density",
         "state_p_cog_ps_pred1": "cog",
@@ -291,17 +292,20 @@ industry4digit_department = {
             "employment": lambda x: x.sum(),
             "wages": lambda x: x.sum(),
             "monthly_wages": first,
+            "num_establishments": sumGroup,
         },
         ("industry_id", "year"): {
             "employment": lambda x: x.sum(),
             "wages": lambda x: x.sum(),
             "monthly_wages": lambda x: x.sum(),
+            "num_establishments": sumGroup,
             "complexity": first
         },
         ("department_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
             "monthly_wages": first,
+            "num_establishments": first,
             "density": first,
             "cog": first,
             "rca": first
