@@ -27,7 +27,6 @@ XPY_FIELDS = ("import_value", "export_value", "import_num_plants",
 class CountryProductYearSchema(ma.Schema):
 
     country_id = ma.fields.Constant(0)
-    import_value = ma.fields.Constant(None)
     export_rca = ma.fields.Constant(None)
     distance = ma.fields.Constant(None)
     cog = ma.fields.Constant(None)
