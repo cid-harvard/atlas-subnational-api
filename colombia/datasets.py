@@ -316,7 +316,6 @@ industry4digit_department = {
 
 def hook_industry4digit_msa(df):
     df = df.drop_duplicates(["msa", "industry", "year"])
-    # TODO: ask neave why there are empty msas?
     df = df[df.msa.notnull()]
     df.msa = df.msa.astype(int).astype(str).str.zfill(5) + "0"
     return df
