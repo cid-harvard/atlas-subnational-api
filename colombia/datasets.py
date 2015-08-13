@@ -467,6 +467,7 @@ industry2digit_department = {
         "year": "year",
         "state_d3_est": "num_establishments",
         "state_d3_wage": "wages",
+        "state_d3_wagemonth": "monthly_wages",
         "state_d3_emp": "employment",
         #"state_d3_rca": "rca",
         "state_d3_distance_ps_pred1": "density",
