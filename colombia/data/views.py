@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from .models import (DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
                      MSAIndustryYear, MunicipalityIndustryYear, ProductYear,
-                     IndustryYear, DepartmentYear,
+                     IndustryYear, DepartmentYear, Location,
                      CountryMunicipalityProductYear,
                      CountryDepartmentProductYear)
 from ..api_schemas import marshal
@@ -195,6 +195,39 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
         abort(400, body=msg)
 
 
+def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
+
+    location_level = lookup_classification_level("location", entity_id)
+
+    if location_level == "country" and buildingblock_level == "department":
+        model = DepartmentProductYear
+        model_field = model.department_id
+    elif location_level == "department" and buildingblock_level == "municipality":
+        model = MunicipalityProductYear
+        model_field = model.municipality_id
+    else:
+        msg = "Data doesn't exist at location level {} and buildingblock level {}"\
+            .format(location_level, buildingblock_level)
+        abort(400, body=msg)
+
+    subregions = db.session\
+        .query(Location.id)\
+        .filter_by(parent_id=entity_id)\
+        .subquery()
+
+    q = db.session.query(
+        db.func.sum(model.export_value).label("export_value"),
+        db.func.sum(model.export_num_plants).label("export_num_plants"),
+        db.func.sum(model.import_value).label("import_value"),
+        db.func.sum(model.import_num_plants).label("import_num_plants"),
+        model_field,
+        model.year,
+    )\
+        .filter(model_field.in_(subregions))\
+        .group_by(model_field, model.year)
+    from flask import jsonify
+    return jsonify(data=[x._asdict() for x in q])
+
 entity_entity_year = {
     "industry": {
         "subdatasets": {
@@ -218,6 +251,9 @@ entity_entity_year = {
             },
             "industries": {
                 "func": eey_location_industries
+            },
+            "subregions_trade": {
+                "func": eey_location_subregions_trade
             }
         }
     },
