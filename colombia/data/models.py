@@ -223,19 +223,9 @@ class DepartmentIndustryYear(BaseModel, IDMixin):
     num_establishments = db.Column(db.Integer)
 
     rca = db.Column(db.Integer)
-    density = db.Column(db.Float)
+    distance = db.Column(db.Float)
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
-
-    @hybrid_property
-    def distance(self):
-        if self.density is None:
-            return None
-        return 1.0 - self.density
-
-    @distance.expression
-    def distance(cls):
-        return (1.0 - cls.density).label("distance")
 
 
 class MSAIndustryYear(BaseModel, IDMixin):
@@ -256,19 +246,9 @@ class MSAIndustryYear(BaseModel, IDMixin):
     num_establishments = db.Column(db.Integer)
 
     rca = db.Column(db.Integer)
-    density = db.Column(db.Float)
+    distance = db.Column(db.Float)
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
-
-    @hybrid_property
-    def distance(self):
-        if self.density is None:
-            return None
-        return 1.0 - self.density
-
-    @distance.expression
-    def distance(cls):
-        return (1.0 - cls.density).label("distance")
 
 
 class MunicipalityIndustryYear(BaseModel, IDMixin):
@@ -289,16 +269,6 @@ class MunicipalityIndustryYear(BaseModel, IDMixin):
     num_establishments = db.Column(db.Integer)
 
     rca = db.Column(db.Integer)
-    density = db.Column(db.Float)
+    distance = db.Column(db.Float)
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
-
-    @hybrid_property
-    def distance(self):
-        if self.density is None:
-            return None
-        return 1.0 - self.density
-
-    @distance.expression
-    def distance(cls):
-        return (1.0 - cls.density).label("distance")
