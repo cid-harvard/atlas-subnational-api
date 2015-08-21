@@ -130,6 +130,12 @@ class DepartmentYearSchema(ma.Schema):
                   "employment", "wages", "monthly_wages", "num_establishments")
 
 
+class OccupationYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("occupation_id", "average_wages", "num_vacancies")
+
+
 class MetadataSchema(ma.Schema):
     """Base serialization schema for metadata APIs."""
 
@@ -163,6 +169,7 @@ municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
 
 product_year = ProductYearSchema(many=True)
 industry_year = IndustryYearSchema(many=True)
+occupation_year = OccupationYearSchema(many=True)
 department_year = DepartmentYearSchema(many=True)
 
 department = DepartmentSchema(many=True)

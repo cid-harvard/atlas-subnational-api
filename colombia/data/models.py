@@ -5,8 +5,8 @@ from atlas_core.model_mixins import IDMixin
 
 from ..core import db
 
-from ..metadata.models import (Location, HSProduct, Industry, product_enum,
-                               industry_enum)
+from ..metadata.models import (Location, HSProduct, Industry, Occupation,
+                               product_enum, industry_enum, occupation_enum)
 
 
 class DepartmentProductYear(BaseModel, IDMixin):
@@ -272,3 +272,32 @@ class MunicipalityIndustryYear(BaseModel, IDMixin):
     distance = db.Column(db.Float)
     cog = db.Column(db.Float)
     coi = db.Column(db.Float)
+
+
+class OccupationYear(BaseModel, IDMixin):
+
+    __tablename__ = "occupation_year"
+
+    occupation_id = db.Column(db.Integer, db.ForeignKey(Occupation.id))
+    level = db.Column(occupation_enum)
+
+    occupation = db.relationship(Occupation)
+
+    average_wages = db.Column(db.Integer)
+    num_vacancies = db.Column(db.Integer)
+
+
+class OccupationIndustryYear(BaseModel, IDMixin):
+
+    __tablename__ = "occupation_industry_year"
+
+    occupation_id = db.Column(db.Integer, db.ForeignKey(Occupation.id))
+    industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
+    level = db.Column(occupation_enum)
+
+    occupation = db.relationship(Occupation)
+    industry = db.relationship(Industry)
+
+    average_wages = db.Column(db.Integer)
+    num_vacancies = db.Column(db.Integer)
+
