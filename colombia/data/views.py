@@ -4,7 +4,8 @@ from .models import (DepartmentProductYear, MSAProductYear,
                      MSAIndustryYear, MunicipalityIndustryYear, ProductYear,
                      IndustryYear, DepartmentYear, Location,
                      CountryMunicipalityProductYear,
-                     CountryDepartmentProductYear)
+                     CountryDepartmentProductYear, OccupationYear,
+                     OccupationIndustryYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -43,6 +44,10 @@ entity_year = {
     "product": {
         "model": ProductYear,
         "schema": schemas.product_year
+    },
+    "occupation": {
+        "model": OccupationYear,
+        "schema": schemas.occupation_year
     }
 }
 
@@ -228,12 +233,29 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
     from flask import jsonify
     return jsonify(data=[x._asdict() for x in q])
 
+
+def eey_industry_occupations(entity_type, entity_id, buildingblock_level):
+
+    if buildingblock_level != "minor_group":
+        msg = "Data doesn't exist at building block level {}"\
+            .format(buildingblock_level)
+        abort(400, body=msg)
+
+    q = OccupationIndustryYear.query\
+        .filter_by(industry_id=entity_id)\
+        .all()
+    return marshal(schemas.occupation_year, q)
+
+
 entity_entity_year = {
     "industry": {
         "subdatasets": {
             "participants": {
                 "func": eey_industry_participants
-            }
+            },
+            "occupations": {
+                "func": eey_industry_occupations
+            },
         }
     },
     "product": {

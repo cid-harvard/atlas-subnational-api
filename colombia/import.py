@@ -7,12 +7,15 @@ from datasets import (trade4digit_department, trade4digit_msa,
                       industry4digit_msa, industry2digit_department,
                       industry4digit_municipality,
                       trade4digit_rcpy_municipality,
-                      trade4digit_rcpy_department, population, gdp_department)
+                      trade4digit_rcpy_department, population, gdp_department,
+                      occupation2digit, occupation2digit_industry2digit)
 
 from datasets import (product_classification,
                       industry_classification,
                       location_classification,
-                      country_classification)
+                      country_classification,
+                      occupation_classification
+                      )
 
 if __name__ == "__main__":
 
@@ -33,6 +36,12 @@ if __name__ == "__main__":
                                                   models.Industry)
             db.session.add_all(industries)
             db.session.commit()
+
+            occupations = classification_to_models(occupation_classification,
+                                                  models.Occupation)
+            db.session.add_all(occupations)
+            db.session.commit()
+
 
             countries = classification_to_models(country_classification,
                                                   models.Country)
@@ -158,4 +167,18 @@ if __name__ == "__main__":
             df.to_sql("municipality_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+
+            # Occupation - year
+            ret = process_dataset(occupation2digit)
+            df = ret[('occupation_id')].reset_index()
+            df["level"] = "minor_group"
+            df.to_sql("occupation_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # Occupation - industry - year
+            ret = process_dataset(occupation2digit_industry2digit)
+            df = ret[('occupation_id', 'industry_id')].reset_index()
+            df["level"] = "minor_group"
+            df.to_sql("occupation_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 

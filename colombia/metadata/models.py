@@ -85,6 +85,14 @@ country_levels = [
 ]
 country_enum = db.Enum(*country_levels, name="country_level")
 
+occupation_levels = [
+    "major_group",
+    "minor_group",
+    "broad_occupation",
+    "detailed_occupation",
+]
+occupation_enum = db.Enum(*occupation_levels, name="occupation_level")
+
 
 class HSProduct(Metadata):
     """A product according to the HS4 (Harmonized System) classification.
@@ -121,6 +129,15 @@ class Industry(Metadata):
     #: Possible aggregation levels
     LEVELS = industry_levels
     level = db.Column(industry_enum)
+
+
+class Occupation(Metadata):
+    """An occupation."""
+    __tablename__ = "occupation"
+
+    #: Possible aggregation levels
+    LEVELS = occupation_levels
+    level = db.Column(occupation_enum)
 
 
 class Country(Metadata):
