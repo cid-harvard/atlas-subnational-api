@@ -17,7 +17,10 @@ metadata_apis = {
         "entity_model": models.Country,
         "plural": "countries",
     },
-
+    "occupation": {
+        "entity_model": models.Occupation,
+        "plural": "occupations",
+    },
 }
 
 
