@@ -7,7 +7,8 @@ from datasets import (trade4digit_department, trade4digit_msa,
                       industry4digit_msa, industry2digit_department,
                       industry4digit_municipality,
                       trade4digit_rcpy_municipality,
-                      trade4digit_rcpy_department, population, gdp_department,
+                      trade4digit_rcpy_department, population,
+                      gdp_nominal_department, gdp_real_department,
                       occupation2digit, occupation2digit_industry2digit)
 
 from datasets import (product_classification,
@@ -70,8 +71,13 @@ if __name__ == "__main__":
             dy_i = ret[('department_id', 'year')].reset_index()
 
             # GDP data
-            ret = process_dataset(gdp_department)
-            gdp_df = ret[('department_id', 'year')].reset_index()
+            ret = process_dataset(gdp_real_department)
+            gdp_real_df = ret[('department_id', 'year')]
+
+            ret = process_dataset(gdp_nominal_department)
+            gdp_nominal_df = ret[('department_id', 'year')]
+
+            gdp_df = gdp_real_df.join(gdp_nominal_df).reset_index()
 
             # Pop data
             ret = process_dataset(population)
