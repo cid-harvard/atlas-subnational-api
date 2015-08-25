@@ -496,21 +496,9 @@ population = {
 }
 
 
-def process_gdp(df):
-    df = df.drop_duplicates(["department", "year"])
-
-    deflators = pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_changevalues_1991_2013.dta"))
-    deflators = deflators[["year", "gdpdef_COL"]]\
-        .set_index("year")\
-        .gdpdef_COL
-
-    df["gdp_real"] = df.gdp_nominal / df.year.map(deflators) * 100.0
-
-    return df
-
-gdp_department = {
+gdp_nominal_department = {
     "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_nomgdp_2000_2013.dta")),
-    "hook_pre_merge": process_gdp,
+    "hook_pre_merge": lambda df: df.drop_duplicates(["department", "year"]),
     "field_mapping": {
         "dept_code": "department",
         "dept_gdp": "gdp_nominal",
@@ -529,6 +517,30 @@ gdp_department = {
     "facets": {
         ("department_id", "year"): {
             "gdp_nominal": first,
+        }
+    }
+}
+
+
+gdp_real_department = {
+    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_realgdp_dept_natl_2000_2013.dta")),
+    "field_mapping": {
+        "dept_code": "department",
+        "real_gdp": "gdp_real",
+        "year": "year"
+    },
+    "classification_fields": {
+        "department": {
+            "classification": location_classification,
+            "level": "department"
+        },
+    },
+    "digit_padding": {
+        "department": 2
+    },
+    "facet_fields": ["department", "year"],
+    "facets": {
+        ("department_id", "year"): {
             "gdp_real": first,
         }
     }
