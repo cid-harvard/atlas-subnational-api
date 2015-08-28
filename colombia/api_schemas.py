@@ -32,40 +32,50 @@ class CountryProductYearSchema(ma.Schema):
     cog = ma.fields.Constant(None)
     coi = ma.fields.Constant(None)
 
+    country_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = XPY_FIELDS + ("country_id", )
+        fields = XPY_FIELDS
 
 
 class MSAProductYearSchema(ma.Schema):
 
+    msa_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = XPY_FIELDS + ("msa_id", )
+        fields = XPY_FIELDS
 
 
 class DepartmentProductYearSchema(ma.Schema):
 
+    department_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = XPY_FIELDS + ("department_id", )
+        fields = XPY_FIELDS
 
 
 class MunicipalityProductYearSchema(ma.Schema):
 
+    municipality_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = XPY_FIELDS + ("municipality_id", )
+        fields = XPY_FIELDS
 
 
 class CountryMunicipalityProductYearSchema(ma.Schema):
 
+    municipality_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = ("export_value", "country_id", "municipality_id",
-                  "product_id", "year")
+        fields = ("export_value", "country_id" "product_id", "year")
 
 
 class CountryDepartmentProductYearSchema(ma.Schema):
 
+    department_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = ("export_value", "country_id", "department_id",
-                  "product_id", "year")
+        fields = ("export_value", "country_id", "product_id", "year")
 
 
 XIY_FIELDS = ("employment", "wages", "monthly_wages", "num_establishments",
@@ -82,31 +92,32 @@ class CountryIndustryYearSchema(ma.Schema):
     rca = ma.fields.Constant(None)
 
     class Meta:
-        fields = XIY_FIELDS + ("country_id", )
+        fields = XIY_FIELDS
 
 
 class DepartmentIndustryYearSchema(ma.Schema):
 
+    country_id = ma.fields.Constant(0)
+    department_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = XIY_FIELDS + ("department_id",)
+        fields = XIY_FIELDS
 
 
 class MSAIndustryYearSchema(ma.Schema):
 
+    msa_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = XIY_FIELDS + ("msa_id",)
+        fields = XIY_FIELDS
 
 
 class MunicipalityIndustryYearSchema(ma.Schema):
 
-    class Meta:
-        fields = XIY_FIELDS + ("municipality_id",)
-
-
-class DepartmentSchema(ma.Schema):
+    municipality_id = ma.fields.Integer(attribute="location_id")
 
     class Meta:
-        fields = ("code", "id", "name", "population", "gdp")
+        fields = XIY_FIELDS
 
 
 class ProductYearSchema(ma.Schema):
@@ -124,10 +135,12 @@ class IndustryYearSchema(ma.Schema):
 
 class DepartmentYearSchema(ma.Schema):
 
+    department_id = ma.fields.Integer(attribute="location_id")
+
     class Meta:
-        fields = ("department_id", "year", "eci", "diversity", "gdp_nominal",
-                  "gdp_real", "gdp_pc_nominal", "gdp_pc_real", "population",
-                  "employment", "wages", "monthly_wages", "num_establishments")
+        fields = ("year", "eci", "diversity", "gdp_nominal", "gdp_real",
+                  "gdp_pc_nominal", "gdp_pc_real", "population", "employment",
+                  "wages", "monthly_wages", "num_establishments")
 
 
 class OccupationYearSchema(ma.Schema):
@@ -172,5 +185,4 @@ industry_year = IndustryYearSchema(many=True)
 occupation_year = OccupationYearSchema(many=True)
 department_year = DepartmentYearSchema(many=True)
 
-department = DepartmentSchema(many=True)
 metadata = ColombiaMetadataSchema(many=True)

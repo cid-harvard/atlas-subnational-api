@@ -13,12 +13,12 @@ class DepartmentProductYear(BaseModel, IDMixin):
 
     __tablename__ = "department_product_year"
 
-    department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
     level = db.Column(product_enum)
 
-    department = db.relationship(Location)
+    location = db.relationship(Location)
     product = db.relationship(HSProduct)
 
     export_value = db.Column(db.BIGINT)
@@ -46,12 +46,12 @@ class MSAProductYear(BaseModel, IDMixin):
 
     __tablename__ = "msa_product_year"
 
-    msa_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
     level = db.Column(product_enum)
 
-    msa = db.relationship(Location)
+    location = db.relationship(Location)
     product = db.relationship(HSProduct)
 
     export_value = db.Column(db.BIGINT)
@@ -79,12 +79,12 @@ class MunicipalityProductYear(BaseModel, IDMixin):
 
     __tablename__ = "municipality_product_year"
 
-    municipality_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
     level = db.Column(product_enum)
 
-    municipality = db.relationship(Location)
+    location = db.relationship(Location)
     product = db.relationship(HSProduct)
 
     export_value = db.Column(db.BIGINT)
@@ -113,12 +113,12 @@ class CountryDepartmentProductYear(BaseModel, IDMixin):
     __tablename__ = "country_department_product_year"
 
     country_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
     level = db.Column(product_enum)
 
-    department = db.relationship(Location, foreign_keys=[department_id])
+    location = db.relationship(Location, foreign_keys=[location_id])
     product = db.relationship(HSProduct)
 
     export_value = db.Column(db.BIGINT)
@@ -130,12 +130,12 @@ class CountryMunicipalityProductYear(BaseModel, IDMixin):
     __tablename__ = "country_municipality_product_year"
 
     country_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    municipality_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
     level = db.Column(product_enum)
 
-    municipality = db.relationship(Location, foreign_keys=[municipality_id])
+    location = db.relationship(Location, foreign_keys=[location_id])
     product = db.relationship(HSProduct)
 
     export_value = db.Column(db.BIGINT)
@@ -146,10 +146,10 @@ class DepartmentYear(BaseModel, IDMixin):
 
     __tablename__ = "department_year"
 
-    department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     year = db.Column(db.Integer)
 
-    department = db.relationship(Location)
+    location = db.relationship(Location)
 
     eci = db.Column(db.Float)
     eci_rank = db.Column(db.Integer)
@@ -209,12 +209,12 @@ class DepartmentIndustryYear(BaseModel, IDMixin):
 
     __tablename__ = "department_industry_year"
 
-    department_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
     year = db.Column(db.Integer)
     level = db.Column(industry_enum)
 
-    department = db.relationship(Location)
+    location = db.relationship(Location)
     industry = db.relationship(Industry)
 
     employment = db.Column(db.Integer)
@@ -232,12 +232,12 @@ class MSAIndustryYear(BaseModel, IDMixin):
 
     __tablename__ = "msa_industry_year"
 
-    msa_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
     year = db.Column(db.Integer)
     level = db.Column(industry_enum)
 
-    msa = db.relationship(Location)
+    location = db.relationship(Location)
     industry = db.relationship(Industry)
 
     employment = db.Column(db.Integer)
@@ -255,12 +255,12 @@ class MunicipalityIndustryYear(BaseModel, IDMixin):
 
     __tablename__ = "municipality_industry_year"
 
-    municipality_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
     industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
     year = db.Column(db.Integer)
     level = db.Column(industry_enum)
 
-    municipality = db.relationship(Location)
+    location = db.relationship(Location)
     industry = db.relationship(Industry)
 
     employment = db.Column(db.Integer)

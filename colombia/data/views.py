@@ -95,13 +95,13 @@ def eeey_location_products(entity_type, entity_id, buildingblock_level,
 
     if location_level == "municipality":
         q = CountryMunicipalityProductYear.query\
-            .filter_by(municipality_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
         return marshal(schemas.country_municipality_product_year, q)
     elif location_level == "department":
         q = CountryDepartmentProductYear.query\
-            .filter_by(department_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
         return marshal(schemas.country_department_product_year, q)
@@ -145,19 +145,19 @@ def eey_location_products(entity_type, entity_id, buildingblock_level):
         return marshal(schemas.country_product_year, q)
     elif location_level == "department":
         q = DepartmentProductYear.query\
-            .filter_by(department_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.department_product_year, q)
     elif location_level == "msa":
         q = MSAProductYear.query\
-            .filter_by(msa_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.msa_product_year, q)
     elif location_level == "municipality":
         q = MunicipalityProductYear.query\
-            .filter_by(municipality_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.municipality_product_year, q)
@@ -178,19 +178,19 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
         return marshal(schemas.country_industry_year, q)
     elif location_level == "department":
         q = DepartmentIndustryYear.query\
-            .filter_by(department_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.department_industry_year, q)
     elif location_level == "msa":
         q = MSAIndustryYear.query\
-            .filter_by(msa_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.msa_industry_year, q)
     elif location_level == "municipality":
         q = MunicipalityIndustryYear.query\
-            .filter_by(municipality_id=entity_id)\
+            .filter_by(location_id=entity_id)\
             .filter_by(level=buildingblock_level)\
             .all()
         return marshal(schemas.municipality_industry_year, q)
@@ -206,10 +206,8 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
 
     if location_level == "country" and buildingblock_level == "department":
         model = DepartmentProductYear
-        model_field = model.department_id
     elif location_level == "department" and buildingblock_level == "municipality":
         model = MunicipalityProductYear
-        model_field = model.municipality_id
     else:
         msg = "Data doesn't exist at location level {} and buildingblock level {}"\
             .format(location_level, buildingblock_level)
@@ -225,11 +223,11 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
         db.func.sum(model.export_num_plants).label("export_num_plants"),
         db.func.sum(model.import_value).label("import_value"),
         db.func.sum(model.import_num_plants).label("import_num_plants"),
-        model_field,
+        model.location_id,
         model.year,
     )\
-        .filter(model_field.in_(subregions))\
-        .group_by(model_field, model.year)
+        .filter(model.location_id.in_(subregions))\
+        .group_by(model.location_id, model.year)
     from flask import jsonify
     return jsonify(data=[x._asdict() for x in q])
 
