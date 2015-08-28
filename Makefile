@@ -46,6 +46,9 @@ dummy: virtualenv
 import: virtualenv
 	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" PYTHONPATH=. $(PYTHON_EXECUTABLE) colombia/import.py
 
+downloads: virtualenv
+	. $(ACTIVATE); FLASK_CONFIG="$(CONF)" PYTHONPATH=. $(PYTHON_EXECUTABLE) colombia/downloads.py
+
 submodule:
 	test -d doc/_themes/ || git submodule add git://github.com/kennethreitz/kr-sphinx-themes.git doc/_themes
 
