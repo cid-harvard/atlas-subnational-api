@@ -173,6 +173,9 @@ trade4digit_msa = {
         ("msa_id", "year"): {
             "eci": first,
         },
+        ("product_id", "year"): {
+            "pci": first,
+        },
         ("msa_id", "product_id", "year"): {
             "export_value": first,
             "import_value": first,

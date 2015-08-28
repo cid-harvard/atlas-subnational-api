@@ -29,3 +29,6 @@ doc/_build/
 
 # swp file
 *.swp
+
+# Generated files
+downloads/

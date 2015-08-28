@@ -1,7 +1,9 @@
 from colombia import models, create_app
 from colombia.core import db
 
-from dataset_tools import process_dataset, classification_to_models
+from dataset_tools import (process_dataset, classification_to_models,
+                           merge_classification_by_id)
+
 from datasets import (trade4digit_department, trade4digit_msa,
                       trade4digit_municipality, industry4digit_department,
                       industry4digit_msa, industry2digit_department,
