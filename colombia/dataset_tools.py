@@ -51,6 +51,15 @@ def merge_to_table(classification, classification_name, df, merge_on):
                     right_index=True, how="left")
 
 
+def merge_classification_by_id(df, classification, column, prefix="name"):
+    return df.merge(
+        classification
+        .table[["name", "code"]]
+        .rename(columns=lambda s: prefix + "_" + s),
+        left_on=column,
+        right_index=True,
+    )
+
 def good(msg):
     return puts("[^_^] " + colored.green(msg))
 
