@@ -18,7 +18,7 @@ def first(x):
     return x.nth(0)
 
 
-def sumGroup(x):
+def sum_group(x):
     """Get the sum for a pandas group by"""
     return x.sum()
 
@@ -93,10 +93,10 @@ trade4digit_department = {
         },
         ("product_id", "year"): {
             "pci": first,
-            "export_value": sumGroup,
-            "import_value": sumGroup,
-            "export_num_plants": sumGroup,
-            "import_num_plants": sumGroup
+            "export_value": sum_group,
+            "import_value": sum_group,
+            "export_num_plants": sum_group,
+            "import_num_plants": sum_group
         },
         ("location_id", "product_id", "year"): {
             "export_value": first,
@@ -357,16 +357,16 @@ industry4digit_department = {
     "facet_fields": ["location", "industry", "year"],
     "facets": {
         ("location_id", "year"): {
-            "employment": lambda x: x.sum(),
-            "wages": lambda x: x.sum(),
+            "employment": sum_group,
+            "wages": sum_group,
             "monthly_wages": first,
-            "num_establishments": sumGroup,
+            "num_establishments": sum_group,
         },
         ("industry_id", "year"): {
-            "employment": lambda x: x.sum(),
-            "wages": lambda x: x.sum(),
-            "monthly_wages": lambda x: x.sum(),
-            "num_establishments": sumGroup,
+            "employment": sum_group,
+            "wages": sum_group,
+            "monthly_wages": sum_group,
+            "num_establishments": sum_group,
             "complexity": first
         },
         ("location_id", "industry_id", "year"): {
@@ -419,12 +419,12 @@ industry4digit_msa = {
     "facet_fields": ["location", "industry", "year"],
     "facets": {
         ("location_id", "year"): {
-            "employment": lambda x: x.sum(),
-            "wages": lambda x: x.sum(),
+            "employment": sum_group,
+            "wages": sum_group,
         },
         ("industry_id", "year"): {
-            "employment": lambda x: x.sum(),
-            "wages": lambda x: x.sum(),
+            "employment": sum_group,
+            "wages": sum_group,
             "complexity": first
         },
         ("location_id", "industry_id", "year"): {
@@ -583,10 +583,10 @@ industry2digit_department = {
     "facet_fields": ["location", "industry", "year"],
     "facets": {
         ("industry_id", "year"): {
-            "wages": sumGroup,
-            "monthly_wages": sumGroup,
-            "employment": sumGroup,
-            "num_establishments": sumGroup,
+            "wages": sum_group,
+            "monthly_wages": sum_group,
+            "employment": sum_group,
+            "num_establishments": sum_group,
             "complexity": first
         },
 
