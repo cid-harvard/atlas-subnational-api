@@ -2,104 +2,113 @@ from colombia import create_app
 from dataset_tools import process_dataset, merge_classification_by_id
 from datasets import (trade4digit_department, trade4digit_msa,
                       trade4digit_municipality, industry4digit_department,
-                      industry4digit_msa, industry2digit_department,
-                      industry4digit_municipality,
-                      trade4digit_rcpy_municipality,
-                      occupation2digit_industry2digit,
-                      gdp_nominal_department,
-                      gdp_real_department, population
-                      )
+                      industry4digit_msa, industry4digit_municipality,
+                      occupation2digit_industry2digit, gdp_nominal_department,
+                      gdp_real_department, population)
 
-from datasets import (product_classification,
-                      industry_classification,
-                      location_classification,
-                      country_classification,
-                      occupation_classification
-                      )
+from datasets import (product_classification, industry_classification,
+                      location_classification, occupation_classification)
 
 import os
+
+classifications = {
+    "occupation_id": {
+        "name": "occupation",
+        "classification": occupation_classification
+    },
+    "location_id": {
+        "name": "location",
+        "classification": location_classification
+    },
+    "product_id": {
+        "name": "product",
+        "classification": product_classification
+    },
+    "industry_id": {
+        "name": "industry",
+        "classification": industry_classification
+    },
+}
+
+
+def merge_classifications(df):
+    """Look for columns named classificationname_id and merge the
+    classification that column."""
+
+    for col, settings in classifications.items():
+        if col in df.columns:
+            df = merge_classification_by_id(
+                df, settings["classification"],
+                col, settings["name"])
+
+    return df
+
 
 def save_products_department():
     ret = process_dataset(trade4digit_department)
 
-    dpy = ret[('department_id', 'product_id', 'year')].reset_index()
+    dpy = ret[('location_id', 'product_id', 'year')].reset_index()
     py = ret[('product_id', 'year')][["pci"]].reset_index()
-    dy = ret[('department_id', 'year')][["eci"]].reset_index()
+    dy = ret[('location_id', 'year')][["eci"]].reset_index()
 
     m = dpy.merge(py, on=["product_id", "year"])
-    m = m.merge(dy, on=["department_id", "year"])
-    m = merge_classification_by_id(m, location_classification,
-                                   "department_id", "location")
-    m = merge_classification_by_id(m, product_classification,
-                                   "product_id", "product")
+    m = m.merge(dy, on=["location_id", "year"])
+
+    m = merge_classifications(m)
     return m
 
 
 def save_products_msa():
     ret = process_dataset(trade4digit_msa)
 
-    df = ret[('msa_id', 'product_id', 'year')].reset_index()
+    df = ret[('location_id', 'product_id', 'year')].reset_index()
     py = ret[('product_id', 'year')][["pci"]].reset_index()
-    dy = ret[('msa_id', 'year')][["eci"]].reset_index()
+    dy = ret[('location_id', 'year')][["eci"]].reset_index()
 
+    from IPython import embed; embed()
     df = df.merge(py, on=["product_id", "year"])
-    df = df.merge(dy, on=["msa_id", "year"])
+    df = df.merge(dy, on=["location_id", "year"])
 
-    df = merge_classification_by_id(df, location_classification,
-                                    "msa_id", "location")
-    df = merge_classification_by_id(df, product_classification, "product_id",
-                                    "product")
+    df = merge_classifications(df)
     return df
 
 
 def save_products_muni():
     ret = process_dataset(trade4digit_municipality)
 
-    df = ret[('municipality_id', 'product_id', 'year')].reset_index()
-    df = merge_classification_by_id(df, location_classification,
-                                    "municipality_id", "location")
-    df = merge_classification_by_id(df, product_classification, "product_id",
-                                    "product")
+    df = ret[('location_id', 'product_id', 'year')].reset_index()
+    df = merge_classifications(df)
     return df
 
 
 def save_industries_department():
     ret = process_dataset(industry4digit_department)
 
-    dpy = ret[('department_id', 'industry_id', 'year')].reset_index()
+    dpy = ret[('location_id', 'industry_id', 'year')].reset_index()
     py = ret[('industry_id', 'year')][["complexity"]].reset_index()
 
     m = dpy.merge(py, on=["industry_id", "year"])
-    m = merge_classification_by_id(m, location_classification,
-                                   "department_id", "location")
-    m = merge_classification_by_id(m, industry_classification,
-                                   "industry_id", "industry")
+    m = merge_classifications(m)
     return m
 
 
 def save_industries_msa():
     ret = process_dataset(industry4digit_msa)
 
-    dpy = ret[('msa_id', 'industry_id', 'year')].reset_index()
+    dpy = ret[('location_id', 'industry_id', 'year')].reset_index()
     py = ret[('industry_id', 'year')][["complexity"]].reset_index()
 
     m = dpy.merge(py, on=["industry_id", "year"])
-    m = merge_classification_by_id(m, location_classification,
-                                   "msa_id", "location")
-    m = merge_classification_by_id(m, industry_classification,
-                                   "industry_id", "industry")
+    m = merge_classifications(m)
     return m
 
 
 def save_industries_municipality():
     ret = process_dataset(industry4digit_municipality)
 
-    m = ret[('municipality_id', 'industry_id', 'year')].reset_index()
+    m = ret[('location_id', 'industry_id', 'year')].reset_index()
 
-    m = merge_classification_by_id(m, location_classification,
-                                   "municipality_id", "location")
-    m = merge_classification_by_id(m, industry_classification,
-                                   "industry_id", "industry")
+    m = merge_classifications(m)
     return m
 
 
@@ -107,30 +116,26 @@ def save_occupations():
     ret = process_dataset(occupation2digit_industry2digit)
     m = ret[('occupation_id', 'industry_id')].reset_index()
 
-    m = merge_classification_by_id(m, occupation_classification,
-                                   "occupation_id", "industry")
-    m = merge_classification_by_id(m, industry_classification,
-                                   "industry_id", "industry")
+    m = merge_classifications(m)
     return m
 
 
 def save_demographic():
     ret = process_dataset(gdp_real_department)
-    gdp_real_df = ret[('department_id', 'year')]
+    gdp_real_df = ret[('location_id', 'year')]
 
     ret = process_dataset(gdp_nominal_department)
-    gdp_nominal_df = ret[('department_id', 'year')]
+    gdp_nominal_df = ret[('location_id', 'year')]
 
     gdp_df = gdp_real_df.join(gdp_nominal_df).reset_index()
 
     ret = process_dataset(population)
-    pop_df = ret[('department_id', 'year')].reset_index()
+    pop_df = ret[('location_id', 'year')].reset_index()
 
-    m = gdp_df.merge(pop_df, on=["department_id", "year"], how="outer")
+    m = gdp_df.merge(pop_df, on=["location_id", "year"], how="outer")
 
-    m = merge_classification_by_id(m, location_classification,
-                                   "department_id", "location")
-    return m.sort_values(by=["department_id", "year"]).reset_index(drop=True)
+    m = merge_classifications(m)
+    return m.sort_values(by=["location_id", "year"]).reset_index(drop=True)
 
 
 def downloads():

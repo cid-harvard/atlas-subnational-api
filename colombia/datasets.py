@@ -58,7 +58,7 @@ def load_trade4digit_department():
 trade4digit_department = {
     "read_function": load_trade4digit_department,
     "field_mapping": {
-        "r": "department",
+        "r": "location",
         "p4": "product",
         "yr": "year",
         "export_value": "export_value",
@@ -73,7 +73,7 @@ trade4digit_department = {
         "RCA_natl": "export_rca"
     },
     "classification_fields": {
-        "department": {
+        "location": {
             "classification": location_classification,
             "level": "department"
         },
@@ -83,12 +83,12 @@ trade4digit_department = {
         },
     },
     "digit_padding": {
-        "department": 2,
+        "location": 2,
         "product": 4
     },
-    "facet_fields": ["department", "product", "year"],
+    "facet_fields": ["location", "product", "year"],
     "facets": {
-        ("department_id", "year"): {
+        ("location_id", "year"): {
             "eci": first,
         },
         ("product_id", "year"): {
@@ -98,7 +98,7 @@ trade4digit_department = {
             "export_num_plants": sumGroup,
             "import_num_plants": sumGroup
         },
-        ("department_id", "product_id", "year"): {
+        ("location_id", "product_id", "year"): {
             "export_value": first,
             "import_value": first,
             "export_num_plants": first,
@@ -141,7 +141,7 @@ def load_trade4digit_msa():
 trade4digit_msa = {
     "read_function": load_trade4digit_msa,
     "field_mapping": {
-        "r": "msa",
+        "r": "location",
         "p": "product",
         "yr": "year",
         "export_value": "export_value",
@@ -156,7 +156,7 @@ trade4digit_msa = {
         "RCA_natl": "export_rca"
     },
     "classification_fields": {
-        "msa": {
+        "location": {
             "classification": location_classification,
             "level": "msa"
         },
@@ -168,15 +168,15 @@ trade4digit_msa = {
     "digit_padding": {
         "product": 4
     },
-    "facet_fields": ["msa", "product", "year"],
+    "facet_fields": ["location", "product", "year"],
     "facets": {
-        ("msa_id", "year"): {
+        ("location_id", "year"): {
             "eci": first,
         },
         ("product_id", "year"): {
             "pci": first,
         },
-        ("msa_id", "product_id", "year"): {
+        ("location_id", "product_id", "year"): {
             "export_value": first,
             "import_value": first,
             "export_num_plants": first,
@@ -212,7 +212,7 @@ def load_trade4digit_municipality():
 trade4digit_municipality = {
     "read_function": load_trade4digit_municipality,
     "field_mapping": {
-        "r": "municipality",
+        "r": "location",
         "p": "product",
         "yr": "year",
         "export_value": "export_value",
@@ -221,7 +221,7 @@ trade4digit_municipality = {
         "import_num_plants": "import_num_plants",
     },
     "classification_fields": {
-        "municipality": {
+        "location": {
             "classification": location_classification,
             "level": "municipality"
         },
@@ -231,12 +231,12 @@ trade4digit_municipality = {
         },
     },
     "digit_padding": {
-        "municipality": 5,
+        "location": 5,
         "product": 4
     },
-    "facet_fields": ["municipality", "product", "year"],
+    "facet_fields": ["location", "product", "year"],
     "facets": {
-        ("municipality_id", "product_id", "year"): {
+        ("location_id", "product_id", "year"): {
             "export_value": first,
             "export_num_plants": first,
             "import_value": first,
@@ -249,7 +249,7 @@ trade4digit_municipality = {
 trade4digit_rcpy_department = {
     "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rcpy_r2_p4.dta")),
     "field_mapping": {
-        "r": "department",
+        "r": "location",
         "ctry_dest": "country",
         "p": "product",
         "yr": "year",
@@ -257,7 +257,7 @@ trade4digit_rcpy_department = {
         "NP_rcpy": "num_plants"
     },
     "classification_fields": {
-        "department": {
+        "location": {
             "classification": location_classification,
             "level": "department"
         },
@@ -271,13 +271,13 @@ trade4digit_rcpy_department = {
         },
     },
     "digit_padding": {
-        "department": 2,
+        "location": 2,
         "country": 3,
         "product": 4
     },
-    "facet_fields": ["department", "country", "product", "year"],
+    "facet_fields": ["location", "country", "product", "year"],
     "facets": {
-        ("country_id", "department_id", "product_id", "year"): {
+        ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
             "num_plants": first
         }
@@ -288,7 +288,7 @@ trade4digit_rcpy_department = {
 trade4digit_rcpy_municipality = {
     "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rcpy_r5_p4.dta")),
     "field_mapping": {
-        "r": "municipality",
+        "r": "location",
         "ctry_dest": "country",
         "p": "product",
         "yr": "year",
@@ -296,7 +296,7 @@ trade4digit_rcpy_municipality = {
         "NP_rcpy": "num_plants"
     },
     "classification_fields": {
-        "municipality": {
+        "location": {
             "classification": location_classification,
             "level": "municipality"
         },
@@ -310,13 +310,13 @@ trade4digit_rcpy_municipality = {
         },
     },
     "digit_padding": {
-        "municipality": 5,
+        "location": 5,
         "country": 3,
         "product": 4
     },
-    "facet_fields": ["municipality", "country", "product", "year"],
+    "facet_fields": ["location", "country", "product", "year"],
     "facets": {
-        ("country_id", "municipality_id", "product_id", "year"): {
+        ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
             "num_plants": first
         }
@@ -326,9 +326,8 @@ trade4digit_rcpy_municipality = {
 
 industry4digit_department = {
     "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_state.hdf"), "data"),
-    "hook_pre_merge": lambda df: df.drop_duplicates(["department", "industry", "year"]),
     "field_mapping": {
-        "state_code": "department",
+        "state_code": "location",
         "p_code": "industry",
         "year": "year",
         "state_p_emp": "employment",
@@ -340,8 +339,9 @@ industry4digit_department = {
         "state_p_cog_ps_pred1": "cog",
         "all_p_pci": "complexity"
     },
+    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
     "classification_fields": {
-        "department": {
+        "location": {
             "classification": location_classification,
             "level": "department"
         },
@@ -351,12 +351,12 @@ industry4digit_department = {
         },
     },
     "digit_padding": {
-        "department": 2,
+        "location": 2,
         "industry": 4
     },
-    "facet_fields": ["department", "industry", "year"],
+    "facet_fields": ["location", "industry", "year"],
     "facets": {
-        ("department_id", "year"): {
+        ("location_id", "year"): {
             "employment": lambda x: x.sum(),
             "wages": lambda x: x.sum(),
             "monthly_wages": first,
@@ -369,7 +369,7 @@ industry4digit_department = {
             "num_establishments": sumGroup,
             "complexity": first
         },
-        ("department_id", "industry_id", "year"): {
+        ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
             "monthly_wages": first,
@@ -383,16 +383,16 @@ industry4digit_department = {
 
 
 def hook_industry4digit_msa(df):
-    df = df.drop_duplicates(["msa", "industry", "year"])
-    df = df[df.msa.notnull()]
-    df.msa = df.msa.astype(int).astype(str).str.zfill(5) + "0"
+    df = df.drop_duplicates(["location", "industry", "year"])
+    df = df[df.location.notnull()]
+    df.location = df.location.astype(int).astype(str).str.zfill(5) + "0"
     return df
 
 industry4digit_msa = {
     "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_msa.hdf"), "data"),
     "hook_pre_merge": hook_industry4digit_msa,
     "field_mapping": {
-        "msa_code": "msa",
+        "msa_code": "location",
         "p_code": "industry",
         "year": "year",
         "msa_p_emp": "employment",
@@ -404,7 +404,7 @@ industry4digit_msa = {
         "all_p_pci": "complexity"
     },
     "classification_fields": {
-        "msa": {
+        "location": {
             "classification": location_classification,
             "level": "msa"
         },
@@ -416,9 +416,9 @@ industry4digit_msa = {
     "digit_padding": {
         "industry": 4
     },
-    "facet_fields": ["msa", "industry", "year"],
+    "facet_fields": ["location", "industry", "year"],
     "facets": {
-        ("msa_id", "year"): {
+        ("location_id", "year"): {
             "employment": lambda x: x.sum(),
             "wages": lambda x: x.sum(),
         },
@@ -427,7 +427,7 @@ industry4digit_msa = {
             "wages": lambda x: x.sum(),
             "complexity": first
         },
-        ("msa_id", "industry_id", "year"): {
+        ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
             "monthly_wages": first,
@@ -440,9 +440,9 @@ industry4digit_msa = {
 
 industry4digit_municipality = {
     "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_muni.hdf"), "data"),
-    "hook_pre_merge": lambda df: df.drop_duplicates(["municipality", "industry", "year"]),
+    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
     "field_mapping": {
-        "muni_code": "municipality",
+        "muni_code": "location",
         "p_code": "industry",
         "year": "year",
         "muni_p_emp": "employment",
@@ -450,7 +450,7 @@ industry4digit_municipality = {
         "muni_p_wagemonth": "monthly_wages",
     },
     "classification_fields": {
-        "municipality": {
+        "location": {
             "classification": location_classification,
             "level": "municipality"
         },
@@ -460,12 +460,12 @@ industry4digit_municipality = {
         },
     },
     "digit_padding": {
-        "municipality": 5,
+        "location": 5,
         "industry": 4
     },
-    "facet_fields": ["municipality", "industry", "year"],
+    "facet_fields": ["location", "industry", "year"],
     "facets": {
-        ("municipality_id", "industry_id", "year"): {
+        ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
             "monthly_wages": first,
@@ -475,24 +475,24 @@ industry4digit_municipality = {
 
 population = {
     "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_pop_muni_dept_natl_1985_2013.dta")),
-    "hook_pre_merge": lambda df: df[~df[["department", "year", "population"]].duplicated()],
+    "hook_pre_merge": lambda df: df[~df[["location", "year", "population"]].duplicated()],
     "field_mapping": {
         "year": "year",
-        "dept_code": "department",
+        "dept_code": "location",
         "dept_pop": "population"
     },
     "classification_fields": {
-        "department": {
+        "location": {
             "classification": location_classification,
             "level": "department"
         },
     },
     "digit_padding": {
-        "department": 2
+        "location": 2
     },
-    "facet_fields": ["department", "year"],
+    "facet_fields": ["location", "year"],
     "facets": {
-        ("department_id", "year"): {
+        ("location_id", "year"): {
             "population": first
         }
     }
@@ -501,24 +501,24 @@ population = {
 
 gdp_nominal_department = {
     "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_nomgdp_2000_2013.dta")),
-    "hook_pre_merge": lambda df: df.drop_duplicates(["department", "year"]),
+    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "year"]),
     "field_mapping": {
-        "dept_code": "department",
+        "dept_code": "location",
         "dept_gdp": "gdp_nominal",
         "year": "year"
     },
     "classification_fields": {
-        "department": {
+        "location": {
             "classification": location_classification,
             "level": "department"
         },
     },
     "digit_padding": {
-        "department": 2
+        "location": 2
     },
-    "facet_fields": ["department", "year"],
+    "facet_fields": ["location", "year"],
     "facets": {
-        ("department_id", "year"): {
+        ("location_id", "year"): {
             "gdp_nominal": first,
         }
     }
@@ -528,22 +528,22 @@ gdp_nominal_department = {
 gdp_real_department = {
     "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_realgdp_dept_natl_2000_2013.dta")),
     "field_mapping": {
-        "dept_code": "department",
+        "dept_code": "location",
         "real_gdp": "gdp_real",
         "year": "year"
     },
     "classification_fields": {
-        "department": {
+        "location": {
             "classification": location_classification,
             "level": "department"
         },
     },
     "digit_padding": {
-        "department": 2
+        "location": 2
     },
-    "facet_fields": ["department", "year"],
+    "facet_fields": ["location", "year"],
     "facets": {
-        ("department_id", "year"): {
+        ("location_id", "year"): {
             "gdp_real": first,
         }
     }
@@ -552,9 +552,9 @@ gdp_real_department = {
 
 industry2digit_department = {
     "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_state.hdf"), "data"),
-    "hook_pre_merge": lambda df: df.drop_duplicates(["department", "industry", "year"]),
+    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
     "field_mapping": {
-        "state_code": "department",
+        "state_code": "location",
         "d3_code": "industry",
         "year": "year",
         "state_d3_est": "num_establishments",
@@ -567,7 +567,7 @@ industry2digit_department = {
         "all_d3_pci": "complexity"
     },
     "classification_fields": {
-        "department": {
+        "location": {
             "classification": location_classification,
             "level": "department"
         },
@@ -577,10 +577,10 @@ industry2digit_department = {
         },
     },
     "digit_padding": {
-        "department": 2,
+        "location": 2,
         "industry": 2
     },
-    "facet_fields": ["department", "industry", "year"],
+    "facet_fields": ["location", "industry", "year"],
     "facets": {
         ("industry_id", "year"): {
             "wages": sumGroup,
@@ -590,7 +590,7 @@ industry2digit_department = {
             "complexity": first
         },
 
-        ("department_id", "industry_id", "year"): {
+        ("location_id", "industry_id", "year"): {
             "wages": first,
             "monthly_wages": first,
             "employment": first,
