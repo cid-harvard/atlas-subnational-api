@@ -1,3 +1,4 @@
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from atlas_core.sqlalchemy import BaseModel
@@ -9,137 +10,107 @@ from ..metadata.models import (Location, HSProduct, Industry, Occupation,
                                product_enum, industry_enum, occupation_enum)
 
 
-class DepartmentProductYear(BaseModel, IDMixin):
+class XProductYear(BaseModel, IDMixin):
+
+    __abstract__ = True
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def product_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(HSProduct.id))
+
+    year = db.Column(db.Integer)
+    level = db.Column(product_enum)
+
+    export_value = db.Column(db.BIGINT)
+    import_value = db.Column(db.BIGINT)
+    export_num_plants = db.Column(db.Integer)
+    import_num_plants = db.Column(db.Integer)
+
+    export_rca = db.Column(db.Integer)
+    density = db.Column(db.Float)
+    cog = db.Column(db.Float)
+    coi = db.Column(db.Float)
+
+    @hybrid_property
+    def distance(self):
+        if self.density is None:
+            return None
+        return 1.0 - self.density
+
+    @distance.expression
+    def distance(cls):
+        return (1.0 - cls.density).label("distance")
+
+
+class DepartmentProductYear(XProductYear):
 
     __tablename__ = "department_product_year"
 
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
-    year = db.Column(db.Integer)
-    level = db.Column(product_enum)
 
-    location = db.relationship(Location)
-    product = db.relationship(HSProduct)
-
-    export_value = db.Column(db.BIGINT)
-    import_value = db.Column(db.BIGINT)
-    export_num_plants = db.Column(db.Integer)
-    import_num_plants = db.Column(db.Integer)
-
-    export_rca = db.Column(db.Integer)
-    density = db.Column(db.Float)
-    cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
-
-    @hybrid_property
-    def distance(self):
-        if self.density is None:
-            return None
-        return 1.0 - self.density
-
-    @distance.expression
-    def distance(cls):
-        return (1.0 - cls.density).label("distance")
-
-
-class MSAProductYear(BaseModel, IDMixin):
+class MSAProductYear(XProductYear):
 
     __tablename__ = "msa_product_year"
 
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
-    year = db.Column(db.Integer)
-    level = db.Column(product_enum)
 
-    location = db.relationship(Location)
-    product = db.relationship(HSProduct)
-
-    export_value = db.Column(db.BIGINT)
-    import_value = db.Column(db.BIGINT)
-    export_num_plants = db.Column(db.Integer)
-    import_num_plants = db.Column(db.Integer)
-
-    export_rca = db.Column(db.Integer)
-    density = db.Column(db.Float)
-    cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
-
-    @hybrid_property
-    def distance(self):
-        if self.density is None:
-            return None
-        return 1.0 - self.density
-
-    @distance.expression
-    def distance(cls):
-        return (1.0 - cls.density).label("distance")
-
-
-class MunicipalityProductYear(BaseModel, IDMixin):
+class MunicipalityProductYear(XProductYear):
 
     __tablename__ = "municipality_product_year"
 
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+
+class ProductYear(BaseModel, IDMixin):
+
+    __tablename__ = "product_year"
+
     product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
     year = db.Column(db.Integer)
     level = db.Column(product_enum)
 
-    location = db.relationship(Location)
     product = db.relationship(HSProduct)
+
+    pci = db.Column(db.Float)
+    pci_rank = db.Column(db.Integer)
 
     export_value = db.Column(db.BIGINT)
     import_value = db.Column(db.BIGINT)
     export_num_plants = db.Column(db.Integer)
     import_num_plants = db.Column(db.Integer)
 
-    export_rca = db.Column(db.Integer)
-    density = db.Column(db.Float)
-    cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
 
-    @hybrid_property
-    def distance(self):
-        if self.density is None:
-            return None
-        return 1.0 - self.density
+class CountryXProductYear(BaseModel, IDMixin):
 
-    @distance.expression
-    def distance(cls):
-        return (1.0 - cls.density).label("distance")
+    __abstract__ = True
+
+    @declared_attr
+    def country_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def product_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(HSProduct.id))
+
+    year = db.Column(db.Integer)
+    level = db.Column(product_enum)
+
+    export_value = db.Column(db.BIGINT)
+    num_plants = db.Column(db.Integer)
 
 
-class CountryDepartmentProductYear(BaseModel, IDMixin):
+class CountryDepartmentProductYear(CountryXProductYear):
 
     __tablename__ = "country_department_product_year"
 
-    country_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
-    year = db.Column(db.Integer)
-    level = db.Column(product_enum)
 
-    location = db.relationship(Location, foreign_keys=[location_id])
-    product = db.relationship(HSProduct)
-
-    export_value = db.Column(db.BIGINT)
-    num_plants = db.Column(db.Integer)
-
-
-class CountryMunicipalityProductYear(BaseModel, IDMixin):
+class CountryMunicipalityProductYear(CountryXProductYear):
 
     __tablename__ = "country_municipality_product_year"
-
-    country_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
-    year = db.Column(db.Integer)
-    level = db.Column(product_enum)
-
-    location = db.relationship(Location, foreign_keys=[location_id])
-    product = db.relationship(HSProduct)
-
-    export_value = db.Column(db.BIGINT)
-    num_plants = db.Column(db.Integer)
 
 
 class DepartmentYear(BaseModel, IDMixin):
@@ -168,23 +139,45 @@ class DepartmentYear(BaseModel, IDMixin):
     num_establishments = db.Column(db.Integer)
 
 
-class ProductYear(BaseModel, IDMixin):
+class XIndustryYear(BaseModel, IDMixin):
 
-    __tablename__ = "product_year"
+    __abstract__ = True
 
-    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def industry_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Industry.id))
+
     year = db.Column(db.Integer)
-    level = db.Column(product_enum)
+    level = db.Column(industry_enum)
 
-    product = db.relationship(HSProduct)
+    employment = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
+    monthly_wages = db.Column(db.Integer)
+    num_establishments = db.Column(db.Integer)
 
-    pci = db.Column(db.Float)
-    pci_rank = db.Column(db.Integer)
+    rca = db.Column(db.Integer)
+    distance = db.Column(db.Float)
+    cog = db.Column(db.Float)
+    coi = db.Column(db.Float)
 
-    export_value = db.Column(db.BIGINT)
-    import_value = db.Column(db.BIGINT)
-    export_num_plants = db.Column(db.Integer)
-    import_num_plants = db.Column(db.Integer)
+
+class DepartmentIndustryYear(XIndustryYear):
+
+    __tablename__ = "department_industry_year"
+
+
+class MSAIndustryYear(XIndustryYear):
+
+    __tablename__ = "msa_industry_year"
+
+
+class MunicipalityIndustryYear(XIndustryYear):
+
+    __tablename__ = "municipality_industry_year"
 
 
 class IndustryYear(BaseModel, IDMixin):
@@ -203,75 +196,6 @@ class IndustryYear(BaseModel, IDMixin):
     num_establishments = db.Column(db.Integer)
 
     complexity = db.Column(db.Float)
-
-
-class DepartmentIndustryYear(BaseModel, IDMixin):
-
-    __tablename__ = "department_industry_year"
-
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
-    year = db.Column(db.Integer)
-    level = db.Column(industry_enum)
-
-    location = db.relationship(Location)
-    industry = db.relationship(Industry)
-
-    employment = db.Column(db.Integer)
-    wages = db.Column(db.BIGINT)
-    monthly_wages = db.Column(db.Integer)
-    num_establishments = db.Column(db.Integer)
-
-    rca = db.Column(db.Integer)
-    distance = db.Column(db.Float)
-    cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
-
-
-class MSAIndustryYear(BaseModel, IDMixin):
-
-    __tablename__ = "msa_industry_year"
-
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
-    year = db.Column(db.Integer)
-    level = db.Column(industry_enum)
-
-    location = db.relationship(Location)
-    industry = db.relationship(Industry)
-
-    employment = db.Column(db.Integer)
-    wages = db.Column(db.BIGINT)
-    monthly_wages = db.Column(db.Integer)
-    num_establishments = db.Column(db.Integer)
-
-    rca = db.Column(db.Integer)
-    distance = db.Column(db.Float)
-    cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
-
-
-class MunicipalityIndustryYear(BaseModel, IDMixin):
-
-    __tablename__ = "municipality_industry_year"
-
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    industry_id = db.Column(db.Integer, db.ForeignKey(Industry.id))
-    year = db.Column(db.Integer)
-    level = db.Column(industry_enum)
-
-    location = db.relationship(Location)
-    industry = db.relationship(Industry)
-
-    employment = db.Column(db.Integer)
-    wages = db.Column(db.BIGINT)
-    monthly_wages = db.Column(db.Integer)
-    num_establishments = db.Column(db.Integer)
-
-    rca = db.Column(db.Integer)
-    distance = db.Column(db.Float)
-    cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
 
 
 class OccupationYear(BaseModel, IDMixin):
@@ -300,4 +224,3 @@ class OccupationIndustryYear(BaseModel, IDMixin):
 
     average_wages = db.Column(db.Integer)
     num_vacancies = db.Column(db.Integer)
-
