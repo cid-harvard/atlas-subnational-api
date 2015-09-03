@@ -65,7 +65,6 @@ def save_products_msa():
     py = ret[('product_id', 'year')][["pci"]].reset_index()
     dy = ret[('location_id', 'year')][["eci"]].reset_index()
 
-    from IPython import embed; embed()
     df = df.merge(py, on=["product_id", "year"])
     df = df.merge(dy, on=["location_id", "year"])
 
