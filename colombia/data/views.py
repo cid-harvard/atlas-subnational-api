@@ -59,24 +59,23 @@ entity_year_location = {
     #"municipality" ...
 }
 
+product_year_region_mapping = {
+    "department": {"model": DepartmentProductYear},
+    "msa": {"model": MSAProductYear},
+    "municipality": {"model": MunicipalityProductYear},
+    "country": {"model": ProductYear},
+}
+
 
 def eey_product_exporters(entity_type, entity_id, location_level):
 
-    if location_level == "department":
-        q = DepartmentProductYear.query\
+    if location_level in product_year_region_mapping:
+        q = product_year_region_mapping[location_level]["model"].query\
             .filter_by(product_id=entity_id)\
             .all()
-        return marshal(schemas.department_product_year, q)
-    elif location_level == "msa":
-        q = MSAProductYear.query\
-            .filter_by(product_id=entity_id)\
-            .all()
-        return marshal(schemas.msa_product_year, q)
-    elif location_level == "municipality":
-        q = MunicipalityProductYear.query\
-            .filter_by(product_id=entity_id)\
-            .all()
-        return marshal(schemas.municipality_product_year, q)
+        schema = schemas.XProductYearSchema(many=True)
+        schema.context = {'id_field_name': location_level + '_id'}
+        return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
@@ -138,29 +137,16 @@ def eey_location_products(entity_type, entity_id, buildingblock_level):
 
     location_level = lookup_classification_level("location", entity_id)
 
-    if location_level == "country":
-        q = ProductYear.query\
+    if location_level in product_year_region_mapping:
+        q = product_year_region_mapping[location_level]["model"].query\
             .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.country_product_year, q)
-    elif location_level == "department":
-        q = DepartmentProductYear.query\
-            .filter_by(location_id=entity_id)\
-            .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.department_product_year, q)
-    elif location_level == "msa":
-        q = MSAProductYear.query\
-            .filter_by(location_id=entity_id)\
-            .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.msa_product_year, q)
-    elif location_level == "municipality":
-        q = MunicipalityProductYear.query\
-            .filter_by(location_id=entity_id)\
-            .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.municipality_product_year, q)
+
+        if hasattr(q, "location_id"):
+            q = q.filter_by(location_id=entity_id)
+
+        schema = schemas.XProductYearSchema(many=True)
+        schema.context = {'id_field_name': location_level + '_id'}
+        return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)

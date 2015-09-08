@@ -19,47 +19,39 @@ def marshal(schema, data, json=True, many=True):
         return serialization_result.data
 
 
-XPY_FIELDS = ("import_value", "export_value", "import_num_plants",
-              "export_num_plants", "export_rca", "distance", "cog", "coi",
-              "product_id", "year")
+def fix_id_hook(self, data):
+    """This is here to handle data model to legacy API compatibility. New
+    data always has location_id for consistency, vs the API uses msa_id,
+    department_id etc. This converts the former to the latter. To get this
+    to work, you need to set schema.context["id_field_name"]."""
+
+    key = self.context.get("id_field_name", None)
+    if key is None:
+        raise ma.ValidationError(
+            "Please set schema.context['id_field_name']."
+        )
+
+    value = data["location_id"]
+    del data["location_id"]
+
+    data[key] = value
+    return data
 
 
-class CountryProductYearSchema(ma.Schema):
+class XProductYearSchema(ma.Schema):
 
-    country_id = ma.fields.Constant(0)
-    export_rca = ma.fields.Constant(None)
-    distance = ma.fields.Constant(None)
-    cog = ma.fields.Constant(None)
-    coi = ma.fields.Constant(None)
+    location_id = ma.fields.Integer(default=None)
+    export_rca = ma.fields.Float(default=None)
+    distance = ma.fields.Float(default=None)
+    cog = ma.fields.Float(default=None)
+    coi = ma.fields.Float(default=None)
 
-    country_id = ma.fields.Integer(attribute="location_id")
-
-    class Meta:
-        fields = XPY_FIELDS
-
-
-class MSAProductYearSchema(ma.Schema):
-
-    msa_id = ma.fields.Integer(attribute="location_id")
-
-    class Meta:
-        fields = XPY_FIELDS
-
-
-class DepartmentProductYearSchema(ma.Schema):
-
-    department_id = ma.fields.Integer(attribute="location_id")
+    fix_id_hook = ma.post_dump(fix_id_hook)
 
     class Meta:
-        fields = XPY_FIELDS
-
-
-class MunicipalityProductYearSchema(ma.Schema):
-
-    municipality_id = ma.fields.Integer(attribute="location_id")
-
-    class Meta:
-        fields = XPY_FIELDS
+        fields = ("import_value", "export_value", "import_num_plants",
+                  "export_num_plants", "export_rca", "distance", "cog", "coi",
+                  "product_id", "location_id", "year")
 
 
 class CountryMunicipalityProductYearSchema(ma.Schema):
@@ -167,10 +159,7 @@ class ColombiaMetadataSchema(MetadataSchema):
     description_es = ma.fields.Str(required=False)
 
 
-country_product_year = CountryProductYearSchema(many=True)
-department_product_year = DepartmentProductYearSchema(many=True)
-msa_product_year = MSAProductYearSchema(many=True)
-municipality_product_year = MunicipalityProductYearSchema(many=True)
+location_product_year = XProductYearSchema(many=True)
 
 country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)
 country_department_product_year = CountryDepartmentProductYearSchema(many=True)
