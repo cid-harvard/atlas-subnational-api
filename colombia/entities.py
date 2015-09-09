@@ -23,7 +23,6 @@ metadata_apis = {
     },
 }
 
-
 entities = {
     "product": {
         (("location", "department"), ("year", None)): {
