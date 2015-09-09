@@ -66,6 +66,13 @@ product_year_region_mapping = {
     "country": {"model": ProductYear},
 }
 
+industry_year_region_mapping = {
+    "department": {"model": DepartmentIndustryYear},
+    "msa": {"model": MSAIndustryYear},
+    "municipality": {"model": MunicipalityIndustryYear},
+    "country": {"model": IndustryYear},
+}
+
 
 def eey_product_exporters(entity_type, entity_id, location_level):
 
@@ -112,21 +119,14 @@ def eeey_location_products(entity_type, entity_id, buildingblock_level,
 
 def eey_industry_participants(entity_type, entity_id, location_level):
 
-    if location_level == "department":
-        q = DepartmentIndustryYear.query\
+    if location_level in product_year_region_mapping:
+
+        q = industry_year_region_mapping[location_level]["model"].query\
             .filter_by(industry_id=entity_id)\
             .all()
-        return marshal(schemas.department_industry_year, q)
-    elif location_level == "msa":
-        q = MSAIndustryYear.query\
-            .filter_by(industry_id=entity_id)\
-            .all()
-        return marshal(schemas.msa_industry_year, q)
-    elif location_level == "municipality":
-        q = MunicipalityIndustryYear.query\
-            .filter_by(industry_id=entity_id)\
-            .all()
-        return marshal(schemas.municipality_industry_year, q)
+        schema = schemas.XIndustryYearSchema(many=True)
+        schema.context = {'id_field_name': location_level + '_id'}
+        return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
@@ -138,13 +138,14 @@ def eey_location_products(entity_type, entity_id, buildingblock_level):
     location_level = lookup_classification_level("location", entity_id)
 
     if location_level in product_year_region_mapping:
-        q = product_year_region_mapping[location_level]["model"].query\
+        query_model = product_year_region_mapping[location_level]["model"]
+        q = query_model.query\
             .filter_by(level=buildingblock_level)\
 
-        if hasattr(q, "location_id"):
+        if hasattr(query_model, "location_id"):
             q = q.filter_by(location_id=entity_id)
 
-        schema = schemas.XProductYearSchema(many=True)
+        schema = schemas.xproductyearschema(many=true)
         schema.context = {'id_field_name': location_level + '_id'}
         return marshal(schema, q)
     else:
@@ -157,33 +158,17 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
 
     location_level = lookup_classification_level("location", entity_id)
 
-    if location_level == "country":
-        q = IndustryYear.query\
+    if location_level in industry_year_region_mapping:
+        query_model = industry_year_region_mapping[location_level]["model"]
+        q = query_model.query\
             .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.country_industry_year, q)
-    elif location_level == "department":
-        q = DepartmentIndustryYear.query\
-            .filter_by(location_id=entity_id)\
-            .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.department_industry_year, q)
-    elif location_level == "msa":
-        q = MSAIndustryYear.query\
-            .filter_by(location_id=entity_id)\
-            .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.msa_industry_year, q)
-    elif location_level == "municipality":
-        q = MunicipalityIndustryYear.query\
-            .filter_by(location_id=entity_id)\
-            .filter_by(level=buildingblock_level)\
-            .all()
-        return marshal(schemas.municipality_industry_year, q)
-    else:
-        msg = "Data doesn't exist at location level {}"\
-            .format(location_level)
-        abort(400, body=msg)
+
+        if hasattr(query_model, "location_id"):
+            q = q.filter_by(location_id=entity_id)
+
+        schema = schemas.XIndustryYearSchema(many=True)
+        schema.context = {'id_field_name': location_level + '_id'}
+        return marshal(schema, q)
 
 
 def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):

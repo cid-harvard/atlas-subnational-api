@@ -40,7 +40,7 @@ def fix_id_hook(self, data):
 
 class XProductYearSchema(ma.Schema):
 
-    location_id = ma.fields.Integer(default=None)
+    location_id = ma.fields.Integer(default=0)
     export_rca = ma.fields.Float(default=None)
     distance = ma.fields.Float(default=None)
     cog = ma.fields.Float(default=None)
@@ -70,46 +70,21 @@ class CountryDepartmentProductYearSchema(ma.Schema):
         fields = ("export_value", "country_id", "product_id", "year")
 
 
-XIY_FIELDS = ("employment", "wages", "monthly_wages", "num_establishments",
-              "rca", "distance", "cog", "coi", "industry_id", "year")
+class XIndustryYearSchema(ma.Schema):
 
+    location_id = ma.fields.Integer(default=0)
 
-class CountryIndustryYearSchema(ma.Schema):
+    distance = ma.fields.Float(default=None)
+    cog = ma.fields.Float(default=None)
+    coi = ma.fields.Float(default=None)
+    rca = ma.fields.Float(default=None)
 
-    country_id = ma.fields.Constant(0)
-
-    distance = ma.fields.Constant(None)
-    cog = ma.fields.Constant(None)
-    coi = ma.fields.Constant(None)
-    rca = ma.fields.Constant(None)
+    fix_id_hook = ma.post_dump(fix_id_hook)
 
     class Meta:
-        fields = XIY_FIELDS
-
-
-class DepartmentIndustryYearSchema(ma.Schema):
-
-    country_id = ma.fields.Constant(0)
-    department_id = ma.fields.Integer(attribute="location_id")
-
-    class Meta:
-        fields = XIY_FIELDS
-
-
-class MSAIndustryYearSchema(ma.Schema):
-
-    msa_id = ma.fields.Integer(attribute="location_id")
-
-    class Meta:
-        fields = XIY_FIELDS
-
-
-class MunicipalityIndustryYearSchema(ma.Schema):
-
-    municipality_id = ma.fields.Integer(attribute="location_id")
-
-    class Meta:
-        fields = XIY_FIELDS
+        fields = ("employment", "wages", "monthly_wages", "num_establishments",
+                  "rca", "distance", "cog", "coi", "industry_id",
+                  "location_id", "year")
 
 
 class ProductYearSchema(ma.Schema):
@@ -159,15 +134,8 @@ class ColombiaMetadataSchema(MetadataSchema):
     description_es = ma.fields.Str(required=False)
 
 
-location_product_year = XProductYearSchema(many=True)
-
 country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)
 country_department_product_year = CountryDepartmentProductYearSchema(many=True)
-
-country_industry_year = CountryIndustryYearSchema(many=True)
-department_industry_year = DepartmentIndustryYearSchema(many=True)
-msa_industry_year = MSAIndustryYearSchema(many=True)
-municipality_industry_year = MunicipalityIndustryYearSchema(many=True)
 
 product_year = ProductYearSchema(many=True)
 industry_year = IndustryYearSchema(many=True)
