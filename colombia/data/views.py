@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from .models import (DepartmentProductYear, MSAProductYear,
+from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
                      MSAIndustryYear, MunicipalityIndustryYear, ProductYear,
                      IndustryYear, DepartmentYear, Location,
@@ -63,7 +63,7 @@ product_year_region_mapping = {
     "department": {"model": DepartmentProductYear},
     "msa": {"model": MSAProductYear},
     "municipality": {"model": MunicipalityProductYear},
-    "country": {"model": ProductYear},
+    "country": {"model": CountryProductYear},
 }
 
 industry_year_region_mapping = {
@@ -145,7 +145,7 @@ def eey_location_products(entity_type, entity_id, buildingblock_level):
         if hasattr(query_model, "location_id"):
             q = q.filter_by(location_id=entity_id)
 
-        schema = schemas.xproductyearschema(many=true)
+        schema = schemas.XProductYearSchema(many=True)
         schema.context = {'id_field_name': location_level + '_id'}
         return marshal(schema, q)
     else:

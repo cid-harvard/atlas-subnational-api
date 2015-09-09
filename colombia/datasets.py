@@ -30,6 +30,80 @@ def prefix_path(to_prefix):
     return os.path.join(DATASET_ROOT, to_prefix)
 
 
+def load_trade4digit_country():
+    prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_rc.dta"))
+
+    exports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_rc_p4.dta"))
+    exports = exports.rename(columns={"X_rpy_d": "export_value",
+                                      "NP_rpy": "export_num_plants"})
+    imports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/imp_rpy_rc_p4.dta"))
+    imports = imports.rename(columns={"X_rpy_d": "import_value",
+                                      "NP_rpy": "import_num_plants"})
+    imports = imports[imports.yr.between(2007, 2013)]
+
+    descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
+    descriptives = descriptives.fillna({
+        "export_value": 0,
+        "export_num_plants": 0,
+        "import_value": 0,
+        "import_num_plants": 0,
+    })
+
+    # TODO: ask moncho about products in df but not df2
+    combo = prescriptives.merge(descriptives,
+                                left_on=["yr", "r", "p4"],
+                                right_on=["yr", "r", "p"])
+
+    combo["r"] = "COL"
+    return combo
+
+trade4digit_country = {
+    "read_function": load_trade4digit_country,
+    "field_mapping": {
+        "r": "location",
+        "p4": "product",
+        "yr": "year",
+        "export_value": "export_value",
+        "export_num_plants": "export_num_plants",
+        "import_value": "import_value",
+        "import_num_plants": "import_num_plants",
+        "density_natl": "density",
+        "eci_natl": "eci",
+        "pci": "pci",
+        "coi_natl": "coi",
+        "cog_natl": "cog",
+        "RCA_natl": "export_rca"
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+    },
+    "digit_padding": {
+        "location": 1,
+        "product": 4
+    },
+    "facet_fields": ["location", "product", "year"],
+    "facets": {
+        ("location_id", "product_id", "year"): {
+            "export_value": first,
+            "import_value": first,
+            "export_num_plants": first,
+            "import_num_plants": first,
+            "export_rca": first,
+            "density": first,
+            "cog": first,
+            "coi": first
+        }
+    }
+}
+
+
 def load_trade4digit_department():
     prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta"))
 

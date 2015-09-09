@@ -46,6 +46,11 @@ class XProductYear(BaseModel, IDMixin):
         return (1.0 - cls.density).label("distance")
 
 
+class CountryProductYear(XProductYear):
+
+    __tablename__ = "country_product_year"
+
+
 class DepartmentProductYear(XProductYear):
 
     __tablename__ = "department_product_year"

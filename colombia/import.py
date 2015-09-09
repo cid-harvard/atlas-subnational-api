@@ -4,10 +4,10 @@ from colombia.core import db
 from dataset_tools import (process_dataset, classification_to_models,
                            merge_classification_by_id)
 
-from datasets import (trade4digit_department, trade4digit_msa,
-                      trade4digit_municipality, industry4digit_department,
-                      industry4digit_msa, industry2digit_department,
-                      industry4digit_municipality,
+from datasets import (trade4digit_country, trade4digit_department,
+                      trade4digit_msa, trade4digit_municipality,
+                      industry4digit_department, industry4digit_msa,
+                      industry2digit_department, industry4digit_municipality,
                       trade4digit_rcpy_municipality,
                       trade4digit_rcpy_department, population,
                       gdp_nominal_department, gdp_real_department,
@@ -51,6 +51,13 @@ if __name__ == "__main__":
             db.session.add_all(countries)
             db.session.commit()
 
+            # Country product year
+            ret = process_dataset(trade4digit_country)
+
+            df = ret[('location_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
             # Department product year
             ret = process_dataset(trade4digit_department)
