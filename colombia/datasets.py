@@ -67,12 +67,12 @@ trade4digit_country = {
         "export_num_plants": "export_num_plants",
         "import_value": "import_value",
         "import_num_plants": "import_num_plants",
-        "density_natl": "density",
-        "eci_natl": "eci",
+        "density_intl": "density",
+        "eci_intl": "eci",
         "pci": "pci",
-        "coi_natl": "coi",
-        "cog_natl": "cog",
-        "RCA_natl": "export_rca"
+        "coi_intl": "coi",
+        "cog_intl": "cog",
+        "RCA_intl": "export_rca"
     },
     "classification_fields": {
         "location": {
