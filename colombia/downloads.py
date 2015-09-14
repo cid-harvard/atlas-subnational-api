@@ -1,8 +1,9 @@
 from colombia import create_app
 from dataset_tools import process_dataset, merge_classification_by_id
-from datasets import (trade4digit_department, trade4digit_msa,
-                      trade4digit_municipality, industry4digit_department,
-                      industry4digit_msa, industry4digit_municipality,
+from datasets import (trade4digit_country, trade4digit_department,
+                      trade4digit_msa, trade4digit_municipality,
+                      industry4digit_department, industry4digit_msa,
+                      industry4digit_municipality,
                       occupation2digit_industry2digit, gdp_nominal_department,
                       gdp_real_department, population)
 
@@ -43,6 +44,10 @@ def merge_classifications(df):
 
     return df
 
+def save_products_country():
+    ret = process_dataset(trade4digit_country)
+    dpy = ret[('location_id', 'product_id', 'year')].reset_index()
+    return merge_classifications(dpy)
 
 def save_products_department():
     ret = process_dataset(trade4digit_department)
@@ -143,6 +148,7 @@ def downloads():
     def save(df, name):
         return df.to_csv(os.path.join(path, name))
 
+    save(save_products_country(), "products_country.csv")
     save(save_products_department(), "products_department.csv")
     save(save_products_msa(), "products_msa.csv")
     save(save_products_muni(), "products_municipality.csv")
