@@ -1,9 +1,9 @@
 from flask import Blueprint, request
 from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
-                     MSAIndustryYear, MunicipalityIndustryYear, ProductYear,
-                     IndustryYear, DepartmentYear, Location,
-                     CountryMunicipalityProductYear,
+                     CountryIndustryYear, MSAIndustryYear,
+                     MunicipalityIndustryYear, ProductYear, IndustryYear,
+                     DepartmentYear, Location, CountryMunicipalityProductYear,
                      CountryDepartmentProductYear, OccupationYear,
                      OccupationIndustryYear)
 from ..api_schemas import marshal
@@ -70,7 +70,7 @@ industry_year_region_mapping = {
     "department": {"model": DepartmentIndustryYear},
     "msa": {"model": MSAIndustryYear},
     "municipality": {"model": MunicipalityIndustryYear},
-    "country": {"model": IndustryYear},
+    "country": {"model": CountryIndustryYear},
 }
 
 

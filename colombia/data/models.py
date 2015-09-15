@@ -170,6 +170,11 @@ class XIndustryYear(BaseModel, IDMixin):
     coi = db.Column(db.Float)
 
 
+class CountryIndustryYear(XIndustryYear):
+
+    __tablename__ = "country_industry_year"
+
+
 class DepartmentIndustryYear(XIndustryYear):
 
     __tablename__ = "department_industry_year"

@@ -6,8 +6,9 @@ from dataset_tools import (process_dataset, classification_to_models,
 
 from datasets import (trade4digit_country, trade4digit_department,
                       trade4digit_msa, trade4digit_municipality,
-                      industry4digit_department, industry4digit_msa,
-                      industry2digit_department, industry4digit_municipality,
+                      industry4digit_country, industry4digit_department,
+                      industry4digit_msa, industry2digit_department,
+                      industry4digit_municipality,
                       trade4digit_rcpy_municipality,
                       trade4digit_rcpy_department, population,
                       gdp_nominal_department, gdp_real_department,
@@ -139,6 +140,13 @@ if __name__ == "__main__":
             df["level"] = "4digit"
             df.to_sql("country_department_product_year", db.engine,
                       index=False, chunksize=10000, if_exists="append")
+
+            # Country - industry- y ear
+            ret = process_dataset(industry4digit_country)
+            df = ret[('location_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
+            df.to_sql("country_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
             # Department - industry - year
             ret = process_dataset(industry4digit_department)

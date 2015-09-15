@@ -398,6 +398,48 @@ trade4digit_rcpy_municipality = {
 }
 
 
+def industry4digit_country_read():
+    df = pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_all.hdf"), "data")
+    df["state_code"] = "COL"
+    return df
+
+industry4digit_country = {
+    "read_function": industry4digit_country_read ,
+    "field_mapping": {
+        "state_code": "location",
+        "p_code": "industry",
+        "year": "year",
+        "all_p_emp": "employment",
+        "all_p_wage": "wages",
+        "all_p_wagemonth": "monthly_wages",
+        "all_p_est": "num_establishments",
+    },
+    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "industry": {
+            "classification": industry_classification,
+            "level": "class"
+        },
+    },
+    "digit_padding": {
+        "location": 1,
+        "industry": 4
+    },
+    "facet_fields": ["location", "industry", "year"],
+    "facets": {
+        ("location_id", "industry_id", "year"): {
+            "employment": first,
+            "wages": first,
+            "monthly_wages": first,
+            "num_establishments": first,
+        }
+    }
+}
+
 industry4digit_department = {
     "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_state.hdf"), "data"),
     "field_mapping": {
