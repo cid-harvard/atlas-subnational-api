@@ -23,7 +23,7 @@ def sum_group(x):
     return x.sum()
 
 
-DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/"
+DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/"
 
 
 def prefix_path(to_prefix):
@@ -31,12 +31,12 @@ def prefix_path(to_prefix):
 
 
 def load_trade4digit_country():
-    prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_rc.dta"))
+    prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_rc.dta"))
 
-    exports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_rc_p4.dta"))
+    exports = pd.read_stata(prefix_path("Trade/exp_rpy_rc_p4.dta"))
     exports = exports.rename(columns={"X_rpy_d": "export_value",
                                       "NP_rpy": "export_num_plants"})
-    imports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/imp_rpy_rc_p4.dta"))
+    imports = pd.read_stata(prefix_path("Trade/imp_rpy_rc_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
@@ -105,12 +105,12 @@ trade4digit_country = {
 
 
 def load_trade4digit_department():
-    prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_r2.dta"))
+    prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_r2.dta"))
 
-    exports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_r2_p4.dta"))
+    exports = pd.read_stata(prefix_path("Trade/exp_rpy_r2_p4.dta"))
     exports = exports.rename(columns={"X_rpy_d": "export_value",
                                       "NP_rpy": "export_num_plants"})
-    imports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/imp_rpy_r2_p4.dta"))
+    imports = pd.read_stata(prefix_path("Trade/imp_rpy_r2_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
@@ -187,12 +187,12 @@ trade4digit_department = {
 
 
 def load_trade4digit_msa():
-    prescriptives = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_ecomplexity_rcity.dta"))
+    prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_rcity.dta"))
 
-    exports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_ra_p4.dta"))
+    exports = pd.read_stata(prefix_path("Trade/exp_rpy_ra_p4.dta"))
     exports = exports.rename(columns={"X_rpy_d": "export_value",
                                       "NP_rpy": "export_num_plants"})
-    imports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/imp_rpy_ra_p4.dta"))
+    imports = pd.read_stata(prefix_path("Trade/imp_rpy_ra_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
@@ -265,10 +265,10 @@ trade4digit_msa = {
 
 
 def load_trade4digit_municipality():
-    exports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/exp_rpy_r5_p4.dta"))
+    exports = pd.read_stata(prefix_path("Trade/exp_rpy_r5_p4.dta"))
     exports = exports.rename(columns={"X_rpy_d": "export_value",
                                       "NP_rpy": "export_num_plants"})
-    imports = pd.read_stata(prefix_path("Atlas/Colombia/beta/Trade/imp_rpy_r5_p4.dta"))
+    imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
@@ -321,7 +321,7 @@ trade4digit_municipality = {
 
 
 trade4digit_rcpy_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rcpy_r2_p4.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("trade/exp_rcpy_r2_p4.dta")),
     "field_mapping": {
         "r": "location",
         "ctry_dest": "country",
@@ -360,7 +360,7 @@ trade4digit_rcpy_department = {
 
 
 trade4digit_rcpy_municipality = {
-    "read_function": lambda: pd.read_stata(prefix_path("atlas/colombia/beta/trade/exp_rcpy_r5_p4.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("trade/exp_rcpy_r5_p4.dta")),
     "field_mapping": {
         "r": "location",
         "ctry_dest": "country",
@@ -441,7 +441,7 @@ industry4digit_country = {
 }
 
 industry4digit_department = {
-    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_state.hdf"), "data"),
+    "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_state.hdf"), "data"),
     "field_mapping": {
         "state_code": "location",
         "p_code": "industry",
@@ -505,7 +505,7 @@ def hook_industry4digit_msa(df):
     return df
 
 industry4digit_msa = {
-    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_msa.hdf"), "data"),
+    "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_msa.hdf"), "data"),
     "hook_pre_merge": hook_industry4digit_msa,
     "field_mapping": {
         "msa_code": "location",
@@ -555,7 +555,7 @@ industry4digit_msa = {
 }
 
 industry4digit_municipality = {
-    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_muni.hdf"), "data"),
+    "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_muni.hdf"), "data"),
     "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
     "field_mapping": {
         "muni_code": "location",
@@ -590,7 +590,7 @@ industry4digit_municipality = {
 }
 
 population = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_pop_muni_dept_natl_1985_2013.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_pop_muni_dept_natl_1985_2013.dta")),
     "hook_pre_merge": lambda df: df[~df[["location", "year", "population"]].duplicated()],
     "field_mapping": {
         "year": "year",
@@ -616,7 +616,7 @@ population = {
 
 
 gdp_nominal_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_nomgdp_2000_2013.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_nomgdp_2000_2013.dta")),
     "hook_pre_merge": lambda df: df.drop_duplicates(["location", "year"]),
     "field_mapping": {
         "dept_code": "location",
@@ -642,7 +642,7 @@ gdp_nominal_department = {
 
 
 gdp_real_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Final Metadata/col_realgdp_dept_natl_2000_2013.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_realgdp_dept_natl_2000_2013.dta")),
     "field_mapping": {
         "dept_code": "location",
         "real_gdp": "gdp_real",
@@ -667,7 +667,7 @@ gdp_real_department = {
 
 
 industry2digit_department = {
-    "read_function": lambda: pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_state.hdf"), "data"),
+    "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_state.hdf"), "data"),
     "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
     "field_mapping": {
         "state_code": "location",
@@ -719,7 +719,7 @@ industry2digit_department = {
 }
 
 occupation2digit_industry2digit = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Vacancies/Vacancies_do010_2d-Ind_X_4d-Occ.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do010_2d-Ind_X_4d-Occ.dta")),
     "field_mapping": {
         "onet_4dig": "occupation",
         "ciiu_2dig": "industry",
@@ -750,7 +750,7 @@ occupation2digit_industry2digit = {
 }
 
 occupation2digit = {
-    "read_function": lambda: pd.read_stata(prefix_path("Atlas/Colombia/beta/Vacancies/Vacancies_do010_4d-Occ.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do010_4d-Occ.dta")),
     "field_mapping": {
         "onet_4dig": "occupation",
         "num_vacantes": "num_vacancies",
