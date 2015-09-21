@@ -4,8 +4,8 @@ import os.path
 from linnaeus import classification
 
 product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
-location_classification = classification.load("location/Colombia/Prospedia/out/locations_colombia_prosperia.csv")
-industry_classification = classification.load("industry/ISIC/Colombia_Prosperia/out/industries_colombia_isic_prosperia.csv")
+location_classification = classification.load("location/Mexico/INEGI/out/locations_mexico_inegi.csv")
+industry_classification = classification.load("industry/NAICS/Mexico/out/industries_mexico_scian_2007.csv")
 country_classification = classification.load("location/International/DANE/out/locations_international_dane.csv")
 occupation_classification = classification.load("occupation/SOC/Colombia/out/occupations_soc_2010.csv")
 
@@ -23,7 +23,7 @@ def sum_group(x):
     return x.sum()
 
 
-DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/"
+DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Mexico/beta/"
 
 
 def prefix_path(to_prefix):
@@ -54,7 +54,7 @@ def load_trade4digit_country():
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
 
-    combo["r"] = "COL"
+    combo["r"] = "MEX"
     return combo
 
 trade4digit_country = {
@@ -109,10 +109,10 @@ def load_trade4digit_department():
 
     exports = pd.read_stata(prefix_path("Trade/exp_rpy_r2_p4.dta"))
     exports = exports.rename(columns={"X_rpy_d": "export_value",
-                                      "NP_rpy": "export_num_plants"})
+                                      "O_rpy": "export_num_plants"})
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r2_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
-                                      "NP_rpy": "import_num_plants"})
+                                      "O_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
@@ -133,7 +133,7 @@ trade4digit_department = {
     "read_function": load_trade4digit_department,
     "field_mapping": {
         "r": "location",
-        "p4": "product",
+        "p": "product",
         "yr": "year",
         "export_value": "export_value",
         "export_num_plants": "export_num_plants",
@@ -266,14 +266,14 @@ trade4digit_msa = {
 
 def load_trade4digit_municipality():
     exports = pd.read_stata(prefix_path("Trade/exp_rpy_r5_p4.dta"))
-    exports = exports.rename(columns={"X_rpy_d": "export_value",
-                                      "NP_rpy": "export_num_plants"})
+    exports = exports.rename(columns={"X_rpy": "export_value",
+                                      "O_rpy": "export_num_plants"})
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
-    imports = imports.rename(columns={"X_rpy_d": "import_value",
-                                      "NP_rpy": "import_num_plants"})
+    imports = imports.rename(columns={"X_rpy": "import_value",
+                                      "O_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
 
-    descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
+    descriptives = exports.merge(imports, on=["yr", "r5", "p4"], how="outer")
     descriptives = descriptives.fillna({
         "export_value": 0,
         "export_num_plants": 0,
@@ -286,8 +286,8 @@ def load_trade4digit_municipality():
 trade4digit_municipality = {
     "read_function": load_trade4digit_municipality,
     "field_mapping": {
-        "r": "location",
-        "p": "product",
+        "r5": "location",
+        "p4": "product",
         "yr": "year",
         "export_value": "export_value",
         "export_num_plants": "export_num_plants",
@@ -448,10 +448,9 @@ industry4digit_department = {
         "year": "year",
         "state_p_emp": "employment",
         "state_p_wage": "wages",
-        "state_p_wagemonth": "monthly_wages",
         "state_p_est": "num_establishments",
         "state_p_rca": "rca",
-        "state_p_distance_ps": "distance",
+        "state_p_distance_ps_pred": "distance",
         "state_p_cog_ps_pred1": "cog",
         "all_p_pci": "complexity"
     },
@@ -459,11 +458,11 @@ industry4digit_department = {
     "classification_fields": {
         "location": {
             "classification": location_classification,
-            "level": "department"
+            "level": "state"
         },
         "industry": {
             "classification": industry_classification,
-            "level": "class"
+            "level": "fourdigit"
         },
     },
     "digit_padding": {
@@ -475,20 +474,17 @@ industry4digit_department = {
         ("location_id", "year"): {
             "employment": sum_group,
             "wages": sum_group,
-            "monthly_wages": first,
             "num_establishments": sum_group,
         },
         ("industry_id", "year"): {
             "employment": sum_group,
             "wages": sum_group,
-            "monthly_wages": sum_group,
             "num_establishments": sum_group,
             "complexity": first
         },
         ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
-            "monthly_wages": first,
             "num_establishments": first,
             "distance": first,
             "cog": first,
