@@ -53,12 +53,12 @@ if __name__ == "__main__":
             db.session.commit()
 
             # Country product year
-            # ret = process_dataset(trade4digit_country)
+            ret = process_dataset(trade4digit_country)
 
-            # df = ret[('location_id', 'product_id', 'year')].reset_index()
-            # df["level"] = "4digit"
-            # df.to_sql("country_product_year", db.engine, index=False,
-            #           chunksize=10000, if_exists="append")
+            df = ret[('location_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
             # Department product year
             ret = process_dataset(trade4digit_department)

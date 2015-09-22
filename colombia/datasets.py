@@ -31,14 +31,14 @@ def prefix_path(to_prefix):
 
 
 def load_trade4digit_country():
-    prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_rc.dta"))
+    prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_rm.dta"))
 
-    exports = pd.read_stata(prefix_path("Trade/exp_rpy_rc_p4.dta"))
+    exports = pd.read_stata(prefix_path("Trade/exp_rpy_rm_p4.dta"))
     exports = exports.rename(columns={"X_rpy_d": "export_value",
-                                      "NP_rpy": "export_num_plants"})
-    imports = pd.read_stata(prefix_path("Trade/imp_rpy_rc_p4.dta"))
+                                      "O_rpy": "export_num_plants"})
+    imports = pd.read_stata(prefix_path("Trade/imp_rpy_rm_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
-                                      "NP_rpy": "import_num_plants"})
+                                      "O_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
