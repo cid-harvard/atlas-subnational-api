@@ -400,7 +400,7 @@ trade4digit_rcpy_municipality = {
 
 def industry4digit_country_read():
     df = pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_all.hdf"), "data")
-    df["state_code"] = "COL"
+    df["state_code"] = "MEX"
     return df
 
 industry4digit_country = {
@@ -458,11 +458,11 @@ industry4digit_department = {
     "classification_fields": {
         "location": {
             "classification": location_classification,
-            "level": "state"
+            "level": "department"
         },
         "industry": {
             "classification": industry_classification,
-            "level": "fourdigit"
+            "level": "class"
         },
     },
     "digit_padding": {
@@ -559,7 +559,7 @@ industry4digit_municipality = {
         "year": "year",
         "muni_p_emp": "employment",
         "muni_p_wage": "wages",
-        "muni_p_wagemonth": "monthly_wages",
+        #"muni_p_wagemonth": "monthly_wages",
     },
     "classification_fields": {
         "location": {
@@ -580,7 +580,7 @@ industry4digit_municipality = {
         ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
-            "monthly_wages": first,
+            #"monthly_wages": first,
         }
     }
 }

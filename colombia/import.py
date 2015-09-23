@@ -38,11 +38,11 @@ if __name__ == "__main__":
 
             industries = classification_to_models(industry_classification,
                                                   models.Industry)
-            #db.session.add_all(industries)
+            db.session.add_all(industries)
             db.session.commit()
 
             occupations = classification_to_models(occupation_classification,
-                                                  models.Occupation)
+                                                   models.Occupation)
             db.session.add_all(occupations)
             db.session.commit()
 
@@ -150,17 +150,17 @@ if __name__ == "__main__":
                       # chunksize=10000, if_exists="append")
 
             # # Department - industry - year
-            # ret = process_dataset(industry4digit_department)
+            ret = process_dataset(industry4digit_department)
 
-            # df = ret[('industry_id', 'year')].reset_index()
-            # df["level"] = "class"
-            # df.to_sql("industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            df = ret[('industry_id', 'year')].reset_index()
+            df["level"] = "class"
+            df.to_sql("industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
-            # df = ret[('location_id', 'industry_id', 'year')].reset_index()
-            # df["level"] = "class"
-            # df.to_sql("department_industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            df = ret[('location_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
+            df.to_sql("department_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
             # # Department - two digit industry - year
             # ret = process_dataset(industry2digit_department)
@@ -184,12 +184,12 @@ if __name__ == "__main__":
                       # chunksize=10000, if_exists="append")
 
 
-            # # Municipality - industry - year
-            # ret = process_dataset(industry4digit_municipality)
-            # df = ret[('location_id', 'industry_id', 'year')].reset_index()
-            # df["level"] = "class"
-            # df.to_sql("municipality_industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            # Municipality - industry - year
+            ret = process_dataset(industry4digit_municipality)
+            df = ret[('location_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
+            df.to_sql("municipality_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
 
             # # Occupation - year
