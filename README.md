@@ -1,5 +1,5 @@
-Colombia Atlas
-==============
+Subnational Atlas
+=================
 
 
 Usage
