@@ -399,7 +399,7 @@ trade4digit_rcpy_municipality = {
 
 
 def industry4digit_country_read():
-    df = pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_all.hdf"), "data")
+    df = pd.read_hdf(prefix_path("Industries/industries_all.hdf"), "data")
     df["state_code"] = "MEX"
     return df
 
@@ -411,7 +411,7 @@ industry4digit_country = {
         "year": "year",
         "all_p_emp": "employment",
         "all_p_wage": "wages",
-        "all_p_wagemonth": "monthly_wages",
+        #"all_p_wagemonth": "monthly_wages",
         "all_p_est": "num_establishments",
     },
     "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
@@ -434,7 +434,7 @@ industry4digit_country = {
         ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
-            "monthly_wages": first,
+            #"monthly_wages": first,
             "num_establishments": first,
         }
     }
