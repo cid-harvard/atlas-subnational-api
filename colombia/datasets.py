@@ -399,7 +399,7 @@ trade4digit_rcpy_municipality = {
 
 
 def industry4digit_country_read():
-    df = pd.read_hdf(prefix_path("Atlas/Colombia/beta/Industries/industries_all.hdf"), "data")
+    df = pd.read_hdf(prefix_path("Industries/industries_all.hdf"), "data")
     df["state_code"] = "COL"
     return df
 
