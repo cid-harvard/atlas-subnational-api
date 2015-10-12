@@ -76,9 +76,9 @@ if __name__ == "__main__":
             # Department-year product
             dy_p = ret[('location_id', 'year')].reset_index()
 
-            # # Department - year industry
-            # ret = process_dataset(industry4digit_department)
-            # dy_i = ret[('location_id', 'year')].reset_index()
+            # Department - year industry
+            ret = process_dataset(industry4digit_department)
+            dy_i = ret[('location_id', 'year')].reset_index()
 
             # # GDP data
             # ret = process_dataset(gdp_real_department)
@@ -95,17 +95,16 @@ if __name__ == "__main__":
 
             # Merge all dept-year variables together
             dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2013)]
-            # dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2013)]
+            dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2013)]
             # gdp_df = gdp_df[(2007 <= gdp_df.year) & (gdp_df.year <= 2013)]
             # pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2013)]
-            # dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
+            dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
             # dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
             # dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")
 
             # dy["gdp_pc_nominal"] = dy.gdp_nominal / dy.population
             # dy["gdp_pc_real"] = dy.gdp_real / dy.population
 
-            dy = dy_p
             dy.to_sql("department_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
@@ -118,12 +117,12 @@ if __name__ == "__main__":
                       chunksize=10000, if_exists="append")
 
             # # MSA product year
-            # ret = process_dataset(trade4digit_msa)
+            ret = process_dataset(trade4digit_msa)
 
-            # df = ret[('location_id', 'product_id', 'year')].reset_index()
-            # df["level"] = "4digit"
-            # df.to_sql("msa_product_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            df = ret[('location_id', 'product_id', 'year')].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("msa_product_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
 
             # # Municipality - trade rcpy
@@ -142,14 +141,14 @@ if __name__ == "__main__":
             # df.to_sql("country_department_product_year", db.engine,
                       # index=False, chunksize=10000, if_exists="append")
 
-            # # Country - industry- y ear
-            # ret = process_dataset(industry4digit_country)
-            # df = ret[('location_id', 'industry_id', 'year')].reset_index()
-            # df["level"] = "class"
-            # df.to_sql("country_industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            # Country - industry- y ear
+            ret = process_dataset(industry4digit_country)
+            df = ret[('location_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
+            df.to_sql("country_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
-            # # Department - industry - year
+            # Department - industry - year
             ret = process_dataset(industry4digit_department)
 
             df = ret[('industry_id', 'year')].reset_index()
@@ -175,13 +174,13 @@ if __name__ == "__main__":
             # df.to_sql("department_industry_year", db.engine, index=False,
                       # chunksize=10000, if_exists="append")
 
-            # # MSA - industry - year
-            # ret = process_dataset(industry4digit_msa)
+            # MSA - industry - year
+            ret = process_dataset(industry4digit_msa)
 
-            # df = ret[('location_id', 'industry_id', 'year')].reset_index()
-            # df["level"] = "class"
-            # df.to_sql("msa_industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            df = ret[('location_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "class"
+            df.to_sql("msa_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
 
             # Municipality - industry - year

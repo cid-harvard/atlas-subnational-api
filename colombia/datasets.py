@@ -187,14 +187,14 @@ trade4digit_department = {
 
 
 def load_trade4digit_msa():
-    prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_rcity.dta"))
+    prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_ra.dta"))
 
     exports = pd.read_stata(prefix_path("Trade/exp_rpy_ra_p4.dta"))
     exports = exports.rename(columns={"X_rpy_d": "export_value",
-                                      "NP_rpy": "export_num_plants"})
+                                      "O_rpy": "export_num_plants"})
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_ra_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
-                                      "NP_rpy": "import_num_plants"})
+                                      "O_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
@@ -240,6 +240,7 @@ trade4digit_msa = {
         },
     },
     "digit_padding": {
+        "location": 2,
         "product": 4
     },
     "facet_fields": ["location", "product", "year"],
@@ -266,14 +267,14 @@ trade4digit_msa = {
 
 def load_trade4digit_municipality():
     exports = pd.read_stata(prefix_path("Trade/exp_rpy_r5_p4.dta"))
-    exports = exports.rename(columns={"X_rpy": "export_value",
+    exports = exports.rename(columns={"X_rpy_d": "export_value",
                                       "O_rpy": "export_num_plants"})
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
-    imports = imports.rename(columns={"X_rpy": "import_value",
+    imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
     imports = imports[imports.yr.between(2007, 2013)]
 
-    descriptives = exports.merge(imports, on=["yr", "r5", "p4"], how="outer")
+    descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
         "export_value": 0,
         "export_num_plants": 0,
@@ -286,8 +287,8 @@ def load_trade4digit_municipality():
 trade4digit_municipality = {
     "read_function": load_trade4digit_municipality,
     "field_mapping": {
-        "r5": "location",
-        "p4": "product",
+        "r": "location",
+        "p": "product",
         "yr": "year",
         "export_value": "export_value",
         "export_num_plants": "export_num_plants",
@@ -497,7 +498,6 @@ industry4digit_department = {
 def hook_industry4digit_msa(df):
     df = df.drop_duplicates(["location", "industry", "year"])
     df = df[df.location.notnull()]
-    df.location = df.location.astype(int).astype(str).str.zfill(5) + "0"
     return df
 
 industry4digit_msa = {
@@ -509,7 +509,7 @@ industry4digit_msa = {
         "year": "year",
         "msa_p_emp": "employment",
         "msa_p_wage": "wages",
-        "msa_p_wagemonth": "monthly_wages",
+        #"msa_p_wagemonth": "monthly_wages",
         "msa_p_rca": "rca",
         "msa_p_distance_hybrid": "distance",
         "msa_p_cog_ps_pred1": "cog",
@@ -526,6 +526,7 @@ industry4digit_msa = {
         },
     },
     "digit_padding": {
+        "location": 2,
         "industry": 4
     },
     "facet_fields": ["location", "industry", "year"],
@@ -542,7 +543,7 @@ industry4digit_msa = {
         ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
-            "monthly_wages": first,
+            #"monthly_wages": first,
             "distance": first,
             "cog": first,
             "rca": first
