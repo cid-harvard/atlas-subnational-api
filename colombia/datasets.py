@@ -322,7 +322,7 @@ trade4digit_municipality = {
 
 
 trade4digit_rcpy_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade/exp_rcpy_r2_p4.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_r2_p4.dta")),
     "field_mapping": {
         "r": "location",
         "ctry_dest": "country",
@@ -361,7 +361,7 @@ trade4digit_rcpy_department = {
 
 
 trade4digit_rcpy_municipality = {
-    "read_function": lambda: pd.read_stata(prefix_path("trade/exp_rcpy_r5_p4.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_r5_p4.dta")),
     "field_mapping": {
         "r": "location",
         "ctry_dest": "country",
