@@ -39,7 +39,6 @@ def load_trade4digit_country():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_rm_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -113,7 +112,6 @@ def load_trade4digit_department():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r2_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -195,7 +193,6 @@ def load_trade4digit_msa():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_ra_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -272,7 +269,6 @@ def load_trade4digit_municipality():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({

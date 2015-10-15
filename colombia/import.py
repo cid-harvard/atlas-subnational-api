@@ -94,8 +94,8 @@ if __name__ == "__main__":
             # pop_df = ret[('location_id', 'year')].reset_index()
 
             # Merge all dept-year variables together
-            dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2013)]
-            dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2013)]
+            #dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2013)]
+            #dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2013)]
             # gdp_df = gdp_df[(2007 <= gdp_df.year) & (gdp_df.year <= 2013)]
             # pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2013)]
             dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
