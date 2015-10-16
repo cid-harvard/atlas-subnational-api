@@ -447,7 +447,7 @@ industry4digit_department = {
         "state_p_wage": "wages",
         "state_p_est": "num_establishments",
         "state_p_rca": "rca",
-        "state_p_distance_ps_pred": "distance",
+        "state_p_distance_ps_pred1": "distance",
         "state_p_cog_ps_pred1": "cog",
         "all_p_pci": "complexity"
     },
