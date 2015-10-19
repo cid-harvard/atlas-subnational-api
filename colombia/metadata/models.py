@@ -75,6 +75,7 @@ location_enum = db.Enum(*location_levels, name="location_level")
 industry_levels = [
     "section",
     "division",
+    "group",
     "class"
 ]
 industry_enum = db.Enum(*industry_levels, name="industry_level")
