@@ -664,16 +664,16 @@ industry2digit_department = {
     "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
     "field_mapping": {
         "state_code": "location",
-        "d3_code": "industry",
+        "d2_code": "industry",
         "year": "year",
-        "state_d3_est": "num_establishments",
-        "state_d3_wage": "wages",
-        "state_d3_wagemonth": "monthly_wages",
-        "state_d3_emp": "employment",
-        "state_d3_rca": "rca",
-        "state_d3_distance_ps_pred1": "distance",
-        "state_d3_cog_ps_pred1": "cog",
-        "all_d3_pci": "complexity"
+        "state_d2_est": "num_establishments",
+        "state_d2_wage": "wages",
+        #"state_d2_wagemonth": "monthly_wages",
+        "state_d2_emp": "employment",
+        #"state_d2_rca": "rca",
+        "state_d2_distance_ps_pred1": "distance",
+        "state_d2_cog_ps_pred1": "cog",
+        "all_d2_pci": "complexity"
     },
     "classification_fields": {
         "location": {
@@ -693,7 +693,7 @@ industry2digit_department = {
     "facets": {
         ("industry_id", "year"): {
             "wages": sum_group,
-            "monthly_wages": sum_group,
+            #"monthly_wages": sum_group,
             "employment": sum_group,
             "num_establishments": sum_group,
             "complexity": first
@@ -701,12 +701,12 @@ industry2digit_department = {
 
         ("location_id", "industry_id", "year"): {
             "wages": first,
-            "monthly_wages": first,
+            #"monthly_wages": first,
             "employment": first,
             "num_establishments": first,
             "distance": first,
             "cog": first,
-            "rca": first
+            #"rca": first
         }
     }
 }

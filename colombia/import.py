@@ -161,18 +161,18 @@ if __name__ == "__main__":
             df.to_sql("department_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            # # Department - two digit industry - year
-            # ret = process_dataset(industry2digit_department)
+            # Department - two digit industry - year
+            ret = process_dataset(industry2digit_department)
 
-            # df = ret[('industry_id', 'year')].reset_index()
-            # df["level"] = "division"
-            # df.to_sql("industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            df = ret[('industry_id', 'year')].reset_index()
+            df["level"] = "division"
+            df.to_sql("industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
-            # df = ret[('location_id', 'industry_id', 'year')].reset_index()
-            # df["level"] = "division"
-            # df.to_sql("department_industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            df = ret[('location_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "division"
+            df.to_sql("department_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
             # MSA - industry - year
             ret = process_dataset(industry4digit_msa)
