@@ -7,7 +7,7 @@ product_classification = classification.load("product/HS/Colombia_Prospedia/out/
 location_classification = classification.load("location/Mexico/INEGI/out/locations_mexico_inegi.csv")
 industry_classification = classification.load("industry/NAICS/Mexico_datlas/out/industries_mexico_scian_2007_datlas.csv")
 country_classification = classification.load("location/International/DANE/out/locations_international_dane.csv")
-occupation_classification = classification.load("occupation/SOC/Colombia/out/occupations_soc_2010.csv")
+occupation_classification = classification.load("occupation/SINCO/Mexico/out/occupations_sinco_2011.csv")
 
 
 country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
@@ -712,17 +712,17 @@ industry2digit_department = {
 }
 
 occupation2digit_industry2digit = {
-    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do010_2d-Ind_X_4d-Occ.dta")),
+    "read_function": lambda: pd.read_excel(prefix_path("OccupationIndustryEmployment/MX_national_ind2code_occ2code_with_SE.xlsx")),
     "field_mapping": {
-        "onet_4dig": "occupation",
-        "ciiu_2dig": "industry",
-        "num_vacantes": "num_vacancies",
-        "wage_mean": "average_wages"
+        "occ_2code": "occupation",
+        "ind_2code": "industry",
+        "mean": "num_vacancies",
+        #"wage_mean": "average_wages"
     },
     "classification_fields": {
         "occupation": {
             "classification": occupation_classification,
-            "level": "minor_group"
+            "level": "2digit"
         },
         "industry": {
             "classification": industry_classification,
@@ -730,38 +730,39 @@ occupation2digit_industry2digit = {
         },
     },
     "digit_padding": {
-        "occupation": 7,
-        "industry": 4
+        "occupation": 2,
+        "industry": 2
     },
     "facet_fields": ["occupation", "industry"],
     "facets": {
         ("occupation_id", "industry_id"): {
-            "average_wages": first,
+            #"average_wages": first,
             "num_vacancies": first,
         }
     }
 }
 
+
 occupation2digit = {
-    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do010_4d-Occ.dta")),
+    "read_function": lambda: pd.read_excel(prefix_path("OccupationIndustryEmployment/MX_national_occ_2code_with_SE.xlsx")),
     "field_mapping": {
-        "onet_4dig": "occupation",
-        "num_vacantes": "num_vacancies",
-        "wage_mean": "average_wages"
+        "occ_2code": "occupation",
+        "mean": "num_vacancies",
+        #"wage_mean": "average_wages"
     },
     "classification_fields": {
         "occupation": {
             "classification": occupation_classification,
-            "level": "minor_group"
+            "level": "2digit"
         },
     },
     "digit_padding": {
-        "occupation": 7,
+        "occupation": 2,
     },
     "facet_fields": ["occupation"],
     "facets": {
         ("occupation_id"): {
-            "average_wages": first,
+            #"average_wages": first,
             "num_vacancies": first,
         }
     }

@@ -191,17 +191,17 @@ if __name__ == "__main__":
                       chunksize=10000, if_exists="append")
 
 
-            # # Occupation - year
-            # ret = process_dataset(occupation2digit)
-            # df = ret[('occupation_id')].reset_index()
-            # df["level"] = "minor_group"
-            # df.to_sql("occupation_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            # Occupation - year
+            ret = process_dataset(occupation2digit)
+            df = ret[('occupation_id')].reset_index()
+            df["level"] = "2digit"
+            df.to_sql("occupation_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
-            # # Occupation - industry - year
-            # ret = process_dataset(occupation2digit_industry2digit)
-            # df = ret[('occupation_id', 'industry_id')].reset_index()
-            # df["level"] = "minor_group"
-            # df.to_sql("occupation_industry_year", db.engine, index=False,
-                      # chunksize=10000, if_exists="append")
+            # Occupation - industry - year
+            ret = process_dataset(occupation2digit_industry2digit)
+            df = ret[('occupation_id', 'industry_id')].reset_index()
+            df["level"] = "2digit"
+            df.to_sql("occupation_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 

@@ -86,10 +86,10 @@ country_levels = [
 country_enum = db.Enum(*country_levels, name="country_level")
 
 occupation_levels = [
-    "major_group",
-    "minor_group",
-    "broad_occupation",
-    "detailed_occupation",
+    "1digit",
+    "2digit",
+    "3digit",
+    "4digit",
 ]
 occupation_enum = db.Enum(*occupation_levels, name="occupation_level")
 
