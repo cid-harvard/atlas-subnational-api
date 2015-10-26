@@ -31,13 +31,6 @@ if __name__ == "__main__":
             db.session.add_all(products)
             db.session.commit()
 
-            # Drop MSAs that are composed of a single municipality for now -
-            # this is to work around a bug where data for those muni/msas are
-            # not included in the msa data files and need to be manually
-            # imported and appended.
-            no_single_muni_msas = "~(level == 'msa' and code in ['3', '11', '44', '45'])"
-            location_classification.table = location_classification.table.query(no_single_muni_msas)
-
             locations = classification_to_models(location_classification,
                                                  models.Location)
             db.session.add_all(locations)
