@@ -583,8 +583,8 @@ industry4digit_municipality = {
 }
 
 population = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_pop_muni_dept_natl_1985_2013.dta")),
-    "hook_pre_merge": lambda df: df[~df[["location", "year", "population"]].duplicated()],
+    "read_function": lambda: pd.read_stata(prefix_path("Metadata Final/mex_natl_dept_muni_pop_by_age_2010.dta"), encoding="latin-1"),
+    "hook_pre_merge": lambda df: df[~df[["location", "year"]].duplicated()],
     "field_mapping": {
         "year": "year",
         "dept_code": "location",
@@ -609,8 +609,8 @@ population = {
 
 
 gdp_nominal_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_nomgdp_2000_2013.dta")),
-    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "year"]),
+    "read_function": lambda: pd.read_stata(prefix_path("Metadata Final/mex_natl_dept_gdp_2003_2013.dta"), encoding="latin-1"),
+    "hook_pre_merge": lambda df: df[~df[["location", "year"]].duplicated()],
     "field_mapping": {
         "dept_code": "location",
         "dept_gdp": "gdp_nominal",

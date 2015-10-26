@@ -80,18 +80,19 @@ if __name__ == "__main__":
             ret = process_dataset(industry4digit_department)
             dy_i = ret[('location_id', 'year')].reset_index()
 
-            # # GDP data
+            # GDP data
             # ret = process_dataset(gdp_real_department)
             # gdp_real_df = ret[('location_id', 'year')]
 
-            # ret = process_dataset(gdp_nominal_department)
-            # gdp_nominal_df = ret[('location_id', 'year')]
+            ret = process_dataset(gdp_nominal_department)
+            gdp_nominal_df = ret[('location_id', 'year')]
 
             # gdp_df = gdp_real_df.join(gdp_nominal_df).reset_index()
+            gdp_df = gdp_nominal_df.reset_index()
 
-            # # Pop data
-            # ret = process_dataset(population)
-            # pop_df = ret[('location_id', 'year')].reset_index()
+            # Pop data
+            ret = process_dataset(population)
+            pop_df = ret[('location_id', 'year')].reset_index()
 
             # Merge all dept-year variables together
             #dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2013)]
@@ -99,10 +100,10 @@ if __name__ == "__main__":
             # gdp_df = gdp_df[(2007 <= gdp_df.year) & (gdp_df.year <= 2013)]
             # pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2013)]
             dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
-            # dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
-            # dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")
+            dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
+            dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")
 
-            # dy["gdp_pc_nominal"] = dy.gdp_nominal / dy.population
+            dy["gdp_pc_nominal"] = dy.gdp_nominal / dy.population
             # dy["gdp_pc_real"] = dy.gdp_real / dy.population
 
             dy.to_sql("department_year", db.engine, index=False,
