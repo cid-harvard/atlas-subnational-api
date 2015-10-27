@@ -7,7 +7,7 @@ product_classification = classification.load("product/HS/Colombia_Prospedia/out/
 location_classification = classification.load("location/Mexico/INEGI/out/locations_mexico_inegi.csv")
 industry_classification = classification.load("industry/NAICS/Mexico_datlas/out/industries_mexico_scian_2007_datlas.csv")
 country_classification = classification.load("location/International/DANE/out/locations_international_dane.csv")
-occupation_classification = classification.load("occupation/SINCO/Mexico/out/occupations_sinco_2011.csv")
+occupation_classification = classification.load("occupation/SINCO/Mexico_datlas/out/occupations_sinco_datlas_2011.csv")
 
 
 country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
