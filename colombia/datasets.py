@@ -608,9 +608,14 @@ population = {
 }
 
 
+def clean_gdp_nominal_department(df):
+    df = df[~df[["location", "year"]].duplicated()]
+    df.gdp_nominal = df.gdp_nominal.astype(int) * (10 ** 6)
+    return df
+
 gdp_nominal_department = {
     "read_function": lambda: pd.read_stata(prefix_path("Metadata Final/mex_natl_dept_gdp_2003_2013.dta"), encoding="latin-1"),
-    "hook_pre_merge": lambda df: df[~df[["location", "year"]].duplicated()],
+    "hook_pre_merge": clean_gdp_nominal_department,
     "field_mapping": {
         "dept_code": "location",
         "dept_gdp": "gdp_nominal",
