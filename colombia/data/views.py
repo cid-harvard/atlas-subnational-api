@@ -30,7 +30,7 @@ def get_or_fail(name, dictionary):
     if thing is None:
         msg = "{} is not valid. Try one of: {}"\
             .format(
-                thing,
+                name,
                 list(dictionary.keys()))
         raise abort(400, body=msg)
     return thing
