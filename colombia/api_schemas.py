@@ -111,6 +111,12 @@ class DepartmentYearSchema(ma.Schema):
                   "department_id")
 
 
+class MSAYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("year", "eci", "location_id")
+
+
 class OccupationYearSchema(ma.Schema):
 
     class Meta:
@@ -142,5 +148,6 @@ product_year = ProductYearSchema(many=True)
 industry_year = IndustryYearSchema(many=True)
 occupation_year = OccupationYearSchema(many=True)
 department_year = DepartmentYearSchema(many=True)
+msa_year = MSAYearSchema(many=True)
 
 metadata = ColombiaMetadataSchema(many=True)

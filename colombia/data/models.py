@@ -144,6 +144,18 @@ class DepartmentYear(BaseModel, IDMixin):
     num_establishments = db.Column(db.Integer)
 
 
+class MSAYear(BaseModel, IDMixin):
+
+    __tablename__ = "msa_year"
+
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    year = db.Column(db.Integer)
+
+    location = db.relationship(Location)
+
+    eci = db.Column(db.Float)
+
+
 class XIndustryYear(BaseModel, IDMixin):
 
     __abstract__ = True
