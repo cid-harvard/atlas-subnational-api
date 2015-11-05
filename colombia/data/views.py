@@ -5,7 +5,7 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityIndustryYear, ProductYear, IndustryYear,
                      DepartmentYear, Location, CountryMunicipalityProductYear,
                      CountryDepartmentProductYear, OccupationYear,
-                     OccupationIndustryYear)
+                     OccupationIndustryYear, CountryDepartmentYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -203,6 +203,26 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
     return jsonify(data=[x._asdict() for x in q])
 
 
+def eey_location_partners(entity_type, entity_id, buildingblock_level):
+
+    if buildingblock_level != "country":
+        msg = "Data doesn't exist at level {}. Try country.".format(buildingblock_level)
+        abort(400, body=msg)
+
+    # Assert level of sub_id is same as entity_id
+    location_level = lookup_classification_level("location", entity_id)
+
+    if location_level == "department":
+        q = CountryDepartmentYear.query\
+            .filter_by(location_id=entity_id)\
+            .all()
+        return marshal(schemas.country_department_year, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
 def eey_industry_occupations(entity_type, entity_id, buildingblock_level):
 
     if buildingblock_level != "minor_group":
@@ -245,6 +265,9 @@ entity_entity_year = {
             },
             "subregions_trade": {
                 "func": eey_location_subregions_trade
+            },
+            "partners": {
+                "func": eey_location_partners
             }
         }
     },
