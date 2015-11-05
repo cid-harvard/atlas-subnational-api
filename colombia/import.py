@@ -146,6 +146,10 @@ if __name__ == "__main__":
             df.to_sql("country_department_product_year", db.engine,
                       index=False, chunksize=10000, if_exists="append")
 
+            df = ret[("country_id", "location_id", "year")].reset_index()
+            df.to_sql("country_department_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
+
             # Country - industry- y ear
             ret = process_dataset(industry4digit_country)
             df = ret[('location_id', 'industry_id', 'year')].reset_index()
