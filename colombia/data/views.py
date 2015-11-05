@@ -5,7 +5,7 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityIndustryYear, ProductYear, IndustryYear,
                      DepartmentYear, Location, CountryMunicipalityProductYear,
                      CountryDepartmentProductYear, OccupationYear,
-                     OccupationIndustryYear, CountryDepartmentYear)
+                     OccupationIndustryYear, CountryDepartmentYear, MSAYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -55,8 +55,11 @@ entity_year_location = {
     "department": {
         "model": DepartmentYear,
         "schema": schemas.department_year
+    },
+    "msa": {
+        "model": MSAYear,
+        "schema": schemas.msa_year
     }
-    #"municipality" ...
 }
 
 product_year_region_mapping = {

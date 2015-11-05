@@ -5,4 +5,4 @@ from .data.models import (CountryProductYear, DepartmentProductYear,
                           DepartmentIndustryYear, IndustryYear,
                           MunicipalityIndustryYear, MSAProductYear,
                           MSAIndustryYear, OccupationYear,
-                          OccupationIndustryYear, CountryDepartmentYear)
+                          OccupationIndustryYear, CountryDepartmentYear, MSAYear)
