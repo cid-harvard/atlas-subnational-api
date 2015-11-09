@@ -81,6 +81,7 @@ industry_levels = [
 industry_enum = db.Enum(*industry_levels, name="industry_level")
 
 country_levels = [
+    "region",
     "country"
 ]
 country_enum = db.Enum(*country_levels, name="country_level")
