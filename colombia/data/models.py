@@ -105,7 +105,7 @@ class CountryXProductYear(BaseModel, IDMixin):
     level = db.Column(product_enum)
 
     export_value = db.Column(db.BIGINT)
-    num_plants = db.Column(db.Integer)
+    export_num_plants = db.Column(db.Integer)
 
 
 class CountryDepartmentProductYear(CountryXProductYear):
@@ -116,6 +116,21 @@ class CountryDepartmentProductYear(CountryXProductYear):
 class CountryMunicipalityProductYear(CountryXProductYear):
 
     __tablename__ = "country_municipality_product_year"
+
+
+class CountryDepartmentYear(BaseModel, IDMixin):
+
+    __tablename__ = "country_department_year"
+
+    country_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    year = db.Column(db.Integer)
+
+    location = db.relationship(Location, foreign_keys=[location_id])
+    country = db.relationship(Location, foreign_keys=[country_id])
+
+    export_value = db.Column(db.BIGINT)
+    export_num_plants = db.Column(db.Integer)
 
 
 class DepartmentYear(BaseModel, IDMixin):
@@ -142,6 +157,18 @@ class DepartmentYear(BaseModel, IDMixin):
     wages = db.Column(db.BIGINT)
     monthly_wages = db.Column(db.Integer)
     num_establishments = db.Column(db.Integer)
+
+
+class MSAYear(BaseModel, IDMixin):
+
+    __tablename__ = "msa_year"
+
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    year = db.Column(db.Integer)
+
+    location = db.relationship(Location)
+
+    eci = db.Column(db.Float)
 
 
 class XIndustryYear(BaseModel, IDMixin):

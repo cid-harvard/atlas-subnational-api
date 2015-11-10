@@ -126,21 +126,30 @@ if __name__ == "__main__":
                       chunksize=10000, if_exists="append")
 
 
-            # # Municipality - trade rcpy
-            # ret = process_dataset(trade4digit_rcpy_municipality)
+            # MSA year
+            df = ret[('location_id', 'year')].reset_index()
+            df.to_sql("msa_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
-            # df = ret[("country_id", "location_id", "product_id", "year")].reset_index()
-            # df["level"] = "4digit"
-            # df.to_sql("country_municipality_product_year", db.engine,
-                      # index=False, chunksize=10000, if_exists="append")
+            # Municipality - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_municipality)
 
-            # # Department - trade rcpy
-            # ret = process_dataset(trade4digit_rcpy_department)
+            df = ret[("country_id", "location_id", "product_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_municipality_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
 
-            # df = ret[("country_id", "location_id", "product_id", "year")].reset_index()
-            # df["level"] = "4digit"
-            # df.to_sql("country_department_product_year", db.engine,
-                      # index=False, chunksize=10000, if_exists="append")
+            # Department - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_department)
+
+            df = ret[("country_id", "location_id", "product_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("country_department_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
+
+            df = ret[("country_id", "location_id", "year")].reset_index()
+            df.to_sql("country_department_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
 
             # Country - industry- y ear
             ret = process_dataset(industry4digit_country)

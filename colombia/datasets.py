@@ -325,7 +325,7 @@ trade4digit_rcpy_department = {
         "p": "product",
         "yr": "year",
         "X_rcpy_d": "export_value",
-        "NP_rcpy": "num_plants"
+        "NP_rcpy": "export_num_plants"
     },
     "classification_fields": {
         "location": {
@@ -348,9 +348,13 @@ trade4digit_rcpy_department = {
     },
     "facet_fields": ["location", "country", "product", "year"],
     "facets": {
+        ("country_id", "location_id", "year"): {
+            "export_value": first,
+            "export_num_plants": first
+        },
         ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
-            "num_plants": first
+            "export_num_plants": first
         }
     }
 }
@@ -364,7 +368,7 @@ trade4digit_rcpy_municipality = {
         "p": "product",
         "yr": "year",
         "X_rcpy_d": "export_value",
-        "NP_rcpy": "num_plants"
+        "NP_rcpy": "export_num_plants"
     },
     "classification_fields": {
         "location": {
@@ -389,7 +393,7 @@ trade4digit_rcpy_municipality = {
     "facets": {
         ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
-            "num_plants": first
+            "export_num_plants": first
         }
     }
 }
