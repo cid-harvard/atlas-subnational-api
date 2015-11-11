@@ -203,7 +203,7 @@ def do_location_query(search_str) :
     for r in rl :
         print (r.name_short_en_test)
 
-
+    return dict(location=[x.name_short_en_test for x in rl])
     #print (Location.query.search(u'pri').limit(5).all())
 
 def do_product_query(search_str) :
@@ -217,6 +217,8 @@ def do_product_query(search_str) :
     #print (rl)
     for r in rl :
         print (r.name_en_test)
+    from flask import jsonify
+    return dict(product=[x.name_en_test for x in rl])
 
 def do_industry_query(search_str) :
     Session = sessionmaker(bind = engine2)
@@ -226,21 +228,19 @@ def do_industry_query(search_str) :
     query_industry = search(query_industry, search_str,sort=True)
     #print (query_industry.first().name_en_test)
     rl = query_industry.all()
-    #print (rl)
-    for r in rl :
-        print (r.name_en_test)
-    from flask import jsonify
-    return jsonify(data=[x.name_en_test for x in rl])
+    return dict(industry=[x.name_en_test for x in rl])
 
 from sqlalchemy_searchable import parse_search_query
 
 def combined_search_query(search_str):
     Session = sessionmaker(bind = engine2)
     session = Session()
-    #do_location_query(search_str)
-    results = do_industry_query(search_str)
-    #do_product_query(search_str)
-    return results
+    results_location = do_location_query(search_str)
+    results_industry = do_industry_query(search_str)
+    results_product = do_product_query(search_str)
+    results = [results_industry,results_product,results_location]
+    from flask import jsonify
+    return jsonify(data=results)
 
     # Try giving location on top
     #combined_search_vector = ( Industry.search_vector |  sa.func.coalesce(Product.search_vector,u'')
