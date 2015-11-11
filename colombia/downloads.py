@@ -153,7 +153,11 @@ def downloads():
     path = os.path.join(os.path.dirname(__file__), "../downloads/")
 
     def save(df, name):
-        return df.to_csv(os.path.join(path, name))
+        return df.to_csv(
+            os.path.join(path, name),
+            float_format='%.2f',
+            index=False
+        )
 
     save(save_products_country(), "products_country.csv")
     save(save_products_department(), "products_department.csv")
