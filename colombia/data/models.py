@@ -300,4 +300,3 @@ class OccupationIndustryYear(BaseModel, IDMixin):
 
     average_wages = db.Column(db.Integer)
     num_vacancies = db.Column(db.Integer)
-

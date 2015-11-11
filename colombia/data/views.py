@@ -12,6 +12,7 @@ from .. import api_schemas as schemas
 
 from ..core import db
 from atlas_core.helpers.flask import abort
+from .search_text import combined_search_query
 
 data_app = Blueprint("data", __name__)
 
@@ -325,3 +326,11 @@ def entity_entity_entity_year_handler(entity_type, entity_id, subdataset, sub_id
     subdataset_config = get_or_fail(subdataset, entity_config["subdatasets"])
 
     return subdataset_config["sub_func"](entity_type, entity_id, buildingblock_level, sub_id)
+
+@data_app.route("/search/")
+def text_search():
+    search_str = request.args.get('str', '')
+    results = combined_search_query(search_str)
+    print (results)
+    return results
+    #return "results something %s" % search_str
