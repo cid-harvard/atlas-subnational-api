@@ -118,19 +118,37 @@ class CountryMunicipalityProductYear(CountryXProductYear):
     __tablename__ = "country_municipality_product_year"
 
 
-class CountryDepartmentYear(BaseModel, IDMixin):
+class CountryXYear(BaseModel, IDMixin):
 
-    __tablename__ = "country_department_year"
+    __abstract__ = True
 
-    country_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    @declared_attr
+    def country_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
     year = db.Column(db.Integer)
-
-    location = db.relationship(Location, foreign_keys=[location_id])
-    country = db.relationship(Location, foreign_keys=[country_id])
 
     export_value = db.Column(db.BIGINT)
     export_num_plants = db.Column(db.Integer)
+
+
+class CountryCountryYear(CountryXYear):
+
+    __tablename__ = "country_country_year"
+
+
+class CountryDepartmentYear(CountryXYear):
+
+    __tablename__ = "country_department_year"
+
+
+class CountryMSAYear(CountryXYear):
+
+    __tablename__ = "country_msa_year"
 
 
 class DepartmentYear(BaseModel, IDMixin):
