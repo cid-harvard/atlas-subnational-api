@@ -36,18 +36,23 @@ def merge_classifications(df):
     """Look for columns named classificationname_id and merge the
     classification that column."""
 
+    index_cols = [a.name for a in df.index.levels]
+    df = df.reset_index()
+
     for col, settings in classifications.items():
         if col in df.columns:
             df = merge_classification_by_id(
                 df, settings["classification"],
                 col, settings["name"])
 
-    return df
+    return df.set_index(index_cols)
+
 
 def save_products_country():
     ret = process_dataset(trade4digit_country)
-    dpy = ret[('location_id', 'product_id', 'year')].reset_index()
+    dpy = ret[('location_id', 'product_id', 'year')]
     return merge_classifications(dpy)
+
 
 def save_products_department():
     ret = process_dataset(trade4digit_department)
@@ -59,7 +64,7 @@ def save_products_department():
     m = dpy.merge(py, on=["product_id", "year"])
     m = m.merge(dy, on=["location_id", "year"])
 
-    m = merge_classifications(m)
+    m = merge_classifications(m.set_index(['location_id', 'product_id', 'year']))
     return m
 
 
@@ -73,14 +78,14 @@ def save_products_msa():
     df = df.merge(py, on=["product_id", "year"])
     df = df.merge(dy, on=["location_id", "year"])
 
-    df = merge_classifications(df)
+    df = merge_classifications(df.set_index(['location_id', 'product_id', 'year']))
     return df
 
 
 def save_products_muni():
     ret = process_dataset(trade4digit_municipality)
 
-    df = ret[('location_id', 'product_id', 'year')].reset_index()
+    df = ret[('location_id', 'product_id', 'year')]
     df = merge_classifications(df)
     return df
 
@@ -88,7 +93,7 @@ def save_products_muni():
 def save_industries_country():
     ret = process_dataset(industry4digit_country)
 
-    dpy = ret[('location_id', 'industry_id', 'year')].reset_index()
+    dpy = ret[('location_id', 'industry_id', 'year')]
     return merge_classifications(dpy)
 
 
@@ -99,7 +104,7 @@ def save_industries_department():
     py = ret[('industry_id', 'year')][["complexity"]].reset_index()
 
     m = dpy.merge(py, on=["industry_id", "year"])
-    m = merge_classifications(m)
+    m = merge_classifications(m.set_index(['location_id', 'industry_id', 'year']))
     return m
 
 
@@ -110,14 +115,14 @@ def save_industries_msa():
     py = ret[('industry_id', 'year')][["complexity"]].reset_index()
 
     m = dpy.merge(py, on=["industry_id", "year"])
-    m = merge_classifications(m)
+    m = merge_classifications(m.set_index(['location_id', 'industry_id', 'year']))
     return m
 
 
 def save_industries_municipality():
     ret = process_dataset(industry4digit_municipality)
 
-    m = ret[('location_id', 'industry_id', 'year')].reset_index()
+    m = ret[('location_id', 'industry_id', 'year')]
 
     m = merge_classifications(m)
     return m
@@ -125,7 +130,7 @@ def save_industries_municipality():
 
 def save_occupations():
     ret = process_dataset(occupation2digit_industry2digit)
-    m = ret[('occupation_id', 'industry_id')].reset_index()
+    m = ret[('occupation_id', 'industry_id')]
 
     m = merge_classifications(m)
     return m
@@ -146,15 +151,19 @@ def save_demographic():
 
     m = gdp_df.merge(pop_df, on=["location_id", "year"], how="outer")
 
-    m = merge_classifications(m)
-    return m.sort_values(by=["location_id", "year"]).reset_index(drop=True)
+    m = merge_classifications(m.set_index(['location_id', 'year']))
+    return m
 
 
 def downloads():
     path = os.path.join(os.path.dirname(__file__), "../downloads/")
 
     def save(df, name):
-        return df.to_csv(os.path.join(path, name))
+        return df.to_csv(
+            os.path.join(path, name),
+            float_format='%.2f',
+            index=False
+        )
 
     save(save_products_country(), "products_country.csv")
     save(save_products_department(), "products_department.csv")
