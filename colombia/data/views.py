@@ -5,7 +5,8 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityIndustryYear, ProductYear, IndustryYear,
                      DepartmentYear, Location, CountryMunicipalityProductYear,
                      CountryDepartmentProductYear, OccupationYear,
-                     OccupationIndustryYear, CountryDepartmentYear, MSAYear)
+                     OccupationIndustryYear, CountryCountryYear,
+                     CountryDepartmentYear, CountryMSAYear, MSAYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -219,7 +220,17 @@ def eey_location_partners(entity_type, entity_id, buildingblock_level):
         q = CountryDepartmentYear.query\
             .filter_by(location_id=entity_id)\
             .all()
-        return marshal(schemas.country_department_year, q)
+        return marshal(schemas.country_x_year, q)
+    elif location_level == "msa":
+        q = CountryMSAYear.query\
+            .filter_by(location_id=entity_id)\
+            .all()
+        return marshal(schemas.country_x_year, q)
+    elif location_level == "country":
+        q = CountryCountryYear.query\
+            .filter_by(location_id=entity_id)\
+            .all()
+        return marshal(schemas.country_x_year, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
