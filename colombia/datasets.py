@@ -808,7 +808,6 @@ industry2digit_department = {
 def hook_industry2digit_msa(df):
     df = df.drop_duplicates(["location", "industry", "year"])
     df = df[df.location.notnull()]
-    df.location = df.location.astype(int).astype(str).str.zfill(5) + "0"
     return df
 
 industry2digit_msa = {
@@ -816,16 +815,16 @@ industry2digit_msa = {
     "hook_pre_merge": hook_industry2digit_msa,
     "field_mapping": {
         "msa_code": "location",
-        "d3_code": "industry",
+        "d2_code": "industry",
         "year": "year",
-        "msa_d3_est": "num_establishments",
-        "msa_d3_wage": "wages",
-        # "msa_d3_wagemonth": "monthly_wages",
-        "msa_d3_emp": "employment",
-        "msa_d3_rca": "rca",
-        "msa_d3_distance_ps_pred1": "distance",
-        "msa_d3_cog_ps_pred1": "cog",
-        "all_d3_pci": "complexity"
+        "msa_d2_est": "num_establishments",
+        "msa_d2_wage": "wages",
+        # "msa_d2_wagemonth": "monthly_wages",
+        "msa_d2_emp": "employment",
+        "msa_d2_rca": "rca",
+        "msa_d2_distance_ps_pred1": "distance",
+        "msa_d2_cog_ps_pred1": "cog",
+        "all_d2_pci": "complexity"
     },
     "classification_fields": {
         "location": {
@@ -845,7 +844,7 @@ industry2digit_msa = {
     "facets": {
         ("industry_id", "year"): {
             "wages": sum_group,
-            "monthly_wages": sum_group,
+            #"monthly_wages": sum_group,
             "employment": sum_group,
             "num_establishments": sum_group,
             "complexity": first
@@ -853,7 +852,7 @@ industry2digit_msa = {
 
         ("location_id", "industry_id", "year"): {
             "wages": first,
-            "monthly_wages": first,
+            #"monthly_wages": first,
             "employment": first,
             "num_establishments": first,
             "distance": first,
