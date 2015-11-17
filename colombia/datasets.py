@@ -318,8 +318,8 @@ trade4digit_municipality = {
 
 
 def read_trade4digit_rcpy_country():
-    df = pd.read_stata(prefix_path("Trade/exp_rcpy_rc_p4.dta"))
-    df["r"] = "COL"
+    df = pd.read_stata(prefix_path("Trade/exp_rcpy_rm_p4.dta"))
+    df["r"] = "MEX"
     return df
 
 
@@ -331,7 +331,7 @@ trade4digit_rcpy_country = {
         "p": "product",
         "yr": "year",
         "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
+        "O_rcpy": "export_num_plants"
     },
     "classification_fields": {
         "location": {
@@ -372,7 +372,7 @@ trade4digit_rcpy_department = {
         "p": "product",
         "yr": "year",
         "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
+        "O_rcpy": "export_num_plants"
     },
     "classification_fields": {
         "location": {
@@ -415,7 +415,7 @@ trade4digit_rcpy_msa = {
         "p": "product",
         "yr": "year",
         "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
+        "O_rcpy": "export_num_plants"
     },
     "classification_fields": {
         "location": {
@@ -452,7 +452,7 @@ trade4digit_rcpy_municipality = {
         "p": "product",
         "yr": "year",
         "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
+        "O_rcpy": "export_num_plants"
     },
     "classification_fields": {
         "location": {
