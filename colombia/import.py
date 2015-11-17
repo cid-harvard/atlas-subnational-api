@@ -10,7 +10,9 @@ from datasets import (trade4digit_country, trade4digit_department,
                       industry4digit_msa, industry2digit_department,
                       industry4digit_municipality,
                       trade4digit_rcpy_municipality,
-                      trade4digit_rcpy_department, population,
+                      industry2digit_msa,
+                      trade4digit_rcpy_department, trade4digit_rcpy_msa,
+                      trade4digit_rcpy_country, population,
                       gdp_nominal_department, gdp_real_department,
                       occupation2digit, occupation2digit_industry2digit)
 
@@ -131,6 +133,21 @@ if __name__ == "__main__":
             df.to_sql("msa_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            # Country - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_country)
+
+            df = ret[("country_id", "location_id", "year")].reset_index()
+            df.to_sql("country_country_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
+
+
+            # MSA - trade rcpy
+            ret = process_dataset(trade4digit_rcpy_msa)
+
+            df = ret[("country_id", "location_id", "year")].reset_index()
+            df.to_sql("country_msa_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
+
             # Municipality - trade rcpy
             ret = process_dataset(trade4digit_rcpy_municipality)
 
@@ -182,6 +199,14 @@ if __name__ == "__main__":
             df = ret[('location_id', 'industry_id', 'year')].reset_index()
             df["level"] = "division"
             df.to_sql("department_industry_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # MSA - two digit industry - year
+            ret = process_dataset(industry2digit_msa)
+
+            df = ret[('location_id', 'industry_id', 'year')].reset_index()
+            df["level"] = "division"
+            df.to_sql("msa_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # MSA - industry - year

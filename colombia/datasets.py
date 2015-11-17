@@ -317,6 +317,53 @@ trade4digit_municipality = {
 }
 
 
+def read_trade4digit_rcpy_country():
+    df = pd.read_stata(prefix_path("Trade/exp_rcpy_rc_p4.dta"))
+    df["r"] = "COL"
+    return df
+
+
+trade4digit_rcpy_country = {
+    "read_function": read_trade4digit_rcpy_country,
+    "field_mapping": {
+        "r": "location",
+        "ctry_dest": "country",
+        "p": "product",
+        "yr": "year",
+        "X_rcpy_d": "export_value",
+        "NP_rcpy": "export_num_plants"
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+        "country": {
+            "classification": country_classification,
+            "level": "country"
+        },
+    },
+    "digit_padding": {
+        "country": 3,
+        "product": 4
+    },
+    "facet_fields": ["location", "country", "product", "year"],
+    "facets": {
+        ("country_id", "location_id", "year"): {
+            "export_value": sum_group,
+            "export_num_plants": sum_group
+        },
+        ("country_id", "location_id", "product_id", "year"): {
+            "export_value": first,
+            "export_num_plants": first
+        }
+    }
+}
+
 trade4digit_rcpy_department = {
     "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_r2_p4.dta")),
     "field_mapping": {
@@ -349,8 +396,8 @@ trade4digit_rcpy_department = {
     "facet_fields": ["location", "country", "product", "year"],
     "facets": {
         ("country_id", "location_id", "year"): {
-            "export_value": first,
-            "export_num_plants": first
+            "export_value": sum_group,
+            "export_num_plants": sum_group
         },
         ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
@@ -359,6 +406,43 @@ trade4digit_rcpy_department = {
     }
 }
 
+
+trade4digit_rcpy_msa = {
+    "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_ra_p4.dta")),
+    "field_mapping": {
+        "r": "location",
+        "ctry_dest": "country",
+        "p": "product",
+        "yr": "year",
+        "X_rcpy_d": "export_value",
+        "NP_rcpy": "export_num_plants"
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "msa"
+        },
+        "product": {
+            "classification": product_classification,
+            "level": "4digit"
+        },
+        "country": {
+            "classification": country_classification,
+            "level": "country"
+        },
+    },
+    "digit_padding": {
+        "country": 3,
+        "product": 4
+    },
+    "facet_fields": ["location", "country", "product", "year"],
+    "facets": {
+        ("country_id", "location_id", "year"): {
+            "export_value": sum_group,
+            "export_num_plants": sum_group
+        }
+    }
+}
 
 trade4digit_rcpy_municipality = {
     "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_r5_p4.dta")),
@@ -716,6 +800,65 @@ industry2digit_department = {
             "distance": first,
             "cog": first,
             #"rca": first
+        }
+    }
+}
+
+
+def hook_industry2digit_msa(df):
+    df = df.drop_duplicates(["location", "industry", "year"])
+    df = df[df.location.notnull()]
+    df.location = df.location.astype(int).astype(str).str.zfill(5) + "0"
+    return df
+
+industry2digit_msa = {
+    "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_msa.hdf"), "data"),
+    "hook_pre_merge": hook_industry2digit_msa,
+    "field_mapping": {
+        "msa_code": "location",
+        "d3_code": "industry",
+        "year": "year",
+        "msa_d3_est": "num_establishments",
+        "msa_d3_wage": "wages",
+        "msa_d3_wagemonth": "monthly_wages",
+        "msa_d3_emp": "employment",
+        "msa_d3_rca": "rca",
+        "msa_d3_distance_ps_pred1": "distance",
+        "msa_d3_cog_ps_pred1": "cog",
+        "all_d3_pci": "complexity"
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "msa"
+        },
+        "industry": {
+            "classification": industry_classification,
+            "level": "division"
+        },
+    },
+    "digit_padding": {
+        "industry": 2,
+        "location": 5
+    },
+    "facet_fields": ["location", "industry", "year"],
+    "facets": {
+        ("industry_id", "year"): {
+            "wages": sum_group,
+            "monthly_wages": sum_group,
+            "employment": sum_group,
+            "num_establishments": sum_group,
+            "complexity": first
+        },
+
+        ("location_id", "industry_id", "year"): {
+            "wages": first,
+            "monthly_wages": first,
+            "employment": first,
+            "num_establishments": first,
+            "distance": first,
+            "cog": first,
+            "rca": first
         }
     }
 }
