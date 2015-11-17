@@ -820,7 +820,7 @@ industry2digit_msa = {
         "year": "year",
         "msa_d3_est": "num_establishments",
         "msa_d3_wage": "wages",
-        "msa_d3_wagemonth": "monthly_wages",
+        # "msa_d3_wagemonth": "monthly_wages",
         "msa_d3_emp": "employment",
         "msa_d3_rca": "rca",
         "msa_d3_distance_ps_pred1": "distance",
