@@ -839,7 +839,7 @@ industry2digit_msa = {
     },
     "digit_padding": {
         "industry": 2,
-        "location": 5
+        "location": 2
     },
     "facet_fields": ["location", "industry", "year"],
     "facets": {
