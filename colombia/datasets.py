@@ -320,22 +320,39 @@ trade4digit_municipality = {
 }
 
 
-def read_trade4digit_rcpy_country():
-    df = pd.read_stata(prefix_path("Trade/exp_rcpy_rc_p4.dta"))
+trade4digit_rcpy_fields_export = {
+    "r": "location",
+    "country": "country",
+    "p": "product",
+    "yr": "year",
+    "X_rcpy_d_export": "export_value",
+    "NP_rcpy_export": "export_num_plants",
+    "X_rcpy_d_import": "import_value",
+    "NP_rcpy_import": "import_num_plants"
+}
+
+
+def read_trade4digit_rcpy(suffix="rc_p4"):
+    e = pd\
+        .read_stata(prefix_path("Trade/exp_rcpy_{}.dta".format(suffix)))\
+        .rename(columns={"ctry_dest": "country"})
+    i = pd\
+        .read_stata(prefix_path("Trade/imp_rcpy_{}.dta".format(suffix)))\
+        .rename(columns={"ctry_orig": "country"})
+    df = e.merge(i,
+                 on=['r', 'p', 'country', 'yr'],
+                 how='outer',
+                 suffixes=('_export', '_import'))
+    return df.fillna(0)
+
+
+def replace_country(df):
     df["r"] = "COL"
     return df
 
-
 trade4digit_rcpy_country = {
-    "read_function": read_trade4digit_rcpy_country,
-    "field_mapping": {
-        "r": "location",
-        "ctry_dest": "country",
-        "p": "product",
-        "yr": "year",
-        "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
-    },
+    "read_function": lambda: replace_country(read_trade4digit_rcpy(suffix="rc_p4")),
+    "field_mapping": trade4digit_rcpy_fields_export,
     "classification_fields": {
         "location": {
             "classification": location_classification,
@@ -358,25 +375,23 @@ trade4digit_rcpy_country = {
     "facets": {
         ("country_id", "location_id", "year"): {
             "export_value": sum_group,
-            "export_num_plants": sum_group
+            "export_num_plants": sum_group,
+            "import_value": sum_group,
+            "import_num_plants": sum_group,
         },
         ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
-            "export_num_plants": first
+            "export_num_plants": first,
+            "import_value": first,
+            "import_num_plants": first,
         }
     }
 }
 
+
 trade4digit_rcpy_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_r2_p4.dta")),
-    "field_mapping": {
-        "r": "location",
-        "ctry_dest": "country",
-        "p": "product",
-        "yr": "year",
-        "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
-    },
+    "read_function": lambda: read_trade4digit_rcpy(suffix="r2_p4"),
+    "field_mapping": trade4digit_rcpy_fields_export,
     "classification_fields": {
         "location": {
             "classification": location_classification,
@@ -411,15 +426,8 @@ trade4digit_rcpy_department = {
 
 
 trade4digit_rcpy_msa = {
-    "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_ra_p4.dta")),
-    "field_mapping": {
-        "r": "location",
-        "ctry_dest": "country",
-        "p": "product",
-        "yr": "year",
-        "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
-    },
+    "read_function": lambda: read_trade4digit_rcpy(suffix="ra_p4"),
+    "field_mapping": trade4digit_rcpy_fields_export,
     "classification_fields": {
         "location": {
             "classification": location_classification,
@@ -448,15 +456,8 @@ trade4digit_rcpy_msa = {
 }
 
 trade4digit_rcpy_municipality = {
-    "read_function": lambda: pd.read_stata(prefix_path("Trade/exp_rcpy_r5_p4.dta")),
-    "field_mapping": {
-        "r": "location",
-        "ctry_dest": "country",
-        "p": "product",
-        "yr": "year",
-        "X_rcpy_d": "export_value",
-        "NP_rcpy": "export_num_plants"
-    },
+    "read_function": lambda: read_trade4digit_rcpy(suffix="r5_p4"),
+    "field_mapping": trade4digit_rcpy_fields_export,
     "classification_fields": {
         "location": {
             "classification": location_classification,
@@ -492,7 +493,7 @@ def industry4digit_country_read():
     return df
 
 industry4digit_country = {
-    "read_function": industry4digit_country_read ,
+    "read_function": industry4digit_country_read,
     "field_mapping": {
         "state_code": "location",
         "p_code": "industry",
