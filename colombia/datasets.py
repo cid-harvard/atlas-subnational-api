@@ -415,11 +415,15 @@ trade4digit_rcpy_department = {
     "facets": {
         ("country_id", "location_id", "year"): {
             "export_value": sum_group,
-            "export_num_plants": sum_group
+            "export_num_plants": sum_group,
+            "import_value": sum_group,
+            "import_num_plants": sum_group,
         },
         ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
-            "export_num_plants": first
+            "export_num_plants": first,
+            "import_value": first,
+            "import_num_plants": first,
         }
     }
 }
@@ -450,7 +454,9 @@ trade4digit_rcpy_msa = {
     "facets": {
         ("country_id", "location_id", "year"): {
             "export_value": sum_group,
-            "export_num_plants": sum_group
+            "export_num_plants": sum_group,
+            "import_value": sum_group,
+            "import_num_plants": sum_group,
         }
     }
 }
@@ -481,7 +487,9 @@ trade4digit_rcpy_municipality = {
     "facets": {
         ("country_id", "location_id", "product_id", "year"): {
             "export_value": first,
-            "export_num_plants": first
+            "export_num_plants": first,
+            "import_value": first,
+            "import_num_plants": first,
         }
     }
 }
