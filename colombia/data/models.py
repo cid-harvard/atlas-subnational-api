@@ -106,6 +106,8 @@ class CountryXProductYear(BaseModel, IDMixin):
 
     export_value = db.Column(db.BIGINT)
     export_num_plants = db.Column(db.Integer)
+    import_value = db.Column(db.BIGINT)
+    import_num_plants = db.Column(db.Integer)
 
 
 class CountryDepartmentProductYear(CountryXProductYear):
@@ -134,6 +136,8 @@ class CountryXYear(BaseModel, IDMixin):
 
     export_value = db.Column(db.BIGINT)
     export_num_plants = db.Column(db.Integer)
+    import_value = db.Column(db.BIGINT)
+    import_num_plants = db.Column(db.Integer)
 
 
 class CountryCountryYear(CountryXYear):
