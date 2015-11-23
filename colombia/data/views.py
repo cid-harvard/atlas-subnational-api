@@ -6,7 +6,8 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      DepartmentYear, Location, CountryMunicipalityProductYear,
                      CountryDepartmentProductYear, OccupationYear,
                      OccupationIndustryYear, CountryCountryYear,
-                     CountryDepartmentYear, CountryMSAYear, MSAYear)
+                     CountryDepartmentYear, CountryMSAYear,
+                     CountryMunicipalityYear, MSAYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -228,6 +229,11 @@ def eey_location_partners(entity_type, entity_id, buildingblock_level):
         return marshal(schemas.country_x_year, q)
     elif location_level == "country":
         q = CountryCountryYear.query\
+            .filter_by(location_id=entity_id)\
+            .all()
+        return marshal(schemas.country_x_year, q)
+    elif location_level == "municipality":
+        q = CountryMunicipalityYear.query\
             .filter_by(location_id=entity_id)\
             .all()
         return marshal(schemas.country_x_year, q)
