@@ -155,6 +155,11 @@ class CountryMSAYear(CountryXYear):
     __tablename__ = "country_msa_year"
 
 
+class CountryMunicipalityYear(CountryXYear):
+
+    __tablename__ = "country_municipality_year"
+
+
 class DepartmentYear(BaseModel, IDMixin):
 
     __tablename__ = "department_year"

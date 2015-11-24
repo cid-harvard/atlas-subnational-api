@@ -490,6 +490,12 @@ trade4digit_rcpy_municipality = {
             "export_num_plants": first,
             "import_value": first,
             "import_num_plants": first,
+        },
+        ("country_id", "location_id", "year"): {
+            "export_value": sum_group,
+            "export_num_plants": sum_group,
+            "import_value": sum_group,
+            "import_num_plants": sum_group,
         }
     }
 }
