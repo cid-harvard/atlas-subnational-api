@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
                      CountryIndustryYear, MSAIndustryYear,
@@ -185,9 +185,7 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
     elif location_level == "department" and buildingblock_level == "municipality":
         model = MunicipalityProductYear
     else:
-        msg = "Data doesn't exist at location level {} and buildingblock level {}"\
-            .format(location_level, buildingblock_level)
-        abort(400, body=msg)
+        return jsonify(data=[])
 
     subregions = db.session\
         .query(Location.id)\
@@ -204,7 +202,6 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
     )\
         .filter(model.location_id.in_(subregions))\
         .group_by(model.location_id, model.year)
-    from flask import jsonify
     return jsonify(data=[x._asdict() for x in q])
 
 
