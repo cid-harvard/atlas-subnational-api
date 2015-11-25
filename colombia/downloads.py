@@ -5,7 +5,9 @@ from datasets import (trade4digit_country, trade4digit_department,
                       industry4digit_country, industry4digit_department,
                       industry4digit_msa, industry4digit_municipality,
                       occupation2digit_industry2digit, gdp_nominal_department,
-                      gdp_real_department, population)
+                      gdp_real_department, population,
+                      trade4digit_rcpy_country, trade4digit_rcpy_department,
+                      trade4digit_rcpy_msa, trade4digit_rcpy_municipality)
 
 from datasets import (product_classification, industry_classification,
                       location_classification, occupation_classification)
@@ -154,6 +156,42 @@ def save_demographic():
     return m
 
 
+def save_rcpy_country():
+
+    ret = process_dataset(trade4digit_rcpy_country)
+    df = ret[("country_id", "location_id", "product_id", "year")]
+
+    m = merge_classifications(df)
+    return m
+
+
+def save_rcpy_department():
+
+    ret = process_dataset(trade4digit_rcpy_department)
+    df = ret[("country_id", "location_id", "product_id", "year")]
+
+    m = merge_classifications(df)
+    return m
+
+
+def save_rcpy_msa():
+
+    ret = process_dataset(trade4digit_rcpy_msa)
+    df = ret[("country_id", "location_id", "product_id", "year")]
+
+    m = merge_classifications(df)
+    return m
+
+
+def save_rcpy_municipality():
+
+    ret = process_dataset(trade4digit_rcpy_municipality)
+    df = ret[("country_id", "location_id", "product_id", "year")]
+
+    m = merge_classifications(df)
+    return m
+
+
 def downloads():
     path = os.path.join(os.path.dirname(__file__), "../downloads/")
 
@@ -163,6 +201,11 @@ def downloads():
             float_format='%.2f',
             index=False
         )
+
+    save(save_rcpy_country(), "products_rcpy_country.csv")
+    save(save_rcpy_department(), "products_rcpy_department.csv")
+    save(save_rcpy_msa(), "products_rcpy_msa.csv")
+    save(save_rcpy_municipality(), "products_rcpy_municipality.csv")
 
     save(save_products_country(), "products_country.csv")
     save(save_products_department(), "products_department.csv")
