@@ -199,7 +199,8 @@ def downloads():
         return df.to_csv(
             os.path.join(path, name),
             float_format='%.2f',
-            index=False
+            index=False,
+            compression="gzip"
         )
 
     save(save_rcpy_country(), "products_rcpy_country.csv")
