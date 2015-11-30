@@ -12,6 +12,8 @@ from datasets import (trade4digit_country, trade4digit_department,
 from datasets import (product_classification, industry_classification,
                       location_classification, occupation_classification)
 
+from unidecode import unidecode
+
 import os
 
 classifications = {
@@ -46,6 +48,9 @@ def merge_classifications(df):
             df = merge_classification_by_id(
                 df, settings["classification"],
                 col, settings["name"])
+            # Deburr names
+            name_col = "{}_name".format(settings["name"])
+            df[name_col] = df[name_col].map(unidecode)
 
     return df.set_index(index_cols)
 
