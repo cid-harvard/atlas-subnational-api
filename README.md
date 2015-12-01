@@ -5,6 +5,7 @@ The API backend for subnational atlas projects at Harvard CID. It's written in
 python and flask.
 
 [![Doc build status](https://readthedocs.org/projects/atlas-subnational-api/badge/?version=latest)](http://atlas-subnational-api.readthedocs.org/en/latest/)
+[![Circle CI test build](https://circleci.com/gh/cid-harvard/atlas-subnational-api.svg?style=svg)](https://circleci.com/gh/cid-harvard/atlas-subnational-api)
 
 Documentation
 -------------
