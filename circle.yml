@@ -2,6 +2,3 @@ general:
 machine:
   python:
     version: 3.5.0
-test:
-  override:
-    - tox
