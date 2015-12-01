@@ -2,3 +2,11 @@ general:
 machine:
   python:
     version: 3.5.0
+dependencies:
+  post:
+    - pip install -r requirements-dev.txt
+test:
+  override:
+    - py.test --cov colombia tests/:
+        environment:
+          FLASK_CONFIG: ../conf/dev.py
