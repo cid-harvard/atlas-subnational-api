@@ -1,0 +1,10 @@
+general:
+machine:
+  python:
+    version: 3.5.0
+dependencies:
+  post:
+    - pip install requirements-dev.txt
+test:
+  override:
+    - make test
