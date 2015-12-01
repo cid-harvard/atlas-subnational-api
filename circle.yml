@@ -1,12 +1,16 @@
 general:
 machine:
   python:
-    version: 3.5.0
+    version: 3.4.3
+general:
+  artifacts:
+    - "htmlcov/"
 dependencies:
   post:
     - pip install -r requirements-dev.txt
 test:
   override:
-    - py.test --cov colombia tests/:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit
+    - py.test --cov colombia --cov-report html --junitxml=$CIRCLE_TEST_REPORTS/junit/results.xml tests/:
         environment:
           FLASK_CONFIG: ../conf/dev.py
