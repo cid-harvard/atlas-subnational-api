@@ -197,6 +197,21 @@ def save_rcpy_municipality():
     return m
 
 
+def save_classifications(output_dir):
+    import pandas as pd
+    writer = pd.ExcelWriter(
+        os.path.join(output_dir, "classifications.xls"),
+        engine='xlsxwriter'
+    )
+
+    for col, settings in classifications.items():
+        name = settings["name"]
+        classification = settings["classification"]
+        classification.table.to_excel(writer, sheet_name=name)
+
+    writer.save()
+
+
 def downloads():
     path = os.path.join(os.path.dirname(__file__), "../downloads/")
 
@@ -207,6 +222,8 @@ def downloads():
             index=False,
             compression="gzip"
         )
+
+    save_classifications(path)
 
     save(save_rcpy_country(), "products_rcpy_country.csv")
     save(save_rcpy_department(), "products_rcpy_department.csv")
