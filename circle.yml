@@ -7,6 +7,6 @@ dependencies:
     - pip install -r requirements-dev.txt
 test:
   override:
-    - py.test --cov colombia tests/
+    - py.test --cov colombia tests/:
         environment:
           FLASK_CONFIG: ../conf/dev.py
