@@ -1,6 +1,16 @@
-Subnational Atlas
-=================
+Subnational API
+===============
 
+The API backend for subnational atlas projects at Harvard CID. It's written in
+python and flask.
+
+[![Doc build status](https://readthedocs.org/projects/atlas-subnational-api/badge/?version=latest)](http://atlas-subnational-api.readthedocs.org/en/latest/)
+
+Documentation
+-------------
+
+For more information on how to access the API and other details, check the
+[documentation](http://atlas-subnational-api.readthedocs.org/en/latest/).
 
 Usage
 -----
@@ -29,8 +39,3 @@ The `/conf/` directory contains configuration files. `dev.py` is included by
 default. You pass the `CHASSIS_CONFIG="path/to/config.py"` environment variable
 to pick a settings file. It's this way to make sure no one accidentally loads
 the dev config in production.
-
-Changelog
----------
-
-* Nothing here yet until release.
