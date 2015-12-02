@@ -327,10 +327,15 @@ def entity_entity_entity_year_handler(entity_type, entity_id, subdataset, sub_id
 
     return subdataset_config["sub_func"](entity_type, entity_id, buildingblock_level, sub_id)
 
-@data_app.route("/search/")
+@data_app.route("/search1/")
 def text_search():
     search_str = request.args.get('str', '')
     results = combined_search_query(search_str)
     print (results)
     return results
     #return "results something %s" % search_str
+@data_app.route("/search/")
+def text_search_1():
+    search_str = request.args.get('query','')
+    results = combined_search_query(search_str)
+    return results

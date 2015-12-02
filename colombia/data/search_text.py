@@ -12,6 +12,7 @@ from sqlalchemy_searchable import make_searchable
 from sqlalchemy_utils.types import TSVectorType
 
 from sqlalchemy import cast
+import psycopg2,json
 
 # sudo apt-get install python3-dev
 # to get psycopg2 in case the installation fails
@@ -123,7 +124,7 @@ class Location1(Metadata):
 
      # query_class = LocationQuery
     __bind_key__ = 'text_search'
-    __tablename__ = "location_1"
+    __tablename__ = "location"
 
 
     #: Possible aggregation levels
@@ -157,12 +158,13 @@ class Industry1(Metadata):
     name_en_test = db.Column(db.UnicodeText)
     search_vector = sa.Column(TSVectorType('name_en_test'))
 
-SQLALCHEMY_DATABASE_URI = "postgresql://postgres:postgres@localhost/colombia"
+#SQLALCHEMY_DATABASE_URI = "postgresql://postgres:postgres@localhost/colombia"
 
-SQLALCHEMY_BINDS = {
-    'text_search':        'postgresql://postgres:postgres@localhost/sqlalchemy_searchable_text'
-}
+#SQLALCHEMY_BINDS = {
+#    'text_search':        'postgresql://postgres:postgres@localhost/sqlalchemy_searchable_text'
+#}
 engine2 = create_engine('postgresql://postgres:postgres@localhost/sqlalchemy_searchable_text')
+#engine2 = create_engine('postgresql://postgres:postgres@localhost/test4')
 #engine = create_engine(bind=['text_search'])
 #app = Flask(__name__)
 #db = SQLAlchemy(app)
@@ -218,7 +220,16 @@ def do_product_query(search_str) :
     for r in rl :
         print (r.name_en_test)
     from flask import jsonify
-    return dict(product=[x.name_en_test for x in rl])
+    #return dict(product=[x.name_en_test for x in rl])
+    return dict(textsearch=[{"name":x.description_en,
+                            "code": x.code,
+                            "description_en": x.description_en,
+                            "description_es": x.description_es,
+                            "level":x.level,
+                            "id": x.id,
+                            "name_short_en": x.name_short_en,
+                            "name_short_es": x.name_short_es,
+                            "parent_id": 0} for x in rl])
 
 def do_industry_query(search_str) :
     Session = sessionmaker(bind = engine2)
@@ -228,19 +239,29 @@ def do_industry_query(search_str) :
     query_industry = search(query_industry, search_str,sort=True)
     #print (query_industry.first().name_en_test)
     rl = query_industry.all()
-    return dict(industry=[x.name_en_test for x in rl])
+    return dict(textsearch=[{"name":x.description_en,
+                            "code": x.code,
+                            "description_en": x.description_en,
+                            "description_es": x.description_es,
+                            "level":x.level,
+                            "id": x.id,
+                            "name_short_en": x.name_short_en,
+                            "name_short_es": x.name_en_test,
+                            "parent_id": 0} for x in rl])
 
 from sqlalchemy_searchable import parse_search_query
 
 def combined_search_query(search_str):
     Session = sessionmaker(bind = engine2)
     session = Session()
-    results_location = do_location_query(search_str)
-    results_industry = do_industry_query(search_str)
+    #results_location = do_location_query(search_str)
+    #results_industry = do_industry_query(search_str)
     results_product = do_product_query(search_str)
-    results = [results_industry,results_product,results_location]
-    from flask import jsonify
-    return jsonify(data=results)
+    #results = [results_industry,results_product,results_location]
+    results = dict({"textsearch":results_product})
+    return json.dumps(results_product)
+    #from flask import jsonify
+    #return jsonify(textsearch=results)
 
     # Try giving location on top
     #combined_search_vector = ( Industry.search_vector |  sa.func.coalesce(Product.search_vector,u'')
