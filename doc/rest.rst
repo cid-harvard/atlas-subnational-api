@@ -200,6 +200,7 @@ All data API requests *must* supply a ?level= query parameter.
 
 .. http:get:: /data/(string:entity_type)/(int:entity_id)/(string:subdataset)/
 .. http:get:: /data/product/(int:entity_id)/exporters/
+.. http:get:: /data/product/(int:entity_id)/partners/
 .. http:get:: /data/industry/(int:entity_id)/participants/
 .. http:get:: /data/industry/(int:entity_id)/occupations/
 .. http:get:: /data/location/(int:entity_id)/products/
