@@ -7,7 +7,7 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      CountryDepartmentProductYear, OccupationYear,
                      OccupationIndustryYear, CountryCountryYear,
                      CountryDepartmentYear, CountryMSAYear,
-                     CountryMunicipalityYear, MSAYear)
+                     CountryMunicipalityYear, MSAYear, PartnerProductYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -240,6 +240,19 @@ def eey_location_partners(entity_type, entity_id, buildingblock_level):
         abort(400, body=msg)
 
 
+def eey_product_partners(entity_type, entity_id, buildingblock_level):
+
+    if buildingblock_level != "country":
+        msg = "Data doesn't exist at level {}. Try country.".format(buildingblock_level)
+        abort(400, body=msg)
+
+    q = PartnerProductYear.query\
+        .filter_by(product_id=entity_id)\
+        .all()
+
+    return marshal(schemas.PartnerProductYearSchema(many=True), q)
+
+
 def eey_industry_occupations(entity_type, entity_id, buildingblock_level):
 
     if buildingblock_level != "minor_group":
@@ -268,6 +281,9 @@ entity_entity_year = {
         "subdatasets": {
             "exporters": {
                 "func": eey_product_exporters
+            },
+            "partners": {
+                "func": eey_product_partners
             }
         }
     },

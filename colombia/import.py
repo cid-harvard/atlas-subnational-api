@@ -139,6 +139,10 @@ if __name__ == "__main__":
             df.to_sql("country_country_year", db.engine,
                       index=False, chunksize=10000, if_exists="append")
 
+            df = ret[("product_id", "country_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("partner_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
 
             # MSA - trade rcpy
             ret = process_dataset(trade4digit_rcpy_msa)

@@ -7,5 +7,5 @@ from .data.models import (CountryProductYear, DepartmentProductYear,
                           MSAIndustryYear, OccupationYear,
                           OccupationIndustryYear, CountryCountryYear,
                           CountryDepartmentYear, CountryMSAYear,
-                          CountryMunicipalityYear, MSAYear)
+                          CountryMunicipalityYear, MSAYear, PartnerProductYear)
 
