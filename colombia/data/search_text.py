@@ -64,7 +64,7 @@ I18nMixin = I18nMixinBase.create(
     languages=["en", "es", "de"],
     fields={
         "name": sa.UnicodeText,
-        "name_short": sa.Unicode(50),
+        "name_short": sa.Unicode(75),
         "description": sa.UnicodeText
     })
 
@@ -88,7 +88,7 @@ class HSProduct1(Metadata):
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
     """
     __bind_key__ = 'text_search'
-    __tablename__ = "product"
+    __tablename__ = "product_test"
 
     #: Possible aggregation levels
     LEVELS = [
@@ -96,7 +96,8 @@ class HSProduct1(Metadata):
         "2digit",
         "4digit"
     ]
-    level = sa.Column(sa.Enum(*LEVELS,name="hs_levels"))
+    level = sa.Column(sa.Enum(*LEVELS,name="product_level"))
+    # This is the column where both name_short and name_en are stored
     name_en_test = sa.Column(sa.UnicodeText)
     #my_enum = sa.Enum('country','municipality', 'department', 'population_center', name='my_enum')
 
@@ -163,7 +164,7 @@ class Industry1(Metadata):
 #SQLALCHEMY_BINDS = {
 #    'text_search':        'postgresql://postgres:postgres@localhost/sqlalchemy_searchable_text'
 #}
-engine2 = create_engine('postgresql://postgres:postgres@localhost/sqlalchemy_searchable_text')
+engine2 = create_engine('postgresql://postgres:postgres@localhost/atlas')
 #engine2 = create_engine('postgresql://postgres:postgres@localhost/test4')
 #engine = create_engine(bind=['text_search'])
 #app = Flask(__name__)
@@ -221,7 +222,7 @@ def do_product_query(search_str) :
         print (r.name_en_test)
     from flask import jsonify
     #return dict(product=[x.name_en_test for x in rl])
-    return dict(textsearch=[{"name":x.description_en,
+    return dict(textsearch=[{"name":x.name_en,
                             "code": x.code,
                             "description_en": x.description_en,
                             "description_es": x.description_es,
