@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
                      CountryIndustryYear, MSAIndustryYear,
@@ -6,7 +6,8 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      DepartmentYear, Location, CountryMunicipalityProductYear,
                      CountryDepartmentProductYear, OccupationYear,
                      OccupationIndustryYear, CountryCountryYear,
-                     CountryDepartmentYear, CountryMSAYear, MSAYear)
+                     CountryDepartmentYear, CountryMSAYear,
+                     CountryMunicipalityYear, MSAYear, PartnerProductYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -184,9 +185,7 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
     elif location_level == "department" and buildingblock_level == "municipality":
         model = MunicipalityProductYear
     else:
-        msg = "Data doesn't exist at location level {} and buildingblock level {}"\
-            .format(location_level, buildingblock_level)
-        abort(400, body=msg)
+        return jsonify(data=[])
 
     subregions = db.session\
         .query(Location.id)\
@@ -203,7 +202,6 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
     )\
         .filter(model.location_id.in_(subregions))\
         .group_by(model.location_id, model.year)
-    from flask import jsonify
     return jsonify(data=[x._asdict() for x in q])
 
 
@@ -231,10 +229,28 @@ def eey_location_partners(entity_type, entity_id, buildingblock_level):
             .filter_by(location_id=entity_id)\
             .all()
         return marshal(schemas.country_x_year, q)
+    elif location_level == "municipality":
+        q = CountryMunicipalityYear.query\
+            .filter_by(location_id=entity_id)\
+            .all()
+        return marshal(schemas.country_x_year, q)
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
         abort(400, body=msg)
+
+
+def eey_product_partners(entity_type, entity_id, buildingblock_level):
+
+    if buildingblock_level != "country":
+        msg = "Data doesn't exist at level {}. Try country.".format(buildingblock_level)
+        abort(400, body=msg)
+
+    q = PartnerProductYear.query\
+        .filter_by(product_id=entity_id)\
+        .all()
+
+    return marshal(schemas.PartnerProductYearSchema(many=True), q)
 
 
 def eey_industry_occupations(entity_type, entity_id, buildingblock_level):
@@ -265,6 +281,9 @@ entity_entity_year = {
         "subdatasets": {
             "exporters": {
                 "func": eey_product_exporters
+            },
+            "partners": {
+                "func": eey_product_partners
             }
         }
     },

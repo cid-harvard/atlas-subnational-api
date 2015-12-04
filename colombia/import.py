@@ -140,6 +140,10 @@ if __name__ == "__main__":
             df.to_sql("country_country_year", db.engine,
                       index=False, chunksize=10000, if_exists="append")
 
+            df = ret[("product_id", "country_id", "year")].reset_index()
+            df["level"] = "4digit"
+            df.to_sql("partner_product_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
 
             # MSA - trade rcpy
             ret = process_dataset(trade4digit_rcpy_msa)
@@ -150,6 +154,10 @@ if __name__ == "__main__":
 
             # Municipality - trade rcpy
             ret = process_dataset(trade4digit_rcpy_municipality)
+
+            df = ret[("country_id", "location_id", "year")].reset_index()
+            df.to_sql("country_municipality_year", db.engine,
+                      index=False, chunksize=10000, if_exists="append")
 
             df = ret[("country_id", "location_id", "product_id", "year")].reset_index()
             df["level"] = "4digit"

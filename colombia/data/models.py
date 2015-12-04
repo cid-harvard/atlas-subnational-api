@@ -7,7 +7,8 @@ from atlas_core.model_mixins import IDMixin
 from ..core import db
 
 from ..metadata.models import (Location, HSProduct, Industry, Occupation,
-                               product_enum, industry_enum, occupation_enum)
+                               Country, product_enum, industry_enum,
+                               occupation_enum)
 
 
 class XProductYear(BaseModel, IDMixin):
@@ -106,6 +107,8 @@ class CountryXProductYear(BaseModel, IDMixin):
 
     export_value = db.Column(db.BIGINT)
     export_num_plants = db.Column(db.Integer)
+    import_value = db.Column(db.BIGINT)
+    import_num_plants = db.Column(db.Integer)
 
 
 class CountryDepartmentProductYear(CountryXProductYear):
@@ -134,6 +137,8 @@ class CountryXYear(BaseModel, IDMixin):
 
     export_value = db.Column(db.BIGINT)
     export_num_plants = db.Column(db.Integer)
+    import_value = db.Column(db.BIGINT)
+    import_num_plants = db.Column(db.Integer)
 
 
 class CountryCountryYear(CountryXYear):
@@ -149,6 +154,30 @@ class CountryDepartmentYear(CountryXYear):
 class CountryMSAYear(CountryXYear):
 
     __tablename__ = "country_msa_year"
+
+
+class CountryMunicipalityYear(CountryXYear):
+
+    __tablename__ = "country_municipality_year"
+
+
+class PartnerProductYear(BaseModel, IDMixin):
+
+    __tablename__ = "partner_product_year"
+
+    country_id = db.Column(db.Integer, db.ForeignKey(Country.id))
+    product_id = db.Column(db.Integer, db.ForeignKey(HSProduct.id))
+    level = db.Column(product_enum)
+
+    partner = db.relationship(Country)
+    product = db.relationship(HSProduct)
+
+    year = db.Column(db.Integer)
+
+    export_value = db.Column(db.BIGINT)
+    import_value = db.Column(db.BIGINT)
+    export_num_plants = db.Column(db.Integer)
+    import_num_plants = db.Column(db.Integer)
 
 
 class DepartmentYear(BaseModel, IDMixin):

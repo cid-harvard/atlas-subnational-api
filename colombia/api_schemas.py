@@ -59,7 +59,7 @@ class CountryMunicipalityProductYearSchema(ma.Schema):
     municipality_id = ma.fields.Integer(attribute="location_id")
 
     class Meta:
-        fields = ("export_value", "country_id" "product_id", "year")
+        fields = ("export_value", "import_value", "country_id" "product_id", "year")
 
 
 class CountryDepartmentProductYearSchema(ma.Schema):
@@ -67,13 +67,22 @@ class CountryDepartmentProductYearSchema(ma.Schema):
     department_id = ma.fields.Integer(attribute="location_id")
 
     class Meta:
-        fields = ("export_value", "country_id", "product_id", "year")
+        fields = ("export_value", "import_value", "country_id", "product_id", "year")
+
+
+class PartnerProductYearSchema(ma.Schema):
+
+    department_id = ma.fields.Integer(attribute="location_id")
+
+    class Meta:
+        fields = ("export_value", "import_value", "export_num_plants",
+                  "import_num_plants", "country_id", "product_id", "year")
 
 
 class CountryXYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("export_value", "country_id", "location_id", "year")
+        fields = ("export_value", "import_value", "country_id", "location_id", "year")
 
 
 class XIndustryYearSchema(ma.Schema):
