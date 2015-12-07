@@ -6,7 +6,7 @@ from linnaeus import classification
 product_classification = classification.load("product/HS/Colombia_Prospedia/out/products_colombia_prospedia.csv")
 location_classification = classification.load("location/Mexico/INEGI/out/locations_mexico_inegi.csv")
 industry_classification = classification.load("industry/NAICS/Mexico_datlas/out/industries_mexico_scian_2007_datlas.csv")
-country_classification = classification.load("location/Mexico/INEGI/out/locations_mexico_inegi.csv")
+country_classification = classification.load("location/International/Mexico/out/locations_international_mexico.csv")
 occupation_classification = classification.load("occupation/SINCO/Mexico_datlas/out/occupations_sinco_datlas_2011.csv")
 
 
@@ -340,11 +340,13 @@ def read_trade4digit_rcpy(suffix="rm_p4"):
                  on=['r', 'p', 'country', 'yr'],
                  how='outer',
                  suffixes=('_export', '_import'))
+
+    df = df[df.country != "-"]
     return df.fillna(0)
 
 
 def replace_country(df):
-    df["r"] = "COL"
+    df["r"] = "MEX"
     return df
 
 trade4digit_rcpy_country = {
@@ -365,7 +367,6 @@ trade4digit_rcpy_country = {
         },
     },
     "digit_padding": {
-        "country": 3,
         "product": 4
     },
     "facet_fields": ["location", "country", "product", "year"],
@@ -411,7 +412,6 @@ trade4digit_rcpy_department = {
     },
     "digit_padding": {
         "location": 2,
-        "country": 3,
         "product": 4
     },
     "facet_fields": ["location", "country", "product", "year"],
@@ -450,7 +450,7 @@ trade4digit_rcpy_msa = {
         },
     },
     "digit_padding": {
-        "country": 3,
+        "location": 2,
         "product": 4
     },
     "facet_fields": ["location", "country", "product", "year"],
@@ -483,7 +483,6 @@ trade4digit_rcpy_municipality = {
     },
     "digit_padding": {
         "location": 5,
-        "country": 3,
         "product": 4
     },
     "facet_fields": ["location", "country", "product", "year"],
