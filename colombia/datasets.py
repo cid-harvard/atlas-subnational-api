@@ -463,6 +463,12 @@ trade4digit_rcpy_msa = {
             "export_num_plants": sum_group,
             "import_value": sum_group,
             "import_num_plants": sum_group,
+        },
+        ("country_id", "location_id", "product_id", "year"): {
+            "export_value": first,
+            "export_num_plants": first,
+            "import_value": first,
+            "import_num_plants": first,
         }
     }
 }
