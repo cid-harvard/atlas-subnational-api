@@ -341,6 +341,7 @@ def entity_entity_entity_year_handler(entity_type, entity_id, subdataset, sub_id
 @data_app.route("/search/")
 def text_search_1():
     search_str = request.args.get('query','')
-    filter_str = request.args.get('filter','')
-    results = combined_search_query(search_str)
+    filter_str = request.args.get('lang','')
+    print(filter_str)
+    results = combined_search_query(search_str,filter_str)
     return results

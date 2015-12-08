@@ -64,7 +64,7 @@ I18nMixin = I18nMixinBase.create(
     languages=["en", "es", "de"],
     fields={
         "name": sa.UnicodeText,
-        "name_short": sa.Unicode(75),
+        "name_short": sa.UnicodeText,
         "description": sa.UnicodeText
     })
 
@@ -88,7 +88,7 @@ class HSProduct1(Metadata):
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
     """
     __bind_key__ = 'text_search'
-    __tablename__ = "product_test"
+    __tablename__ = "product_test_2"
 
     #: Possible aggregation levels
     LEVELS = [
@@ -99,9 +99,10 @@ class HSProduct1(Metadata):
     level = sa.Column(sa.Enum(*LEVELS,name="product_level"))
     # This is the column where both name_short and name_en are stored
     name_en_test = sa.Column(sa.UnicodeText)
+    text_es = sa.Column(sa.UnicodeText)
     #my_enum = sa.Enum('country','municipality', 'department', 'population_center', name='my_enum')
-
-    search_vector = sa.Column(TSVectorType('name_en_test'))
+    search_vector_es = sa.Column(TSVectorType('text_es',regconfig='pg_catalog.spanish'))
+    search_vector = sa.Column(TSVectorType('name_en_test',regconfig='pg_catalog.english'))
 
 from sqlalchemy.dialects.postgresql import ENUM
 
@@ -209,12 +210,19 @@ def do_location_query(search_str) :
     return dict(location=[x.name_short_en_test for x in rl])
     #print (Location.query.search(u'pri').limit(5).all())
 
-def do_product_query(search_str) :
+def do_product_query(search_str,filter_str) :
     Session = sessionmaker(bind = engine2)
     session = Session()
 
     query_product = session.query(HSProduct1)
-    query_product = search(query_product, search_str,sort=True)
+    print(filter_str)
+    if filter_str == "en-col":
+        print("english")
+        query_product = search(query_product, search_str, vector=HSProduct1.search_vector,sort=True)
+    else :
+        print("spanish")
+        query_product = search(query_product, search_str,vector=HSProduct1.search_vector_es, sort=True)
+
     #print (query_product.first().name_en_test)
     rl = query_product.all()
     #print (rl)
@@ -228,6 +236,7 @@ def do_product_query(search_str) :
                             "description_es": x.description_es,
                             "level":x.level,
                             "id": x.id,
+                            "short_name": x.name_short_en,
                             "name_short_en": x.name_short_en,
                             "name_short_es": x.name_short_es,
                             "parent_id": 0} for x in rl])
@@ -252,12 +261,12 @@ def do_industry_query(search_str) :
 
 from sqlalchemy_searchable import parse_search_query
 
-def combined_search_query(search_str):
+def combined_search_query(search_str,filter_str):
     Session = sessionmaker(bind = engine2)
     session = Session()
     #results_location = do_location_query(search_str)
     #results_industry = do_industry_query(search_str)
-    results_product = do_product_query(search_str)
+    results_product = do_product_query(search_str,filter_str)
     #results = [results_industry,results_product,results_location]
     results = dict({"textsearch":results_product})
     return json.dumps(results_product)
