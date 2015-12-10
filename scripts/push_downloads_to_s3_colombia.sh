@@ -1,2 +1,7 @@
 set -e
-aws s3 sync downloads/ s3://datlas-colombia-downloads/ --content-encoding=gzip --acl=public-read --profile datlas-colombia-downloads-prod
+
+export BUCKETNAME=s3://datlas-colombia-downloads
+export PROFILENAME=datlas-colombia-downloads-prod
+export SOURCE=downloads/
+
+./scripts/versioned_push_to_s3.sh
