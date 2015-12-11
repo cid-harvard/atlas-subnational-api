@@ -216,11 +216,11 @@ def downloads():
     path = os.path.join(os.path.dirname(__file__), "../downloads/")
 
     def save(df, name):
-        return df.to_csv(
+        return df.to_excel(
             os.path.join(path, name),
             float_format='%.2f',
             index=False,
-            compression="gzip"
+            engine="xlsxwriter"
         )
 
     save_classifications(path)
