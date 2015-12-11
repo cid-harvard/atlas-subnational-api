@@ -217,7 +217,7 @@ def downloads():
 
     def save(df, name):
         return df.to_excel(
-            os.path.join(path, name),
+            os.path.join(path, name).replace(".csv", ".xlsx"),
             float_format='%.2f',
             index=False,
             engine="xlsxwriter"
