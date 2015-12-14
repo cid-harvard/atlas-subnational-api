@@ -215,35 +215,48 @@ def save_classifications(output_dir):
 def downloads():
     path = os.path.join(os.path.dirname(__file__), "../downloads/")
 
-    def save(df, name):
-        return df\
-            .reset_index(level=["year"])\
-            .to_excel(
-                os.path.join(path, name).replace(".csv", ".xlsx"),
-                float_format='%.2f',
-                index=False,
-                engine="xlsxwriter"
-            )
+    def save(df, name, format="excel"):
+
+        if format == "excel":
+            df\
+                .reset_index(level=["year"])\
+                .to_excel(
+                    os.path.join(path, name) + ".xlsx",
+                    float_format='%.2f',
+                    index=False,
+                    engine="xlsxwriter"
+                )
+        elif format == "csv":
+            df\
+                .reset_index(level=["year"])\
+                .to_csv(
+                    os.path.join(path, name) + ".csv",
+                    float_format='%.2f',
+                    index=False,
+                    compression="gzip"
+                )
+        else:
+            raise ValueError("Download format must be excel or csv.")
 
     save_classifications(path)
 
-    save(save_rcpy_country(), "products_rcpy_country.csv")
-    save(save_rcpy_department(), "products_rcpy_department.csv")
-    save(save_rcpy_msa(), "products_rcpy_msa.csv")
-    save(save_rcpy_municipality(), "products_rcpy_municipality.csv")
+    save(save_rcpy_country(), "products_rcpy_country", format="csv")
+    save(save_rcpy_department(), "products_rcpy_department", format="csv")
+    save(save_rcpy_msa(), "products_rcpy_msa", format="csv")
+    save(save_rcpy_municipality(), "products_rcpy_municipality", format="csv")
 
-    save(save_products_country(), "products_country.csv")
-    save(save_products_department(), "products_department.csv")
-    save(save_products_msa(), "products_msa.csv")
-    save(save_products_muni(), "products_municipality.csv")
+    save(save_products_country(), "products_country")
+    save(save_products_department(), "products_department")
+    save(save_products_msa(), "products_msa")
+    save(save_products_muni(), "products_municipality", format="csv")
 
-    save(save_industries_country(), "industries_country.csv")
-    save(save_industries_department(), "industries_department.csv")
-    save(save_industries_msa(), "industries_msa.csv")
-    save(save_industries_municipality(), "industries_municipality.csv")
+    save(save_industries_country(), "industries_country")
+    save(save_industries_department(), "industries_department")
+    save(save_industries_msa(), "industries_msa")
+    save(save_industries_municipality(), "industries_municipality", format="csv")
 
-    save(save_occupations(), "occupations.csv")
-    save(save_demographic(), "demographic.csv")
+    save(save_occupations(), "occupations")
+    save(save_demographic(), "demographic")
 
 if __name__ == "__main__":
 
