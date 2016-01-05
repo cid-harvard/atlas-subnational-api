@@ -83,14 +83,13 @@ if __name__ == "__main__":
             dy_i = ret[('location_id', 'year')].reset_index()
 
             # GDP data
-            # ret = process_dataset(gdp_real_department)
-            # gdp_real_df = ret[('location_id', 'year')]
+            ret = process_dataset(gdp_real_department)
+            gdp_real_df = ret[('location_id', 'year')]
 
             ret = process_dataset(gdp_nominal_department)
             gdp_nominal_df = ret[('location_id', 'year')]
 
-            # gdp_df = gdp_real_df.join(gdp_nominal_df).reset_index()
-            gdp_df = gdp_nominal_df.reset_index()
+            gdp_df = gdp_real_df.join(gdp_nominal_df).reset_index()
 
             # Pop data
             ret = process_dataset(population)

@@ -728,11 +728,11 @@ def clean_gdp_nominal_department(df):
     return df
 
 gdp_nominal_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Metadata Final/mex_natl_dept_gdp_2003_2013.dta"), encoding="latin-1"),
+    "read_function": lambda: pd.read_stata(prefix_path("Metadata Final/mex_natl_dept_gdp_2003_2014.dta"), encoding="latin-1"),
     "hook_pre_merge": clean_gdp_nominal_department,
     "field_mapping": {
-        "dept_code": "location",
-        "dept_gdp": "gdp_nominal",
+        "entidad": "location",
+        "PIB_Current": "gdp_nominal",
         "year": "year"
     },
     "classification_fields": {
@@ -754,10 +754,10 @@ gdp_nominal_department = {
 
 
 gdp_real_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_realgdp_dept_natl_2000_2013.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Metadata Final/mex_natl_dept_gdp_2003_2014.dta")),
     "field_mapping": {
-        "dept_code": "location",
-        "real_gdp": "gdp_real",
+        "entidad": "location",
+        "PIB_Constant_2008": "gdp_real",
         "year": "year"
     },
     "classification_fields": {
