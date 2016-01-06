@@ -105,7 +105,7 @@ if __name__ == "__main__":
             dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")
 
             dy["gdp_pc_nominal"] = dy.gdp_nominal / dy.population
-            # dy["gdp_pc_real"] = dy.gdp_real / dy.population
+            dy["gdp_pc_real"] = dy.gdp_real / dy.population
 
             dy.to_sql("department_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
