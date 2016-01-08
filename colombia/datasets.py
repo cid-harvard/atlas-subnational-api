@@ -24,6 +24,10 @@ def sum_group(x):
 
 
 DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/"
+YEAR_MIN_TRADE = 2007
+YEAR_MAX_TRADE = 2013
+YEAR_MIN_INDUSTRY = 2007
+YEAR_MIN_INDUSTRY = 2013
 
 
 def prefix_path(to_prefix):
@@ -39,7 +43,7 @@ def load_trade4digit_country():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_rc_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
+    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -113,7 +117,7 @@ def load_trade4digit_department():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r2_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
+    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -195,7 +199,7 @@ def load_trade4digit_msa():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_ra_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
+    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -271,7 +275,7 @@ def load_trade4digit_municipality():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(2007, 2013)]
+    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -343,6 +347,7 @@ def read_trade4digit_rcpy(suffix="rc_p4"):
                  on=['r', 'p', 'country', 'yr'],
                  how='outer',
                  suffixes=('_export', '_import'))
+    df = df[df.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     return df.fillna(0)
 
 
@@ -513,6 +518,13 @@ trade4digit_rcpy_municipality = {
 }
 
 
+def hook_industry(df):
+    df = df.drop_duplicates(["location", "industry", "year"])
+    df = df[df.location.notnull()]
+    df = df[df.year.between(YEAR_MIN_INDUSTRY, YEAR_MAX_INDUSTRY)]
+    return df
+
+
 def industry4digit_country_read():
     df = pd.read_hdf(prefix_path("Industries/industries_all.hdf"), "data")
     df["state_code"] = "COL"
@@ -529,7 +541,7 @@ industry4digit_country = {
         "all_p_wagemonth": "monthly_wages",
         "all_p_est": "num_establishments",
     },
-    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
+    "hook_pre_merge": hook_industry,
     "classification_fields": {
         "location": {
             "classification": location_classification,
@@ -570,7 +582,7 @@ industry4digit_department = {
         "state_p_cog_ps_pred1": "cog",
         "all_p_pci": "complexity"
     },
-    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
+    "hook_pre_merge": hook_industry,
     "classification_fields": {
         "location": {
             "classification": location_classification,
@@ -614,8 +626,7 @@ industry4digit_department = {
 
 
 def hook_industry4digit_msa(df):
-    df = df.drop_duplicates(["location", "industry", "year"])
-    df = df[df.location.notnull()]
+    df = hook_industry(df)
     df.location = df.location.astype(int).astype(str).str.zfill(5) + "0"
     return df
 
@@ -671,7 +682,7 @@ industry4digit_msa = {
 
 industry4digit_municipality = {
     "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_muni.hdf"), "data"),
-    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
+    "hook_pre_merge": hook_industry,
     "field_mapping": {
         "muni_code": "location",
         "p_code": "industry",
@@ -783,7 +794,7 @@ gdp_real_department = {
 
 industry2digit_department = {
     "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_state.hdf"), "data"),
-    "hook_pre_merge": lambda df: df.drop_duplicates(["location", "industry", "year"]),
+    "hook_pre_merge": hook_industry,
     "field_mapping": {
         "state_code": "location",
         "d3_code": "industry",
@@ -835,8 +846,7 @@ industry2digit_department = {
 
 
 def hook_industry2digit_msa(df):
-    df = df.drop_duplicates(["location", "industry", "year"])
-    df = df[df.location.notnull()]
+    df = hook_industry(df)
     df.location = df.location.astype(int).astype(str).str.zfill(5) + "0"
     return df
 
