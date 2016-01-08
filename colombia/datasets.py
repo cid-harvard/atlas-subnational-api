@@ -24,10 +24,10 @@ def sum_group(x):
 
 
 DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Mexico/beta/"
-YEAR_MIN_TRADE = 2007
-YEAR_MAX_TRADE = 2013
-YEAR_MIN_INDUSTRY = 2007
-YEAR_MAX_INDUSTRY = 2013
+YEAR_MIN_TRADE = 2004
+YEAR_MAX_TRADE = 2014
+YEAR_MIN_INDUSTRY = 2004
+YEAR_MAX_INDUSTRY = 2014
 
 
 def prefix_path(to_prefix):
