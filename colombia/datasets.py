@@ -27,7 +27,7 @@ DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/"
 YEAR_MIN_TRADE = 2007
 YEAR_MAX_TRADE = 2013
 YEAR_MIN_INDUSTRY = 2007
-YEAR_MIN_INDUSTRY = 2013
+YEAR_MAX_INDUSTRY = 2013
 
 
 def prefix_path(to_prefix):
