@@ -53,7 +53,6 @@ def load_trade4digit_country():
         "import_num_plants": 0,
     })
 
-    # TODO: ask moncho about products in df but not df2
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
@@ -127,7 +126,6 @@ def load_trade4digit_department():
         "import_num_plants": 0,
     })
 
-    # TODO: ask moncho about products in df but not df2
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
@@ -209,7 +207,6 @@ def load_trade4digit_msa():
         "import_num_plants": 0,
     })
 
-    # TODO: ask moncho about products in df but not df2
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
