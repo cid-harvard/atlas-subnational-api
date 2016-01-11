@@ -58,7 +58,6 @@ def load_trade4digit_country():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_rc_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -72,6 +71,7 @@ def load_trade4digit_country():
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
 
+    combo = combo[combo.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     combo["r"] = "COL"
     return combo
 
@@ -131,7 +131,6 @@ def load_trade4digit_department():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r2_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -144,6 +143,7 @@ def load_trade4digit_department():
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
+    combo = combo[combo.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     return combo
 
 trade4digit_department = {
@@ -231,7 +231,6 @@ def load_trade4digit_msa():
 
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -244,6 +243,7 @@ def load_trade4digit_msa():
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
+    combo = combo[combo.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     return combo
 
 
@@ -306,7 +306,6 @@ def load_trade4digit_municipality():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "NP_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -316,6 +315,7 @@ def load_trade4digit_municipality():
         "import_num_plants": 0,
     })
 
+    descriptives = descriptives[descriptives.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     return descriptives
 
 trade4digit_municipality = {
