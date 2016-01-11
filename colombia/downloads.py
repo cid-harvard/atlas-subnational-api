@@ -10,7 +10,8 @@ from datasets import (trade4digit_country, trade4digit_department,
                       trade4digit_rcpy_msa, trade4digit_rcpy_municipality)
 
 from datasets import (product_classification, industry_classification,
-                      location_classification, occupation_classification)
+                      location_classification, occupation_classification,
+                      country_classification)
 
 from unidecode import unidecode
 
@@ -32,6 +33,10 @@ classifications = {
     "industry_id": {
         "name": "industry",
         "classification": industry_classification
+    },
+    "country_id": {
+        "name": "country",
+        "classification": country_classification
     },
 }
 
