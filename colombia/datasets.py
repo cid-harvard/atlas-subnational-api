@@ -156,12 +156,12 @@ trade4digit_department = {
         "export_num_plants": "export_num_plants",
         "import_value": "import_value",
         "import_num_plants": "import_num_plants",
-        "density_natl": "density",
-        "eci_natl": "eci",
+        "density_intl": "density",
+        "eci_intl": "eci",
         "pci": "pci",
-        "coi_natl": "coi",
-        "cog_natl": "cog",
-        "RCA_natl": "export_rca"
+        "coi_intl": "coi",
+        "cog_intl": "cog",
+        "RCA_intl": "export_rca"
     },
     "classification_fields": {
         "location": {
@@ -254,15 +254,15 @@ trade4digit_msa = {
         "p": "product",
         "yr": "year",
         "export_value": "export_value",
-        "import_value": "import_value",
         "export_num_plants": "export_num_plants",
+        "import_value": "import_value",
         "import_num_plants": "import_num_plants",
-        "density_natl": "density",
-        "eci_natl": "eci",
+        "density_intl": "density",
+        "eci_intl": "eci",
         "pci": "pci",
-        "coi_natl": "coi",
-        "cog_natl": "cog",
-        "RCA_natl": "export_rca"
+        "coi_intl": "coi",
+        "cog_intl": "cog",
+        "RCA_intl": "export_rca"
     },
     "classification_fields": {
         "location": {
