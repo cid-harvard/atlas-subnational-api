@@ -108,8 +108,12 @@ def save_products_muni():
 def save_industries_country():
     ret = process_dataset(industry4digit_country)
 
-    dpy = ret[('location_id', 'industry_id', 'year')]
-    return merge_classifications(dpy)
+    dpy = ret[('location_id', 'industry_id', 'year')].reset_index()
+    py = ret[('industry_id', 'year')][["complexity"]].reset_index()
+
+    m = dpy.merge(py, on=["industry_id", "year"])
+    m = merge_classifications(m.set_index(['location_id', 'industry_id', 'year']))
+    return m
 
 
 def save_industries_department():
