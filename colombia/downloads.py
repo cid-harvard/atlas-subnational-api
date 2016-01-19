@@ -170,40 +170,30 @@ def save_demographic():
     return m
 
 
-def save_rcpy_country():
-
-    ret = process_dataset(trade4digit_rcpy_country)
+def save_rcpy(rcpy_dataset):
+    ret = process_dataset(rcpy_dataset)
     df = ret[("country_id", "location_id", "product_id", "year")]
 
-    m = merge_classifications(df)
-    return m
+    df = merge_classifications(df)
+
+    pci = process_dataset(trade4digit_country)[('product_id', 'year')][["pci"]].reset_index()
+    df = df.reset_index().merge(pci, on=["product_id", "year"], how="outer")
+    return df.set_index(['country_id', 'location_id', 'product_id', 'year'])
+
+def save_rcpy_country():
+    return save_rcpy(trade4digit_rcpy_country)
 
 
 def save_rcpy_department():
-
-    ret = process_dataset(trade4digit_rcpy_department)
-    df = ret[("country_id", "location_id", "product_id", "year")]
-
-    m = merge_classifications(df)
-    return m
+    return save_rcpy(trade4digit_rcpy_department)
 
 
 def save_rcpy_msa():
-
-    ret = process_dataset(trade4digit_rcpy_msa)
-    df = ret[("country_id", "location_id", "product_id", "year")]
-
-    m = merge_classifications(df)
-    return m
+    return save_rcpy(trade4digit_rcpy_msa)
 
 
 def save_rcpy_municipality():
-
-    ret = process_dataset(trade4digit_rcpy_municipality)
-    df = ret[("country_id", "location_id", "product_id", "year")]
-
-    m = merge_classifications(df)
-    return m
+    return save_rcpy(trade4digit_rcpy_municipality)
 
 
 def save_classifications(output_dir):
