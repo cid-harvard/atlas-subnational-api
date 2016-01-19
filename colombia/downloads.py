@@ -60,28 +60,9 @@ def merge_classifications(df):
     return df.set_index(index_cols)
 
 
-def save_products_country():
-    ret = process_dataset(trade4digit_country)
-    dpy = ret[('location_id', 'product_id', 'year')]
-    return merge_classifications(dpy)
-
-
-def save_products_department():
-    ret = process_dataset(trade4digit_department)
-
-    dpy = ret[('location_id', 'product_id', 'year')].reset_index()
-    py = ret[('product_id', 'year')][["pci"]].reset_index()
-    dy = ret[('location_id', 'year')][["eci"]].reset_index()
-
-    m = dpy.merge(py, on=["product_id", "year"])
-    m = m.merge(dy, on=["location_id", "year"])
-
-    m = merge_classifications(m.set_index(['location_id', 'product_id', 'year']))
-    return m
-
-
-def save_products_msa():
-    ret = process_dataset(trade4digit_msa)
+def region_product_year(ret):
+    """Merge region product year, product year and region year variable
+    datasets."""
 
     df = ret[('location_id', 'product_id', 'year')].reset_index()
     py = ret[('product_id', 'year')][["pci"]].reset_index()
@@ -90,8 +71,27 @@ def save_products_msa():
     df = df.merge(py, on=["product_id", "year"])
     df = df.merge(dy, on=["location_id", "year"])
 
-    df = merge_classifications(df.set_index(['location_id', 'product_id', 'year']))
-    return df
+    return df.set_index(['location_id', 'product_id', 'year'])
+
+
+def save_products_country():
+    ret = process_dataset(trade4digit_country)
+    dpy = ret[('location_id', 'product_id', 'year')]
+    return merge_classifications(dpy)
+
+
+def save_products_department():
+    ret = process_dataset(trade4digit_department)
+    m = region_product_year(ret)
+    m = merge_classifications(m)
+    return m
+
+
+def save_products_msa():
+    ret = process_dataset(trade4digit_msa)
+    m = region_product_year(ret)
+    m = merge_classifications(m)
+    return m
 
 
 def save_products_muni():
@@ -99,7 +99,10 @@ def save_products_muni():
 
     df = ret[('location_id', 'product_id', 'year')]
     df = merge_classifications(df)
-    return df
+
+    pci = process_dataset(trade4digit_country)[('product_id', 'year')][["pci"]].reset_index()
+    df = df.reset_index().merge(pci, on=["product_id", "year"])
+    return df.set_index(['location_id', 'product_id', 'year'])
 
 
 def save_industries_country():
