@@ -101,7 +101,7 @@ def save_products_muni():
     df = merge_classifications(df)
 
     pci = process_dataset(trade4digit_country)[('product_id', 'year')][["pci"]].reset_index()
-    df = df.reset_index().merge(pci, on=["product_id", "year"])
+    df = df.reset_index().merge(pci, on=["product_id", "year"], how="outer")
     return df.set_index(['location_id', 'product_id', 'year'])
 
 
