@@ -50,9 +50,14 @@ def merge_classifications(df):
 
     for col, settings in classifications.items():
         if col in df.columns:
+            if settings["name"] == "location":
+                name_columns = ["name"]
+            else:
+                name_columns = ["name", "name_es"]
             df = merge_classification_by_id(
-                df, settings["classification"],
-                col, settings["name"])
+                df, settings["classification"], col,
+                prefix=settings["name"],
+                name_columns=name_columns)
             # Deburr names
             name_col = "{}_name".format(settings["name"])
             df[name_col] = df[name_col].map(unidecode)

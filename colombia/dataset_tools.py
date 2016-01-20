@@ -55,10 +55,10 @@ def merge_to_table(classification, classification_name, df, merge_on):
                     right_index=True, how="left")
 
 
-def merge_classification_by_id(df, classification, column, prefix="name"):
+def merge_classification_by_id(df, classification, column, prefix="name", name_columns=["name"]):
     return df.merge(
         classification
-        .table[["name", "code"]]
+        .table[name_columns + ["code"]]
         .rename(columns=lambda s: prefix + "_" + s),
         left_on=column,
         right_index=True,
