@@ -21,7 +21,7 @@ FOLDERNAME=$(./scripts/get_version_string.sh)
 # Upload generated files
 # CSV files that are generated are all gzipped, so tag them that way so that
 # the browser knows how to decode it when downloading from s3
-aws s3 sync $SOURCE $BUCKETNAME/generated/$FOLDERNAME/ --include "*.csv" --content-encoding=gzip --profile $PROFILENAME
+aws s3 sync $SOURCE $BUCKETNAME/generated/$FOLDERNAME/ --exclude "*" --include "*.csv" --content-encoding=gzip --profile $PROFILENAME
 aws s3 sync $SOURCE $BUCKETNAME/generated/$FOLDERNAME/ --exclude "*.csv" --profile $PROFILENAME
 
 # Copy in manually uploaded custom files to complete downloads
