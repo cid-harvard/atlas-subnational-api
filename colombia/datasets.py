@@ -29,6 +29,21 @@ YEAR_MAX_TRADE = 2014
 YEAR_MIN_INDUSTRY = 2004
 YEAR_MAX_INDUSTRY = 2014
 
+# These are MSAs (Metropolitan Statistical Area) that have a single
+# municipality associated with them - they're mostly "cities" which are munis
+# that have population greater than a certain number (100k?). Alternatively it
+# could have been that the way we generated MSAs (looking at commute patterns
+# between cities) could have generated a MSA that has only one city, but I
+# don't think this is the case. These values are from Moncho's Trade dataset,
+# in Keys/Colombia_cities_of_onemuni_key.dta
+SINGLE_MUNI_MSAS = ['73001', '47001', '23001', '20001', '76109', '41001', '76520',
+                    '19001', '70001', '44001', '68081', '52835', '18001', '05045',
+                    '44430', '05837', '76147', '85001', '13430', '25290', '76111',
+                    '27001', '23417', '41551', '47189', '05154', '54498', '20011',
+                    '23162', '19698', '81001', '73268', '17380', '23466', '13244',
+                    '88001', '05172', '50006', '15176', '70215', '47288', '50313',
+                    '54518']
+
 
 def prefix_path(to_prefix):
     return os.path.join(DATASET_ROOT, to_prefix)
@@ -43,7 +58,6 @@ def load_trade4digit_country():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_rm_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -53,11 +67,11 @@ def load_trade4digit_country():
         "import_num_plants": 0,
     })
 
-    # TODO: ask moncho about products in df but not df2
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
 
+    combo = combo[combo.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     combo["r"] = "MEX"
     return combo
 
@@ -117,7 +131,6 @@ def load_trade4digit_department():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r2_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -127,10 +140,10 @@ def load_trade4digit_department():
         "import_num_plants": 0,
     })
 
-    # TODO: ask moncho about products in df but not df2
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
+    combo = combo[combo.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     return combo
 
 trade4digit_department = {
@@ -143,12 +156,12 @@ trade4digit_department = {
         "export_num_plants": "export_num_plants",
         "import_value": "import_value",
         "import_num_plants": "import_num_plants",
-        "density_natl": "density",
-        "eci_natl": "eci",
+        "density_intl": "density",
+        "eci_intl": "eci",
         "pci": "pci",
-        "coi_natl": "coi",
-        "cog_natl": "cog",
-        "RCA_natl": "export_rca"
+        "coi_intl": "coi",
+        "cog_intl": "cog",
+        "RCA_intl": "export_rca"
     },
     "classification_fields": {
         "location": {
@@ -193,13 +206,31 @@ trade4digit_department = {
 def load_trade4digit_msa():
     prescriptives = pd.read_stata(prefix_path("Trade/exp_ecomplexity_ra.dta"))
 
+    # Fix certain muni codes to msa codes, see MEX-148
+    is_single_muni_msa = prescriptives.r.isin(SINGLE_MUNI_MSAS)
+    prescriptives.loc[is_single_muni_msa, "r"] = prescriptives.loc[is_single_muni_msa, "r"].map(lambda x: x + "0")
+
     exports = pd.read_stata(prefix_path("Trade/exp_rpy_ra_p4.dta"))
+
+    # Add missing exports from single muni MSAs. See MEX-148
+    muni_exports = pd.read_stata(prefix_path("Trade/exp_rpy_r5_p4.dta"))
+    muni_exports = muni_exports[muni_exports.r.isin(SINGLE_MUNI_MSAS)]
+    muni_exports.r = muni_exports.r.map(lambda x: x + "0")
+    exports = pd.concat([exports, muni_exports]).reset_index(drop=True)
+
     exports = exports.rename(columns={"X_rpy_d": "export_value",
                                       "O_rpy": "export_num_plants"})
+
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_ra_p4.dta"))
+
+    # Add missing imports from single muni MSAs. See MEX-148
+    muni_imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
+    muni_imports = muni_imports[muni_imports.r.isin(SINGLE_MUNI_MSAS)]
+    muni_imports.r = muni_imports.r.map(lambda x: x + "0")
+    imports = pd.concat([imports, muni_imports]).reset_index(drop=True)
+
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -209,10 +240,10 @@ def load_trade4digit_msa():
         "import_num_plants": 0,
     })
 
-    # TODO: ask moncho about products in df but not df2
     combo = prescriptives.merge(descriptives,
                                 left_on=["yr", "r", "p4"],
                                 right_on=["yr", "r", "p"])
+    combo = combo[combo.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     return combo
 
 
@@ -223,15 +254,15 @@ trade4digit_msa = {
         "p": "product",
         "yr": "year",
         "export_value": "export_value",
-        "import_value": "import_value",
         "export_num_plants": "export_num_plants",
+        "import_value": "import_value",
         "import_num_plants": "import_num_plants",
-        "density_natl": "density",
-        "eci_natl": "eci",
+        "density_intl": "density",
+        "eci_intl": "eci",
         "pci": "pci",
-        "coi_natl": "coi",
-        "cog_natl": "cog",
-        "RCA_natl": "export_rca"
+        "coi_intl": "coi",
+        "cog_intl": "cog",
+        "RCA_intl": "export_rca"
     },
     "classification_fields": {
         "location": {
@@ -276,7 +307,6 @@ def load_trade4digit_municipality():
     imports = pd.read_stata(prefix_path("Trade/imp_rpy_r5_p4.dta"))
     imports = imports.rename(columns={"X_rpy_d": "import_value",
                                       "O_rpy": "import_num_plants"})
-    imports = imports[imports.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
 
     descriptives = exports.merge(imports, on=["yr", "r", "p"], how="outer")
     descriptives = descriptives.fillna({
@@ -286,6 +316,7 @@ def load_trade4digit_municipality():
         "import_num_plants": 0,
     })
 
+    descriptives = descriptives[descriptives.yr.between(YEAR_MIN_TRADE, YEAR_MAX_TRADE)]
     return descriptives
 
 trade4digit_municipality = {
