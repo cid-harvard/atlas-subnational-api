@@ -141,7 +141,7 @@ def save_occupations():
 
     m = merge_classifications(m)
     m["year"] = 2014
-    return m
+    return m.reset_index().set_index(['occupation_id', 'industry_id', 'year'])
 
 
 def save_demographic():
