@@ -140,6 +140,7 @@ def save_occupations():
     m = ret[('occupation_id', 'industry_id')]
 
     m = merge_classifications(m)
+    m["year"] = 2014
     return m
 
 
