@@ -108,6 +108,12 @@ trade4digit_country = {
     },
     "facet_fields": ["location", "product", "year"],
     "facets": {
+        ("location_id", "year"): {
+            "eci": first,
+        },
+        ("product_id", "year"): {
+            "pci": first,
+        },
         ("location_id", "product_id", "year"): {
             "export_value": first,
             "import_value": first,
@@ -571,6 +577,7 @@ industry4digit_country = {
         "all_p_wage": "wages",
         "all_p_wagemonth": "monthly_wages",
         "all_p_est": "num_establishments",
+        "all_p_pci": "complexity"
     },
     "hook_pre_merge": hook_industry,
     "classification_fields": {
@@ -589,6 +596,9 @@ industry4digit_country = {
     },
     "facet_fields": ["location", "industry", "year"],
     "facets": {
+        ("industry_id", "year"): {
+            "complexity": first
+        },
         ("location_id", "industry_id", "year"): {
             "employment": first,
             "wages": first,
