@@ -1,8 +1,7 @@
 from colombia import models, create_app
 from colombia.core import db
 
-from dataset_tools import (process_dataset, classification_to_models,
-                           merge_classification_by_id)
+from dataset_tools import (process_dataset, classification_to_models)
 
 from datasets import (trade4digit_country, trade4digit_department,
                       trade4digit_msa, trade4digit_municipality,
@@ -14,7 +13,8 @@ from datasets import (trade4digit_country, trade4digit_department,
                       trade4digit_rcpy_department, trade4digit_rcpy_msa,
                       trade4digit_rcpy_country, population,
                       gdp_nominal_department, gdp_real_department,
-                      occupation2digit, occupation2digit_industry2digit)
+                      occupation2digit, occupation2digit_industry2digit,
+                      industry2digit_country)
 
 from datasets import (product_classification,
                       industry_classification,
@@ -195,13 +195,15 @@ if __name__ == "__main__":
             df.to_sql("department_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            # Department - two digit industry - year
-            ret = process_dataset(industry2digit_department)
-
+            # Country - two digit industry - year
+            ret = process_dataset(industry2digit_country)
             df = ret[('industry_id', 'year')].reset_index()
             df["level"] = "division"
             df.to_sql("industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+            # Department - two digit industry - year
+            ret = process_dataset(industry2digit_department)
 
             df = ret[('location_id', 'industry_id', 'year')].reset_index()
             df["level"] = "division"
