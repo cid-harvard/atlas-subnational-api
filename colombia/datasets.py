@@ -564,13 +564,13 @@ def hook_industry(df):
 
 def industry4digit_country_read():
     df = pd.read_hdf(prefix_path("Industries/industries_all.hdf"), "data")
-    df["state_code"] = "COL"
+    df["country_code"] = "COL"
     return df
 
 industry4digit_country = {
     "read_function": industry4digit_country_read,
     "field_mapping": {
-        "state_code": "location",
+        "country_code": "location",
         "p_code": "industry",
         "year": "year",
         "all_p_emp": "employment",
@@ -833,6 +833,50 @@ gdp_real_department = {
 }
 
 
+def industry2digit_country_read():
+    df = pd.read_hdf(prefix_path("Industries/industries_all.hdf"), "data")
+    df["country_code"] = "COL"
+    return df
+
+industry2digit_country = {
+    "read_function": industry2digit_country_read,
+    "hook_pre_merge": hook_industry,
+    "field_mapping": {
+        "country_code": "location",
+        "d3_code": "industry",
+        "year": "year",
+        "all_d3_wage": "wages",
+        "all_d3_wagemonth": "monthly_wages",
+        "all_d3_emp": "employment",
+        "all_d3_est": "num_establishments",
+        "all_d3_pci": "complexity"
+    },
+    "classification_fields": {
+        "location": {
+            "classification": location_classification,
+            "level": "country"
+        },
+        "industry": {
+            "classification": industry_classification,
+            "level": "division"
+        },
+    },
+    "digit_padding": {
+        "location": 1,
+        "industry": 2
+    },
+    "facet_fields": ["location", "industry", "year"],
+    "facets": {
+        ("industry_id", "year"): {
+            "wages": first,
+            "monthly_wages": first,
+            "employment": first,
+            "num_establishments": first,
+            "complexity": first
+        }
+    }
+}
+
 industry2digit_department = {
     "read_function": lambda: pd.read_hdf(prefix_path("Industries/industries_state.hdf"), "data"),
     "hook_pre_merge": hook_industry,
@@ -865,14 +909,6 @@ industry2digit_department = {
     },
     "facet_fields": ["location", "industry", "year"],
     "facets": {
-        ("industry_id", "year"): {
-            "wages": sum_group,
-            "monthly_wages": sum_group,
-            "employment": sum_group,
-            "num_establishments": sum_group,
-            "complexity": first
-        },
-
         ("location_id", "industry_id", "year"): {
             "wages": first,
             "monthly_wages": first,
