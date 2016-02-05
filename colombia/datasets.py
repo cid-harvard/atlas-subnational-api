@@ -842,7 +842,7 @@ industry2digit_country = {
     "facets": {
         ("industry_id", "year"): {
             "wages": first,
-            "monthly_wages": first,
+            #"monthly_wages": first,
             "employment": first,
             "num_establishments": first,
             "complexity": first
