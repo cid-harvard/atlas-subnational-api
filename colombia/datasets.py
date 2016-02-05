@@ -816,13 +816,13 @@ industry2digit_country = {
     "hook_pre_merge": hook_industry,
     "field_mapping": {
         "country_code": "location",
-        "d3_code": "industry",
+        "d2_code": "industry",
         "year": "year",
-        "all_d3_wage": "wages",
-        #"all_d3_wagemonth": "monthly_wages",
-        "all_d3_emp": "employment",
-        "all_d3_est": "num_establishments",
-        "all_d3_pci": "complexity"
+        "all_d2_wage": "wages",
+        #"all_d2_wagemonth": "monthly_wages",
+        "all_d2_emp": "employment",
+        "all_d2_est": "num_establishments",
+        "all_d2_pci": "complexity"
     },
     "classification_fields": {
         "location": {
