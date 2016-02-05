@@ -808,7 +808,7 @@ gdp_real_department = {
 
 def industry2digit_country_read():
     df = pd.read_hdf(prefix_path("Industries/industries_all.hdf"), "data")
-    df["country_code"] = "COL"
+    df["country_code"] = "MEX"
     return df
 
 industry2digit_country = {
