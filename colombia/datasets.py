@@ -819,7 +819,7 @@ industry2digit_country = {
         "d3_code": "industry",
         "year": "year",
         "all_d3_wage": "wages",
-        "all_d3_wagemonth": "monthly_wages",
+        #"all_d3_wagemonth": "monthly_wages",
         "all_d3_emp": "employment",
         "all_d3_est": "num_establishments",
         "all_d3_pci": "complexity"
