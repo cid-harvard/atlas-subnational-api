@@ -25,9 +25,9 @@ def sum_group(x):
 
 DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/"
 YEAR_MIN_TRADE = 2007
-YEAR_MAX_TRADE = 2013
+YEAR_MAX_TRADE = 2014
 YEAR_MIN_INDUSTRY = 2007
-YEAR_MAX_INDUSTRY = 2013
+YEAR_MAX_INDUSTRY = 2014
 
 # These are MSAs (Metropolitan Statistical Area) that have a single
 # municipality associated with them - they're mostly "cities" which are munis
