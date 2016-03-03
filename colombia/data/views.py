@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy import inspect
+
 from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
                      CountryIndustryYear, MSAIndustryYear,
@@ -94,6 +96,13 @@ def eey_product_exporters(entity_type, entity_id, location_level):
         abort(400, body=msg)
 
 
+def get_all_model_fields(model):
+    """Get a iterable of all the fields of a model."""
+    return (
+        getattr(model, field.expression.name)
+        for field in inspect(model).attrs)
+
+
 def eeey_location_products(entity_type, entity_id, buildingblock_level,
                            sub_id):
 
@@ -105,17 +114,17 @@ def eeey_location_products(entity_type, entity_id, buildingblock_level,
     location_level = lookup_classification_level("location", entity_id)
 
     if location_level == "municipality":
-        q = CountryMunicipalityProductYear.query\
+        q = db.session.query(*get_all_model_fields(CountryMunicipalityProductYear))\
             .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
-        return marshal(schemas.country_municipality_product_year, q)
+        return marshal(schemas.country_municipality_product_year, (x._asdict() for x in q))
     elif location_level == "department":
-        q = CountryDepartmentProductYear.query\
+        q = db.session.query(*get_all_model_fields(CountryDepartmentProductYear))\
             .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
-        return marshal(schemas.country_department_product_year, q)
+        return marshal(schemas.country_department_product_year, (x._asdict() for x in q))
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
