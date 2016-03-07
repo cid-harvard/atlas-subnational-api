@@ -719,13 +719,26 @@ industry4digit_municipality = {
     }
 }
 
+def read_population():
+    df = pd.read_excel(prefix_path("Metadata Final/demographic_department.xlsx"), 3,
+                       skiprows=[0, 1, 2, 3,5, 6, 7, 8],
+                       skip_footer=3)
+
+    df.columns = ["state_name", "state_code"] + list(range(2005, 2016))
+    df = df\
+        .drop("state_name", axis=1)\
+        .set_index("state_code")\
+        .stack()\
+        .reset_index()
+    df.columns = ["state_code", "year", "population"]
+    return df
+
 population = {
-    "read_function": lambda: pd.read_stata(prefix_path("Metadata Final/mex_natl_dept_muni_pop_by_age_2010.dta"), encoding="latin-1"),
-    "hook_pre_merge": lambda df: df[~df[["location", "year"]].duplicated()],
+    "read_function": read_population,
     "field_mapping": {
         "year": "year",
-        "dept_code": "location",
-        "dept_pop": "population"
+        "state_code": "location",
+        "population": "population"
     },
     "classification_fields": {
         "location": {
