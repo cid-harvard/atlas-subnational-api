@@ -58,13 +58,19 @@ class CountryMunicipalityProductYearSchema(ma.Schema):
 
     municipality_id = ma.fields.Integer(attribute="location_id")
 
+    export_value = ma.fields.Float(default=None)
+    import_value = ma.fields.Float(default=None)
+
     class Meta:
-        fields = ("export_value", "import_value", "country_id" "product_id", "year")
+        fields = ("export_value", "import_value", "country_id", "product_id", "year")
 
 
 class CountryDepartmentProductYearSchema(ma.Schema):
 
     department_id = ma.fields.Integer(attribute="location_id")
+
+    export_value = ma.fields.Float(default=None)
+    import_value = ma.fields.Float(default=None)
 
     class Meta:
         fields = ("export_value", "import_value", "country_id", "product_id", "year")
