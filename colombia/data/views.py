@@ -17,7 +17,64 @@ from .. import api_schemas as schemas
 from ..core import db
 from atlas_core.helpers.flask import abort
 
+from collections import OrderedDict
+from itertools import product
+
 data_app = Blueprint("data", __name__)
+
+
+def rectangularize(data, keys):
+    """Make sure there is a row in the dataset for each unique combination of
+    values for the given keys.
+
+    E.g. If your rows are:
+        [
+        {"location":4, "year": 2012},
+        {"location":3, "year": 2013}
+        ]
+    and you rectangularize by ["location", "year"], this function will add two
+    more rows:
+        [
+        {"location":3, "year": 2012},
+        {"location":4, "year": 2012},
+        {"location":4, "year": 2013},
+        {"location":4, "year": 2013}
+        ]
+    """
+
+    unique_values = OrderedDict()
+    all_keys = set()
+    index = {}
+
+    for i, line in enumerate(data):
+
+        # Collect unique values for each key
+        for key in keys:
+            unique_values.setdefault(key, set())
+            unique_values[key].add(line[key])
+
+        # Build an index where we can look up stuff in the list by value
+        values = tuple(line[key] for key in keys)
+        index[values] = i
+
+        # Collect names of keys just so we have all possible names of keys in
+        # the list
+        all_keys.update(line.keys())
+
+    # Generate all combos of the unique values by doing a cartesian product
+    all_combos = product(*unique_values.values())
+
+    # Make a new list, creating entries for combos that didn't exist in the old
+    # list
+    new_list = []
+    for combo in all_combos:
+        if combo in index:
+            entry_index = index[combo]
+            new_list.append(data[entry_index])
+        else:
+            new_list.append(dict(zip(keys, combo)))
+
+    return new_list
 
 
 def get_level():
