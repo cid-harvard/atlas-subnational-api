@@ -175,13 +175,18 @@ def eeey_location_products(entity_type, entity_id, buildingblock_level,
             .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
-        return marshal(schemas.country_municipality_product_year, (x._asdict() for x in q))
+        return marshal(schemas.country_municipality_product_year,
+                       rectangularize([x._asdict() for x in q],
+                                      ["country_id", "product_id", "year"]))
     elif location_level == "department":
         q = db.session.query(*get_all_model_fields(CountryDepartmentProductYear))\
             .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
-        return marshal(schemas.country_department_product_year, (x._asdict() for x in q))
+        return marshal(schemas.country_department_product_year,
+                       rectangularize([x._asdict() for x in q],
+                                      ["country_id", "product_id", "year"]))
+
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
