@@ -184,6 +184,8 @@ def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
         model = DepartmentProductYear
     elif location_level == "department" and buildingblock_level == "municipality":
         model = MunicipalityProductYear
+    elif location_level == "department" and buildingblock_level == "msa":
+        model = MSAProductYear
     else:
         return jsonify(data=[])
 
