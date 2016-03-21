@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy import inspect
+
 from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
                      CountryIndustryYear, MSAIndustryYear,
@@ -15,7 +17,64 @@ from .. import api_schemas as schemas
 from ..core import db
 from atlas_core.helpers.flask import abort
 
+from collections import OrderedDict
+from itertools import product
+
 data_app = Blueprint("data", __name__)
+
+
+def rectangularize(data, keys):
+    """Make sure there is a row in the dataset for each unique combination of
+    values for the given keys.
+
+    E.g. If your rows are:
+        [
+        {"location":4, "year": 2012},
+        {"location":3, "year": 2013}
+        ]
+    and you rectangularize by ["location", "year"], this function will add two
+    more rows:
+        [
+        {"location":3, "year": 2012},
+        {"location":4, "year": 2012},
+        {"location":4, "year": 2013},
+        {"location":4, "year": 2013}
+        ]
+    """
+
+    unique_values = OrderedDict()
+    all_keys = set()
+    index = {}
+
+    for i, line in enumerate(data):
+
+        # Collect unique values for each key
+        for key in keys:
+            unique_values.setdefault(key, set())
+            unique_values[key].add(line[key])
+
+        # Build an index where we can look up stuff in the list by value
+        values = tuple(line[key] for key in keys)
+        index[values] = i
+
+        # Collect names of keys just so we have all possible names of keys in
+        # the list
+        all_keys.update(line.keys())
+
+    # Generate all combos of the unique values by doing a cartesian product
+    all_combos = product(*unique_values.values())
+
+    # Make a new list, creating entries for combos that didn't exist in the old
+    # list
+    new_list = []
+    for combo in all_combos:
+        if combo in index:
+            entry_index = index[combo]
+            new_list.append(data[entry_index])
+        else:
+            new_list.append(dict(zip(keys, combo)))
+
+    return new_list
 
 
 def get_level():
@@ -94,6 +153,13 @@ def eey_product_exporters(entity_type, entity_id, location_level):
         abort(400, body=msg)
 
 
+def get_all_model_fields(model):
+    """Get a iterable of all the fields of a model."""
+    return (
+        getattr(model, field.expression.name)
+        for field in inspect(model).attrs)
+
+
 def eeey_location_products(entity_type, entity_id, buildingblock_level,
                            sub_id):
 
@@ -105,17 +171,22 @@ def eeey_location_products(entity_type, entity_id, buildingblock_level,
     location_level = lookup_classification_level("location", entity_id)
 
     if location_level == "municipality":
-        q = CountryMunicipalityProductYear.query\
+        q = db.session.query(*get_all_model_fields(CountryMunicipalityProductYear))\
             .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
-        return marshal(schemas.country_municipality_product_year, q)
+        return marshal(schemas.country_municipality_product_year,
+                       rectangularize([x._asdict() for x in q],
+                                      ["country_id", "product_id", "year"]))
     elif location_level == "department":
-        q = CountryDepartmentProductYear.query\
+        q = db.session.query(*get_all_model_fields(CountryDepartmentProductYear))\
             .filter_by(location_id=entity_id)\
             .filter_by(product_id=sub_id)\
             .all()
-        return marshal(schemas.country_department_product_year, q)
+        return marshal(schemas.country_department_product_year,
+                       rectangularize([x._asdict() for x in q],
+                                      ["country_id", "product_id", "year"]))
+
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)
