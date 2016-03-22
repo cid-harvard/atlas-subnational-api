@@ -3,7 +3,7 @@ flask-cache==0.13.1
 clint==0.4.1
 
 # Atlas Core
-git+https://github.com/cid-harvard/atlas_core.git@v0.2.7#egg=atlas_core
+git+https://github.com/cid-harvard/atlas_core.git@v0.2.8#egg=atlas_core
 
 # Classifications
 git+https://github.com/cid-harvard/classifications.git@v0.0.54#egg=linnaeus
