@@ -6,7 +6,7 @@ clint==0.4.1
 git+https://github.com/cid-harvard/atlas_core.git@v0.2.8#egg=atlas_core
 
 # Classifications
-git+https://github.com/cid-harvard/classifications.git@v0.0.54#egg=linnaeus
+git+https://github.com/cid-harvard/classifications.git@v0.0.58#egg=linnaeus
 
 # Reckoner - data quality / assertions
 git+https://github.com/cid-harvard/reckoner.git@850e1322226107262a9c6a9af24b9440f3b5b35b#egg=reckoner
