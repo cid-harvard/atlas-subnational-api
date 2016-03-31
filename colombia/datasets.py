@@ -621,7 +621,8 @@ industry4digit_department = {
         "state_p_rca": "rca",
         "state_p_distance_ps": "distance",
         "state_p_cog_ps_pred1": "cog",
-        "all_p_pci": "complexity"
+        "all_p_pci": "complexity",
+        "state_all_eci": "industry_eci"
     },
     "hook_pre_merge": hook_industry,
     "classification_fields": {
@@ -645,6 +646,7 @@ industry4digit_department = {
             "wages": sum_group,
             "monthly_wages": first,
             "num_establishments": sum_group,
+            "industry_eci": first
         },
         ("industry_id", "year"): {
             "employment": sum_group,
@@ -684,7 +686,8 @@ industry4digit_msa = {
         "msa_p_rca": "rca",
         "msa_p_distance_hybrid": "distance",
         "msa_p_cog_ps_pred1": "cog",
-        "all_p_pci": "complexity"
+        "all_p_pci": "complexity",
+        "msa_all_eci": "industry_eci"
     },
     "classification_fields": {
         "location": {
@@ -704,6 +707,9 @@ industry4digit_msa = {
         ("location_id", "year"): {
             "employment": sum_group,
             "wages": sum_group,
+            "monthly_wages": first,
+            "num_establishments": sum_group,
+            "industry_eci": first
         },
         ("industry_id", "year"): {
             "employment": sum_group,
