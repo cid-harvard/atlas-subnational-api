@@ -683,6 +683,7 @@ industry4digit_msa = {
         "msa_p_emp": "employment",
         "msa_p_wage": "wages",
         "msa_p_wagemonth": "monthly_wages",
+        "msa_p_est": "num_establishments",
         "msa_p_rca": "rca",
         "msa_p_distance_hybrid": "distance",
         "msa_p_cog_ps_pred1": "cog",
