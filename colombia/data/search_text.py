@@ -64,7 +64,7 @@ I18nMixin = I18nMixinBase.create(
     languages=["en", "es", "de"],
     fields={
         "name": sa.UnicodeText,
-        "name_short": sa.Unicode(75),
+        "name_short": sa.UnicodeText,
         "description": sa.UnicodeText
     })
 
@@ -99,9 +99,11 @@ class HSProduct1(Metadata):
     level = sa.Column(sa.Enum(*LEVELS,name="product_level"))
     # This is the column where both name_short and name_en are stored
     name_en_test = sa.Column(sa.UnicodeText)
+    name_es_test = sa.Column(sa.UnicodeText)
     #my_enum = sa.Enum('country','municipality', 'department', 'population_center', name='my_enum')
 
-    search_vector = sa.Column(TSVectorType('name_en_test'))
+    en_search_vector = sa.Column(TSVectorType('name_en_test',regconfig='pg_catalog.english'))
+    es_search_vector = sa.Column(TSVectorType('name_es_test', regconfig='pg_catalog.spanish'))
 
 from sqlalchemy.dialects.postgresql import ENUM
 
@@ -125,7 +127,7 @@ class Location1(Metadata):
 
      # query_class = LocationQuery
     __bind_key__ = 'text_search'
-    __tablename__ = "location"
+    __tablename__ = "location_test"
 
 
     #: Possible aggregation levels
@@ -135,16 +137,19 @@ class Location1(Metadata):
         "department",
         "population_center"
     ]
-    level = sa.Column(sa.Enum(*LEVELS, name="location_levels"))
-    name_short_en_test = sa.Column(sa.UnicodeText)
+    level = sa.Column(sa.Enum(*LEVELS, name="location_level"))
+    name_en_test = sa.Column(sa.UnicodeText)
+    name_es_test = sa.Column(sa.UnicodeText)
     #my_enum = sa.Enum('country','municipality', 'department', 'population_center', name='my_enum')
+    en_search_vector = sa.Column(TSVectorType('name_en_test',regconfig='pg_catalog.english'))
+    es_search_vector = sa.Column(TSVectorType('name_es_test', regconfig='pg_catalog.spanish'))
 
-    search_vector = sa.Column(TSVectorType('name_short_en_test'))
+    #search_vector = sa.Column(TSVectorType('name_short_en_test'))
 
 class Industry1(Metadata):
     """An ISIC 4 industry."""
     __bind_key__ = 'text_search'
-    __tablename__ = "industry"
+    __tablename__ = "industry_test"
 
 
     #: Possible aggregation levels
@@ -155,9 +160,12 @@ class Industry1(Metadata):
         "class"
     ]
     #level = db.Column(db.Enum(*LEVELS))
-    level = db.Column(db.Enum(*LEVELS, name="industry_levels"))
+    level = db.Column(db.Enum(*LEVELS, name="industry_level"))
     name_en_test = db.Column(db.UnicodeText)
-    search_vector = sa.Column(TSVectorType('name_en_test'))
+    name_es_test = db.Column(db.UnicodeText)
+    #search_vector = sa.Column(TSVectorType('name_en_test'))
+    en_search_vector = sa.Column(TSVectorType('name_en_test',regconfig='pg_catalog.english'))
+    es_search_vector = sa.Column(TSVectorType('name_es_test', regconfig='pg_catalog.spanish'))
 
 #SQLALCHEMY_DATABASE_URI = "postgresql://postgres:postgres@localhost/colombia"
 
@@ -169,14 +177,13 @@ engine2 = create_engine('postgresql://postgres:postgres@localhost/atlas')
 #engine = create_engine(bind=['text_search'])
 #app = Flask(__name__)
 #db = SQLAlchemy(app)
-sa.orm.configure_mappers()  #
+sa.orm.configure_mappers()  # Very important
 Base.metadata.create_all(engine2) # this is where things get created.
 #db.create_all(bind=['text_search'])
 
 
 def do_posgres_update():
     pass
-
     Session = sessionmaker(bind = engine2)
     session = Session()
 
@@ -190,31 +197,49 @@ def do_posgres_update():
 # This needs to be done for each of the language
 #search_vector = TSVectorType('name', regconfig='pg_catalog.finnish')
 
-
-
-
-
-def do_location_query(search_str) :
+def do_location_query(search_str, lang) :
     Session = sessionmaker(bind = engine2)
     session = Session()
 
     query_location = session.query(Location1)
-    query_location = search(query_location, search_str,sort=True)
+    if lang == 'en-col':
+        print('location en-col')
+        query_location = search(query_location, search_str,sort=True)
+    else :
+        print('location es-col')
+        query_location = search(query_location,search_str, vector=Location1.es_search_vector,sort=True)
+
+    #query_location = search(query_location, search_str,sort=True)
     #print (query_location.first().name_short_en_test)
     rl = query_location.all()
     #print (rl)
-    for r in rl :
-        print (r.name_short_en_test)
+    #for r in rl :
+    #    print (r.name_short_en_test)
 
-    return dict(location=[x.name_short_en_test for x in rl])
+    return [{ "type": "location",
+              "name_en": x.description_en,
+              "name_es": x.description_es,
+              "code": x.code,
+              "description_en": x.name_short_en,
+              "description_es": x.description_es,
+              "level":x.level,
+              "id": x.id,
+              "name_short_en": x.description_en,
+              "name_short_es": x.description_es,
+              "parent_id": x.parent_id}
+            for x in rl]
     #print (Location.query.search(u'pri').limit(5).all())
 
-def do_product_query(search_str) :
+def do_product_query(search_str,lang) :
     Session = sessionmaker(bind = engine2)
     session = Session()
 
     query_product = session.query(HSProduct1)
-    query_product = search(query_product, search_str,sort=True)
+    if lang == 'en-col':
+        query_product = search(query_product, search_str,sort=True)
+    else :
+        query_product = search(query_product,search_str, vector=HSProduct1.es_search_vector,sort=True)
+
     #print (query_product.first().name_en_test)
     rl = query_product.all()
     #print (rl)
@@ -222,45 +247,79 @@ def do_product_query(search_str) :
         print (r.name_en_test)
     from flask import jsonify
     #return dict(product=[x.name_en_test for x in rl])
-    return dict(textsearch=[{"name":x.name_en,
-                            "code": x.code,
-                            "description_en": x.description_en,
-                            "description_es": x.description_es,
-                            "level":x.level,
-                            "id": x.id,
-                            "name_short_en": x.name_short_en,
-                            "name_short_es": x.name_short_es,
-                            "parent_id": 0} for x in rl])
+    return [{
+    "type": "product",
+    "name_en": x.description_en,
+    "name_es": x.description_es,
+                   "code": x.code,
+                   "description_en": x.name_short_en,
+                   "description_es": x.description_es,
+                   "level":x.level,
+                   "id": x.id,
 
-def do_industry_query(search_str) :
+                   "name_short_en": x.description_en,
+                   "name_short_es": x.description_es,
+                               "parent_id": x.parent_id} for x in rl]
+
+def do_industry_query(search_str,lang) :
     Session = sessionmaker(bind = engine2)
     session = Session()
 
     query_industry = session.query(Industry1)
-    query_industry = search(query_industry, search_str,sort=True)
+    #query_industry = search(query_industry, search_str,sort=True)
+    if lang == 'en-col':
+        query_industry = search(query_industry, search_str,sort=True)
+    else :
+        query_industry = search(query_industry,search_str, vector=Industry1.es_search_vector,sort=True)
     #print (query_industry.first().name_en_test)
     rl = query_industry.all()
-    return dict(textsearch=[{"name":x.description_en,
+    return [{#"name":x.description_en,
+             "type": "industry",
+             "name_en": x.description_en,
+             "name_es": x.description_es,
                             "code": x.code,
-                            "description_en": x.description_en,
+                            "description_en": x.name_short_en,
                             "description_es": x.description_es,
                             "level":x.level,
                             "id": x.id,
-                            "name_short_en": x.name_short_en,
-                            "name_short_es": x.name_en_test,
-                            "parent_id": 0} for x in rl])
+
+                            "name_short_en": x.description_en,
+                            "name_short_es": x.description_es,
+                            "parent_id": x.parent_id} for x in rl]
 
 from sqlalchemy_searchable import parse_search_query
 
-def combined_search_query(search_str):
+def combined_search_query(search_str,lang,filter):
     Session = sessionmaker(bind = engine2)
     session = Session()
     #results_location = do_location_query(search_str)
     #results_industry = do_industry_query(search_str)
-    results_product = do_product_query(search_str)
+
+    if filter == 'industry':
+        results_industry = do_industry_query(search_str,lang)
+        #return json.dumps(dict({"industry":results_industry}))
+        return json.dumps(dict({"textsearch":results_industry}))
+    elif filter == 'product' :
+        results_product = do_product_query(search_str,lang)
+        #results = dict({"textsearch":results_product})
+        #return json.dumps(dict({"textsearch":{"product":results_product}}))
+        return json.dumps(dict({"textsearch":results_product}))
+    elif filter == 'location' :
+        result_location = do_location_query(search_str,lang)
+        #return json.dumps(dict({"location":result_location}))
+        return json.dumps(dict({"textsearch":result_location}))
+    else :
+        results_product = do_product_query(search_str,lang)
+        results_industry = do_industry_query(search_str,lang)
+        result_location = do_location_query(search_str,lang)
+        results_product.extend(results_industry)
+        results_product.extend(result_location)
+        results = dict({"textsearch":results_product})
+        return json.dumps(results)
+
+
     #results = [results_industry,results_product,results_location]
-    results = dict({"textsearch":results_product})
-    return json.dumps(results_product)
+
     #from flask import jsonify
     #return jsonify(textsearch=results)
 

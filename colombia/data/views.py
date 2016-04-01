@@ -9,7 +9,7 @@ from .models import (DepartmentProductYear, MSAProductYear,
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
-
+import json
 from ..core import db
 from atlas_core.helpers.flask import abort
 from .search_text import combined_search_query
@@ -336,6 +336,20 @@ def text_search():
     #return "results something %s" % search_str
 @data_app.route("/search/")
 def text_search_1():
+    print("text_search")
     search_str = request.args.get('query','')
-    results = combined_search_query(search_str)
+    lang = request.args.get('lang')
+    filter = request.args.get('filter')
+    print (filter)
+    results = combined_search_query(search_str,lang,filter)
     return results
+@data_app.route("/textsearches/")
+def text_search_latest():
+    search_str = request.args.get('query','')
+    if search_str:
+        lang = request.args.get('lang')
+        filter = request.args.get('filter')
+        results = combined_search_query(search_str,lang,filter)
+        return results
+    else :
+        return json.dumps({"textsearches": []})
