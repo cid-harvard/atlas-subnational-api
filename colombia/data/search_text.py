@@ -172,13 +172,16 @@ class Industry1(Metadata):
 #SQLALCHEMY_BINDS = {
 #    'text_search':        'postgresql://postgres:postgres@localhost/sqlalchemy_searchable_text'
 #}
+
 engine2 = create_engine('postgresql://postgres:postgres@localhost/atlas')
+
 #engine2 = create_engine('postgresql://postgres:postgres@localhost/test4')
 #engine = create_engine(bind=['text_search'])
 #app = Flask(__name__)
 #db = SQLAlchemy(app)
 sa.orm.configure_mappers()  # Very important
 Base.metadata.create_all(engine2) # this is where things get created.
+
 #db.create_all(bind=['text_search'])
 
 
@@ -209,13 +212,7 @@ def do_location_query(search_str, lang) :
         print('location es-col')
         query_location = search(query_location,search_str, vector=Location1.es_search_vector,sort=True)
 
-    #query_location = search(query_location, search_str,sort=True)
-    #print (query_location.first().name_short_en_test)
     rl = query_location.all()
-    #print (rl)
-    #for r in rl :
-    #    print (r.name_short_en_test)
-
     return [{ "type": "location",
               "name_en": x.description_en,
               "name_es": x.description_es,
@@ -230,6 +227,7 @@ def do_location_query(search_str, lang) :
             for x in rl]
     #print (Location.query.search(u'pri').limit(5).all())
 
+from unidecode import unidecode
 def do_product_query(search_str,lang) :
     Session = sessionmaker(bind = engine2)
     session = Session()
@@ -238,7 +236,9 @@ def do_product_query(search_str,lang) :
     if lang == 'en-col':
         query_product = search(query_product, search_str,sort=True)
     else :
-        query_product = search(query_product,search_str, vector=HSProduct1.es_search_vector,sort=True)
+        s = unidecode(search_str)
+
+        query_product = search(query_product,s, vector=HSProduct1.es_search_vector,sort=True)
 
     #print (query_product.first().name_en_test)
     rl = query_product.all()
