@@ -205,6 +205,8 @@ class DepartmentYear(BaseModel, IDMixin):
     monthly_wages = db.Column(db.Integer)
     num_establishments = db.Column(db.Integer)
 
+    industry_eci = db.Column(db.Float)
+
 
 class MSAYear(BaseModel, IDMixin):
 
@@ -216,6 +218,12 @@ class MSAYear(BaseModel, IDMixin):
     location = db.relationship(Location)
 
     eci = db.Column(db.Float)
+
+    employment = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
+    monthly_wages = db.Column(db.Integer)
+    num_establishments = db.Column(db.Integer)
+    industry_eci = db.Column(db.Float)
 
 
 class XIndustryYear(BaseModel, IDMixin):
