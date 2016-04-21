@@ -42,6 +42,9 @@ def rectangularize(data, keys):
         ]
     """
 
+    if(len(data) == 0):
+        return []
+
     unique_values = OrderedDict()
     all_keys = set()
     index = {}
