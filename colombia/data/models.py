@@ -116,6 +116,11 @@ class CountryDepartmentProductYear(CountryXProductYear):
     __tablename__ = "country_department_product_year"
 
 
+class CountryMSAProductYear(CountryXProductYear):
+
+    __tablename__ = "country_msa_product_year"
+
+
 class CountryMunicipalityProductYear(CountryXProductYear):
 
     __tablename__ = "country_municipality_product_year"

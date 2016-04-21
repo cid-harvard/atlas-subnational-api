@@ -76,6 +76,17 @@ class CountryDepartmentProductYearSchema(ma.Schema):
         fields = ("export_value", "import_value", "country_id", "product_id", "year")
 
 
+class CountryMSAProductYearSchema(ma.Schema):
+
+    msa_id = ma.fields.Integer(attribute="location_id")
+
+    export_value = ma.fields.Float(default=None)
+    import_value = ma.fields.Float(default=None)
+
+    class Meta:
+        fields = ("export_value", "import_value", "country_id", "product_id", "year")
+
+
 class PartnerProductYearSchema(ma.Schema):
 
     department_id = ma.fields.Integer(attribute="location_id")
@@ -165,6 +176,7 @@ class ColombiaMetadataSchema(MetadataSchema):
 
 country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)
 country_department_product_year = CountryDepartmentProductYearSchema(many=True)
+country_msa_product_year = CountryMSAProductYearSchema(many=True)
 
 country_x_year = CountryXYearSchema(many=True)
 
