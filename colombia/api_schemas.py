@@ -129,13 +129,14 @@ class DepartmentYearSchema(ma.Schema):
         fields = ("year", "eci", "diversity", "gdp_nominal", "gdp_real",
                   "gdp_pc_nominal", "gdp_pc_real", "population", "employment",
                   "wages", "monthly_wages", "num_establishments",
-                  "department_id")
+                  "industry_eci", "department_id")
 
 
 class MSAYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("year", "eci", "location_id")
+        fields = ("year", "eci", "industry_eci", "employment", "wages",
+                  "monthly_wages", "num_establishments", "location_id")
 
 
 class OccupationYearSchema(ma.Schema):
