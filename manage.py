@@ -118,9 +118,14 @@ def import_data():
 
     for key in store.keys():
         metadata = store.get_storer(key).attrs.atlas_metadata
-        table_name = metadata["sql_table_name"]
+        table_name = metadata.get("sql_table_name", None)
 
         print("-----------------------------------")
+
+        if table_name is None:
+            print("Skipping {}".format(key))
+            continue
+
         print(metadata)
         print(key, table_name)
 
