@@ -81,8 +81,9 @@ def region_product_year(ret):
 
 def save_products_country():
     ret = process_dataset(trade4digit_country)
-    dpy = ret[('location_id', 'product_id', 'year')]
-    return merge_classifications(dpy)
+    m = region_product_year(ret)
+    m = merge_classifications(m)
+    return m
 
 
 def save_products_department():
