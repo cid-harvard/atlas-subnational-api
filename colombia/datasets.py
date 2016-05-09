@@ -23,7 +23,7 @@ def sum_group(x):
     return x.sum()
 
 
-DATASET_ROOT = "/nfs/home/M/makmanalp/shared_space/cidgrowlab/Atlas/Colombia/beta/"
+DATASET_ROOT = "/nfs/projects_nobackup/c/cidgrowlab/Atlas/Colombia/beta/"
 YEAR_MIN_TRADE = 2007
 YEAR_MAX_TRADE = 2014
 YEAR_MIN_INDUSTRY = 2007
