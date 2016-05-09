@@ -34,7 +34,6 @@ class XProductYear(BaseModel, IDMixin):
     export_rca = db.Column(db.Integer)
     density = db.Column(db.Float)
     cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
 
     @hybrid_property
     def distance(self):
@@ -197,6 +196,8 @@ class DepartmentYear(BaseModel, IDMixin):
     eci = db.Column(db.Float)
     eci_rank = db.Column(db.Integer)
     diversity = db.Column(db.Float)
+    coi = db.Column(db.Float)
+    industry_coi = db.Column(db.Float)
 
     gdp_nominal = db.Column(db.BIGINT)
     gdp_real = db.Column(db.BIGINT)
@@ -223,6 +224,8 @@ class MSAYear(BaseModel, IDMixin):
     location = db.relationship(Location)
 
     eci = db.Column(db.Float)
+    coi = db.Column(db.Float)
+    industry_coi = db.Column(db.Float)
 
     employment = db.Column(db.Integer)
     wages = db.Column(db.BIGINT)
@@ -254,7 +257,6 @@ class XIndustryYear(BaseModel, IDMixin):
     rca = db.Column(db.Integer)
     distance = db.Column(db.Float)
     cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
 
 
 class CountryIndustryYear(XIndustryYear):
