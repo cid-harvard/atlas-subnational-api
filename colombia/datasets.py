@@ -110,6 +110,7 @@ trade4digit_country = {
     "facets": {
         ("location_id", "year"): {
             "eci": first,
+            "coi": first,
         },
         ("product_id", "year"): {
             "pci": first,
@@ -122,7 +123,6 @@ trade4digit_country = {
             "export_rca": first,
             "density": first,
             "cog": first,
-            "coi": first
         }
     }
 }
@@ -187,6 +187,7 @@ trade4digit_department = {
     "facets": {
         ("location_id", "year"): {
             "eci": first,
+            "coi": first,
         },
         ("product_id", "year"): {
             "pci": first,
@@ -203,7 +204,6 @@ trade4digit_department = {
             "export_rca": first,
             "density": first,
             "cog": first,
-            "coi": first
         }
     }
 }
@@ -287,6 +287,7 @@ trade4digit_msa = {
     "facets": {
         ("location_id", "year"): {
             "eci": first,
+            "coi": first
         },
         ("product_id", "year"): {
             "pci": first,
@@ -299,7 +300,6 @@ trade4digit_msa = {
             "export_rca": first,
             "density": first,
             "cog": first,
-            "coi": first
         }
     }
 }
