@@ -23,7 +23,7 @@ def sum_group(x):
     return x.sum()
 
 
-DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Colombia/beta/"
+DATASET_ROOT = "/nfs/home/M/makmanalp/shared_space/cidgrowlab/Atlas/Colombia/beta/"
 YEAR_MIN_TRADE = 2007
 YEAR_MAX_TRADE = 2014
 YEAR_MIN_INDUSTRY = 2007
@@ -477,8 +477,20 @@ trade4digit_rcpy_department = {
 }
 
 
+def load_trade4digit_rcpy_msa():
+
+    df = read_trade4digit_rcpy(suffix="ra_p4")
+
+    # Add missing exports from single muni MSAs. See MEX-148 COL-959
+    muni = read_trade4digit_rcpy(suffix="r5_p4")
+    muni = muni[muni.r.isin(SINGLE_MUNI_MSAS)]
+    muni.r = muni.r.map(lambda x: x + "0")
+
+    return pd.concat([df, muni]).reset_index(drop=True)
+
+
 trade4digit_rcpy_msa = {
-    "read_function": lambda: read_trade4digit_rcpy(suffix="ra_p4"),
+    "read_function": load_trade4digit_rcpy_msa,
     "field_mapping": trade4digit_rcpy_fields_export,
     "classification_fields": {
         "location": {
