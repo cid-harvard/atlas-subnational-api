@@ -733,6 +733,7 @@ industry4digit_msa = {
             "employment": first,
             "wages": first,
             "monthly_wages": first,
+            "num_establishments": first,
             "distance": first,
             "cog": first,
             "rca": first
@@ -750,6 +751,7 @@ industry4digit_municipality = {
         "muni_p_emp": "employment",
         "muni_p_wage": "wages",
         "muni_p_wagemonth": "monthly_wages",
+        "muni_p_est": "num_establishments",
     },
     "classification_fields": {
         "location": {
@@ -771,6 +773,7 @@ industry4digit_municipality = {
             "employment": first,
             "wages": first,
             "monthly_wages": first,
+            "num_establishments": first,
         }
     }
 }
