@@ -26,7 +26,7 @@ aws configure set s3.multipart_threshold 150MB --profile $PROFILENAME
 # Upload generated files
 # CSV files that are generated are all gzipped, so tag them that way so that
 # the browser knows how to decode it when downloading from s3
-aws s3 sync $SOURCE $BUCKETNAME/generated/$FOLDERNAME/ --exclude "*" --include "*.csv" --include "*.txt" --content-encoding=gzip --profile $PROFILENAME
+aws s3 sync $SOURCE $BUCKETNAME/generated/$FOLDERNAME/ --exclude "*" --include "*.csv" --include "*.txt" --content-encoding=gzip --content-disposition "Attachment" --profile $PROFILENAME
 aws s3 sync $SOURCE $BUCKETNAME/generated/$FOLDERNAME/ --exclude "*.csv" --exclude "*.txt" --profile $PROFILENAME
 
 # Copy in manually uploaded custom files to complete downloads
