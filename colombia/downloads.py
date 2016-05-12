@@ -244,8 +244,17 @@ def downloads():
                     index=False,
                     compression="gzip"
                 )
+        elif format == "txt":
+            df\
+                .reset_index(level=["year"])\
+                .to_csv(
+                    os.path.join(path, name) + ".txt",
+                    float_format='%.2f',
+                    index=False,
+                    compression="gzip"
+                )
         else:
-            raise ValueError("Download format must be excel or csv.")
+            raise ValueError("Download format must be excel, csv or txt.")
 
     save_classifications(path)
 
@@ -262,7 +271,7 @@ def downloads():
     save(save_industries_country(), "industries_country")
     save(save_industries_department(), "industries_department")
     save(save_industries_msa(), "industries_msa")
-    save(save_industries_municipality(), "industries_municipality", format="csv")
+    save(save_industries_municipality(), "industries_municipality", format="txt")
 
     save(save_occupations(), "occupations")
     save(save_demographic(), "demographic")
