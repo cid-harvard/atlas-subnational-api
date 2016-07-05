@@ -631,9 +631,9 @@ industry4digit_department = {
         "state_p_wagemonth": "monthly_wages",
         "state_p_est": "num_establishments",
         "state_p_rca": "rca",
-        "state_p_distance_ps": "distance",
-        "state_p_cog_ps_pred1": "cog",
-        "state_all_coi_ps_pred1": "industry_coi",
+        "state_p_distance_flow": "distance",
+        "state_p_cog_flow_pred1": "cog",
+        "state_all_coi_flow_pred1": "industry_coi",
         "all_p_pci": "complexity",
         "state_all_eci": "industry_eci"
     },
@@ -699,9 +699,9 @@ industry4digit_msa = {
         "msa_p_wagemonth": "monthly_wages",
         "msa_p_est": "num_establishments",
         "msa_p_rca": "rca",
-        "msa_p_distance_hybrid": "distance",
-        "msa_p_cog_ps_pred1": "cog",
-        "msa_all_coi_ps_pred1": "industry_coi",
+        "msa_p_distance_flow": "distance",
+        "msa_p_cog_flow_pred1": "cog",
+        "msa_all_coi_flow_pred1": "industry_coi",
         "all_p_pci": "complexity",
         "msa_all_eci": "industry_eci"
     },
@@ -915,8 +915,8 @@ industry2digit_department = {
         "state_d3_wagemonth": "monthly_wages",
         "state_d3_emp": "employment",
         "state_d3_rca": "rca",
-        "state_d3_distance_ps_pred1": "distance",
-        "state_d3_cog_ps_pred1": "cog",
+        "state_d3_distance_flow_pred1": "distance",
+        "state_d3_cog_flow_pred1": "cog",
         "all_d3_pci": "complexity"
     },
     "classification_fields": {
@@ -965,8 +965,8 @@ industry2digit_msa = {
         "msa_d3_wagemonth": "monthly_wages",
         "msa_d3_emp": "employment",
         "msa_d3_rca": "rca",
-        "msa_d3_distance_ps_pred1": "distance",
-        "msa_d3_cog_ps_pred1": "cog",
+        "msa_d3_distance_flow_pred1": "distance",
+        "msa_d3_cog_flow_pred1": "cog",
         "all_d3_pci": "complexity"
     },
     "classification_fields": {
