@@ -1006,7 +1006,7 @@ industry2digit_msa = {
 }
 
 occupation2digit_industry2digit = {
-    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do010_2d-Ind_X_4d-Occ.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do130_2d-Ind_X_4d-Occ.dta")),
     "field_mapping": {
         "onet_4dig": "occupation",
         "ciiu_2dig": "industry",
@@ -1037,7 +1037,7 @@ occupation2digit_industry2digit = {
 }
 
 occupation2digit = {
-    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do010_4d-Occ.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Vacancies/Vacancies_do140_4d-Occ.dta")),
     "field_mapping": {
         "onet_4dig": "occupation",
         "num_vacantes": "num_vacancies",
