@@ -126,11 +126,7 @@ if __name__ == "__main__":
             df.to_sql("msa_product_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-
-            # MSA year
-            df = ret[('location_id', 'year')].reset_index()
-            df.to_sql("msa_year", db.engine, index=False,
-                      chunksize=10000, if_exists="append")
+            trade_msa_year = ret[('location_id', 'year')]
 
             # Country - trade rcpy
             ret = process_dataset(trade4digit_rcpy_country)
@@ -225,6 +221,13 @@ if __name__ == "__main__":
             df["level"] = "class"
             df.to_sql("msa_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+            industry_msa_year = ret[('location_id', 'year')]
+
+            # MSA year
+            msa_year = industry_msa_year.join(trade_msa_year).reset_index()
+            msa_year.to_sql("msa_year", db.engine, index=False,
+                            chunksize=10000, if_exists="append")
 
 
             # Municipality - industry - year

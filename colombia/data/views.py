@@ -6,9 +6,9 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      CountryIndustryYear, MSAIndustryYear,
                      MunicipalityIndustryYear, ProductYear, IndustryYear,
                      DepartmentYear, Location, CountryMunicipalityProductYear,
-                     CountryDepartmentProductYear, OccupationYear,
-                     OccupationIndustryYear, CountryCountryYear,
-                     CountryDepartmentYear, CountryMSAYear,
+                     CountryDepartmentProductYear, CountryMSAProductYear,
+                     OccupationYear, OccupationIndustryYear,
+                     CountryCountryYear, CountryDepartmentYear, CountryMSAYear,
                      CountryMunicipalityYear, MSAYear, PartnerProductYear)
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
@@ -41,6 +41,9 @@ def rectangularize(data, keys):
         {"location":4, "year": 2013}
         ]
     """
+
+    if(len(data) == 0):
+        return []
 
     unique_values = OrderedDict()
     all_keys = set()
@@ -186,7 +189,14 @@ def eeey_location_products(entity_type, entity_id, buildingblock_level,
         return marshal(schemas.country_department_product_year,
                        rectangularize([x._asdict() for x in q],
                                       ["country_id", "product_id", "year"]))
-
+    elif location_level == "msa":
+        q = db.session.query(*get_all_model_fields(CountryMSAProductYear))\
+            .filter_by(location_id=entity_id)\
+            .filter_by(product_id=sub_id)\
+            .all()
+        return marshal(schemas.country_msa_product_year,
+                       rectangularize([x._asdict() for x in q],
+                                      ["country_id", "product_id", "year"]))
     else:
         msg = "Data doesn't exist at location level {}"\
             .format(location_level)

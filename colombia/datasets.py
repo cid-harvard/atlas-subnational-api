@@ -23,7 +23,7 @@ def sum_group(x):
     return x.sum()
 
 
-DATASET_ROOT = "/Users/makmana/ciddata/Subnationals/Atlas/Mexico/beta/"
+DATASET_ROOT = "/nfs/projects_nobackup/c/cidgrowlab/Atlas/Mexico/beta/"
 YEAR_MIN_TRADE = 2004
 YEAR_MAX_TRADE = 2014
 YEAR_MIN_INDUSTRY = 2004
@@ -94,6 +94,7 @@ trade4digit_country = {
     "facets": {
         ("location_id", "year"): {
             "eci": first,
+            "coi": first,
         },
         ("product_id", "year"): {
             "pci": first,
@@ -106,7 +107,6 @@ trade4digit_country = {
             "export_rca": first,
             "density": first,
             "cog": first,
-            "coi": first
         }
     }
 }
@@ -171,6 +171,7 @@ trade4digit_department = {
     "facets": {
         ("location_id", "year"): {
             "eci": first,
+            "coi": first,
         },
         ("product_id", "year"): {
             "pci": first,
@@ -187,7 +188,6 @@ trade4digit_department = {
             "export_rca": first,
             "density": first,
             "cog": first,
-            "coi": first
         }
     }
 }
@@ -256,6 +256,7 @@ trade4digit_msa = {
     "facets": {
         ("location_id", "year"): {
             "eci": first,
+            "coi": first
         },
         ("product_id", "year"): {
             "pci": first,
@@ -268,7 +269,6 @@ trade4digit_msa = {
             "export_rca": first,
             "density": first,
             "cog": first,
-            "coi": first
         }
     }
 }
@@ -445,8 +445,13 @@ trade4digit_rcpy_department = {
 }
 
 
+def load_trade4digit_rcpy_msa():
+
+    df = read_trade4digit_rcpy(suffix="ra_p4")
+    return df
+
 trade4digit_rcpy_msa = {
-    "read_function": lambda: read_trade4digit_rcpy(suffix="ra_p4"),
+    "read_function": load_trade4digit_rcpy_msa,
     "field_mapping": trade4digit_rcpy_fields_export,
     "classification_fields": {
         "location": {
@@ -585,9 +590,11 @@ industry4digit_department = {
         "state_p_wage": "wages",
         "state_p_est": "num_establishments",
         "state_p_rca": "rca",
-        "state_p_distance_ps": "distance",
-        "state_p_cog_ps_pred1": "cog",
-        "all_p_pci": "complexity"
+        "state_p_distance_flow": "distance",
+        "state_p_cog_flow_pred1": "cog",
+        "state_all_coi_flow_pred1": "industry_coi",
+        "all_p_pci": "complexity",
+        "state_all_eci": "industry_eci"
     },
     "hook_pre_merge": hook_industry,
     "classification_fields": {
@@ -610,6 +617,8 @@ industry4digit_department = {
             "employment": sum_group,
             "wages": sum_group,
             "num_establishments": sum_group,
+            "industry_eci": first,
+            "industry_coi":first,
         },
         ("industry_id", "year"): {
             "employment": sum_group,
@@ -643,10 +652,13 @@ industry4digit_msa = {
         "msa_p_emp": "employment",
         "msa_p_wage": "wages",
         #"msa_p_wagemonth": "monthly_wages",
+        "msa_p_est": "num_establishments",
         "msa_p_rca": "rca",
-        "msa_p_distance_hybrid": "distance",
-        "msa_p_cog_ps_pred1": "cog",
-        "all_p_pci": "complexity"
+        "msa_p_distance_flow": "distance",
+        "msa_p_cog_flow_pred1": "cog",
+        "msa_all_coi_flow_pred1": "industry_coi",
+        "all_p_pci": "complexity",
+        "msa_all_eci": "industry_eci"
     },
     "classification_fields": {
         "location": {
@@ -667,6 +679,10 @@ industry4digit_msa = {
         ("location_id", "year"): {
             "employment": sum_group,
             "wages": sum_group,
+            "monthly_wages": first,
+            "num_establishments": sum_group,
+            "industry_eci": first,
+            "industry_coi": first,
         },
         ("industry_id", "year"): {
             "employment": sum_group,
@@ -677,6 +693,7 @@ industry4digit_msa = {
             "employment": first,
             "wages": first,
             #"monthly_wages": first,
+            "num_establishments": first,
             "distance": first,
             "cog": first,
             "rca": first
@@ -694,6 +711,7 @@ industry4digit_municipality = {
         "muni_p_emp": "employment",
         "muni_p_wage": "wages",
         #"muni_p_wagemonth": "monthly_wages",
+        "muni_p_est": "num_establishments",
     },
     "classification_fields": {
         "location": {
@@ -715,6 +733,7 @@ industry4digit_municipality = {
             "employment": first,
             "wages": first,
             #"monthly_wages": first,
+            "num_establishments": first,
         }
     }
 }
@@ -874,7 +893,7 @@ industry2digit_department = {
         "state_d2_wage": "wages",
         #"state_d2_wagemonth": "monthly_wages",
         "state_d2_emp": "employment",
-        #"state_d2_rca": "rca",
+        "state_d2_rca": "rca",
         "state_d2_distance_ps_pred1": "distance",
         "state_d2_cog_ps_pred1": "cog",
         "all_d2_pci": "complexity"

@@ -44,13 +44,12 @@ class XProductYearSchema(ma.Schema):
     export_rca = ma.fields.Float(default=None)
     distance = ma.fields.Float(default=None)
     cog = ma.fields.Float(default=None)
-    coi = ma.fields.Float(default=None)
 
     fix_id_hook = ma.post_dump(fix_id_hook)
 
     class Meta:
         fields = ("import_value", "export_value", "import_num_plants",
-                  "export_num_plants", "export_rca", "distance", "cog", "coi",
+                  "export_num_plants", "export_rca", "distance", "cog",
                   "product_id", "location_id", "year")
 
 
@@ -68,6 +67,17 @@ class CountryMunicipalityProductYearSchema(ma.Schema):
 class CountryDepartmentProductYearSchema(ma.Schema):
 
     department_id = ma.fields.Integer(attribute="location_id")
+
+    export_value = ma.fields.Float(default=None)
+    import_value = ma.fields.Float(default=None)
+
+    class Meta:
+        fields = ("export_value", "import_value", "country_id", "product_id", "year")
+
+
+class CountryMSAProductYearSchema(ma.Schema):
+
+    msa_id = ma.fields.Integer(attribute="location_id")
 
     export_value = ma.fields.Float(default=None)
     import_value = ma.fields.Float(default=None)
@@ -97,15 +107,14 @@ class XIndustryYearSchema(ma.Schema):
 
     distance = ma.fields.Float(default=None)
     cog = ma.fields.Float(default=None)
-    coi = ma.fields.Float(default=None)
     rca = ma.fields.Float(default=None)
 
     fix_id_hook = ma.post_dump(fix_id_hook)
 
     class Meta:
         fields = ("employment", "wages", "monthly_wages", "num_establishments",
-                  "rca", "distance", "cog", "coi", "industry_id",
-                  "location_id", "year")
+                  "rca", "distance", "cog", "industry_id", "location_id",
+                  "year")
 
 
 class ProductYearSchema(ma.Schema):
@@ -129,13 +138,15 @@ class DepartmentYearSchema(ma.Schema):
         fields = ("year", "eci", "diversity", "gdp_nominal", "gdp_real",
                   "gdp_pc_nominal", "gdp_pc_real", "population", "employment",
                   "wages", "monthly_wages", "num_establishments",
-                  "department_id")
+                  "industry_eci", "coi", "industry_coi", "department_id")
 
 
 class MSAYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("year", "eci", "location_id")
+        fields = ("year", "eci", "industry_eci", "employment", "wages",
+                  "monthly_wages", "num_establishments", "coi", "industry_coi",
+                  "location_id")
 
 
 class OccupationYearSchema(ma.Schema):
@@ -164,6 +175,7 @@ class ColombiaMetadataSchema(MetadataSchema):
 
 country_municipality_product_year = CountryMunicipalityProductYearSchema(many=True)
 country_department_product_year = CountryDepartmentProductYearSchema(many=True)
+country_msa_product_year = CountryMSAProductYearSchema(many=True)
 
 country_x_year = CountryXYearSchema(many=True)
 

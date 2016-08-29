@@ -34,7 +34,6 @@ class XProductYear(BaseModel, IDMixin):
     export_rca = db.Column(db.Integer)
     density = db.Column(db.Float)
     cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
 
     @hybrid_property
     def distance(self):
@@ -116,6 +115,11 @@ class CountryDepartmentProductYear(CountryXProductYear):
     __tablename__ = "country_department_product_year"
 
 
+class CountryMSAProductYear(CountryXProductYear):
+
+    __tablename__ = "country_msa_product_year"
+
+
 class CountryMunicipalityProductYear(CountryXProductYear):
 
     __tablename__ = "country_municipality_product_year"
@@ -192,6 +196,8 @@ class DepartmentYear(BaseModel, IDMixin):
     eci = db.Column(db.Float)
     eci_rank = db.Column(db.Integer)
     diversity = db.Column(db.Float)
+    coi = db.Column(db.Float)
+    industry_coi = db.Column(db.Float)
 
     gdp_nominal = db.Column(db.BIGINT)
     gdp_real = db.Column(db.BIGINT)
@@ -205,6 +211,8 @@ class DepartmentYear(BaseModel, IDMixin):
     monthly_wages = db.Column(db.Integer)
     num_establishments = db.Column(db.Integer)
 
+    industry_eci = db.Column(db.Float)
+
 
 class MSAYear(BaseModel, IDMixin):
 
@@ -216,6 +224,14 @@ class MSAYear(BaseModel, IDMixin):
     location = db.relationship(Location)
 
     eci = db.Column(db.Float)
+    coi = db.Column(db.Float)
+    industry_coi = db.Column(db.Float)
+
+    employment = db.Column(db.Integer)
+    wages = db.Column(db.BIGINT)
+    monthly_wages = db.Column(db.Integer)
+    num_establishments = db.Column(db.Integer)
+    industry_eci = db.Column(db.Float)
 
 
 class XIndustryYear(BaseModel, IDMixin):
@@ -241,7 +257,6 @@ class XIndustryYear(BaseModel, IDMixin):
     rca = db.Column(db.Integer)
     distance = db.Column(db.Float)
     cog = db.Column(db.Float)
-    coi = db.Column(db.Float)
 
 
 class CountryIndustryYear(XIndustryYear):
