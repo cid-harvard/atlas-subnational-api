@@ -232,7 +232,7 @@ def downloads():
                 .reset_index(level=["year"])\
                 .to_excel(
                     os.path.join(path, name) + ".xlsx",
-                    float_format='%.2f',
+                    float_format='%.4f',
                     index=False,
                     engine="xlsxwriter"
                 )
@@ -241,7 +241,7 @@ def downloads():
                 .reset_index(level=["year"])\
                 .to_csv(
                     os.path.join(path, name) + ".csv",
-                    float_format='%.2f',
+                    float_format='%.4f',
                     index=False,
                     compression="gzip"
                 )
@@ -250,7 +250,7 @@ def downloads():
                 .reset_index(level=["year"])\
                 .to_csv(
                     os.path.join(path, name) + ".txt",
-                    float_format='%.2f',
+                    float_format='%.4f',
                     index=False,
                     compression="gzip"
                 )
