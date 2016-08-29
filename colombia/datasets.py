@@ -679,7 +679,7 @@ industry4digit_msa = {
         ("location_id", "year"): {
             "employment": sum_group,
             "wages": sum_group,
-            "monthly_wages": first,
+            #"monthly_wages": first,
             "num_establishments": sum_group,
             "industry_eci": first,
             "industry_coi": first,
