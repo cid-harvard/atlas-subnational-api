@@ -272,7 +272,7 @@ def downloads():
     save(save_industries_country(), "industries_country")
     save(save_industries_department(), "industries_department")
     save(save_industries_msa(), "industries_msa")
-    save(save_industries_municipality(), "industries_municipality", format="txt")
+    save(save_industries_municipality(), "industries_municipality", format="csv")
 
     save(save_occupations(), "occupations")
     save(save_demographic(), "demographic")
