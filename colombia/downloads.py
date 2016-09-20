@@ -71,7 +71,7 @@ def region_product_year(ret):
 
     df = ret[('location_id', 'product_id', 'year')].reset_index()
     py = ret[('product_id', 'year')][["pci"]].reset_index()
-    dy = ret[('location_id', 'year')][["eci"]].reset_index()
+    dy = ret[('location_id', 'year')][["eci", "coi"]].reset_index()
 
     df = df.merge(py, on=["product_id", "year"])
     df = df.merge(dy, on=["location_id", "year"])
@@ -127,8 +127,10 @@ def save_industries_department():
 
     dpy = ret[('location_id', 'industry_id', 'year')].reset_index()
     py = ret[('industry_id', 'year')][["complexity"]].reset_index()
+    ly = ret[('location_id', 'year')][["industry_eci", "industry_coi"]].reset_index()
 
     m = dpy.merge(py, on=["industry_id", "year"])
+    m = m.merge(ly, on=["location_id", "year"])
     m = merge_classifications(m.set_index(['location_id', 'industry_id', 'year']))
     return m
 
@@ -138,8 +140,10 @@ def save_industries_msa():
 
     dpy = ret[('location_id', 'industry_id', 'year')].reset_index()
     py = ret[('industry_id', 'year')][["complexity"]].reset_index()
+    ly = ret[('location_id', 'year')][["industry_eci", "industry_coi"]].reset_index()
 
     m = dpy.merge(py, on=["industry_id", "year"])
+    m = m.merge(ly, on=["location_id", "year"])
     m = merge_classifications(m.set_index(['location_id', 'industry_id', 'year']))
     return m
 
