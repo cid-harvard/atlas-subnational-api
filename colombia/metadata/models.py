@@ -1,5 +1,5 @@
 from atlas_core.sqlalchemy import BaseModel
-from atlas_core.model_mixins import IDMixin, LanguageMixin
+from atlas_core.model_mixins import IDMixin
 
 from ..core import db
 
