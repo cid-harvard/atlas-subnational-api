@@ -95,6 +95,15 @@ occupation_levels = [
 occupation_enum = db.Enum(*occupation_levels, name="occupation_level")
 
 
+livestock_levels = [
+    "major_group",
+    "minor_group",
+    "broad_occupation",
+    "detailed_occupation",
+]
+livestock_enum = db.Enum(*livestock_levels, name="livestock_level")
+
+
 class HSProduct(Metadata):
     """A product according to the HS4 (Harmonized System) classification.
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
@@ -148,3 +157,11 @@ class Country(Metadata):
     #: Possible aggregation levels
     LEVELS = country_levels
     level = db.Column(country_enum)
+
+
+class Livestock(Metadata):
+    __tablename__ = "livestock"
+
+    #: Possible aggregation levels
+    LEVELS = livestock_levels
+    level = db.Column(livestock_enum)
