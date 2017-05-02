@@ -1,4 +1,5 @@
 import pandas as pd
+import copy
 import os.path
 
 from linnaeus import classification
@@ -8,6 +9,7 @@ location_classification = classification.load("location/Colombia/Prospedia/out/l
 industry_classification = classification.load("industry/ISIC/Colombia_Prosperia/out/industries_colombia_isic_prosperia.csv")
 country_classification = classification.load("location/International/DANE/out/locations_international_dane.csv")
 occupation_classification = classification.load("occupation/SOC/Colombia/out/occupations_soc_2010.csv")
+livestock_classification = classification.load("product/Datlas/Rural/out/livestock.csv")
 
 
 country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
@@ -1060,3 +1062,57 @@ occupation2digit = {
         }
     }
 }
+
+
+livestock_template = {
+    "read_function": None,
+    "field_mapping": {
+        "livestock": "livestock",
+        "location_id": "location",
+        "livestock_level": "livestock_level",
+        "livestock_number": "num_livestock",
+        "farms_number": "num_farms"
+    },
+    "classification_fields": {
+        "livestock": {
+            "classification": livestock_classification,
+            "level": "level1",
+        },
+        "location": {
+            "classification": location_classification,
+            "level": None,
+        },
+    },
+    "digit_padding": {
+        "location": None,
+    },
+    "facet_fields": ["livestock", "location"],
+    "facets": {
+        ("livestock_id", "location_id"): {
+            "num_livestock": first,
+            "num_farms": first,
+        }
+    }
+}
+
+def read_livestock_level1_country():
+    df = pd.read_stata(prefix_path("livestock_Col.dta"))
+    df["location_id"] = "COL"
+    return df
+
+livestock_level1_country = copy.deepcopy(livestock_template)
+livestock_level1_country["read_function"] = read_livestock_level1_country
+livestock_level1_country["classification_fields"]["location"]["level"] = "country"
+livestock_level1_country["digit_padding"]["location"] = 3
+
+
+livestock_level1_department = copy.deepcopy(livestock_template)
+livestock_level1_department["read_function"] = lambda: pd.read_stata(prefix_path("livestock_dept.dta"))
+livestock_level1_department["classification_fields"]["location"]["level"] = "department"
+livestock_level1_department["digit_padding"]["location"] = 2
+
+
+livestock_level1_municipality = copy.deepcopy(livestock_template)
+livestock_level1_municipality["read_function"] = lambda: pd.read_stata(prefix_path("livestock_muni.dta"))
+livestock_level1_municipality["classification_fields"]["location"]["level"] = "municipality"
+livestock_level1_municipality["digit_padding"]["location"] = 5
