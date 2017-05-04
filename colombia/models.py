@@ -1,5 +1,5 @@
 from .metadata.models import (Metadata, HSProduct, Location, Industry, Country,
-                              Occupation)
+                              Occupation, Livestock)
 from .data.models import (CountryProductYear, DepartmentProductYear,
                           DepartmentYear, ProductYear, CountryIndustryYear,
                           DepartmentIndustryYear, IndustryYear,
@@ -7,5 +7,8 @@ from .data.models import (CountryProductYear, DepartmentProductYear,
                           MSAIndustryYear, OccupationYear,
                           OccupationIndustryYear, CountryCountryYear,
                           CountryDepartmentYear, CountryMSAYear,
-                          CountryMunicipalityYear, MSAYear, PartnerProductYear)
+                          CountryMunicipalityYear, MSAYear, PartnerProductYear,
+                          CountryLivestockYear, DepartmentLivestockYear,
+                          MunicipalityLivestockYear
+                          )
 

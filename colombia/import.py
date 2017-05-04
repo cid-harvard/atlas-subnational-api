@@ -14,7 +14,9 @@ from datasets import (trade4digit_country, trade4digit_department,
                       trade4digit_rcpy_country, population,
                       gdp_nominal_department, gdp_real_department,
                       occupation2digit, occupation2digit_industry2digit,
-                      industry2digit_country)
+                      industry2digit_country, livestock_level1_country,
+                      livestock_level1_department,
+                      livestock_level1_municipality)
 
 from datasets import (product_classification,
                       industry_classification,
@@ -237,6 +239,26 @@ if __name__ == "__main__":
             df.to_sql("municipality_industry_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            # Livestock - country
+            ret = process_dataset(livestock_level1_country)
+            df = ret[('location_id', 'livestock_id')].reset_index()
+            df["livestock_level"] = "level1"
+            df.to_sql("country_livestock_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # Livestock - department
+            ret = process_dataset(livestock_level1_department)
+            df = ret[('location_id', 'livestock_id')].reset_index()
+            df["livestock_level"] = "level1"
+            df.to_sql("department_livestock_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # Livestock - municipality
+            ret = process_dataset(livestock_level1_municipality)
+            df = ret[('location_id', 'livestock_id')].reset_index()
+            df["livestock_level"] = "level1"
+            df.to_sql("municipality_livestock_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
 
             # Occupation - year
             ret = process_dataset(occupation2digit)

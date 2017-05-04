@@ -7,8 +7,8 @@ from atlas_core.model_mixins import IDMixin
 from ..core import db
 
 from ..metadata.models import (Location, HSProduct, Industry, Occupation,
-                               Country, product_enum, industry_enum,
-                               occupation_enum)
+                               Country, Livestock, product_enum, industry_enum,
+                               occupation_enum, livestock_enum)
 
 
 class XProductYear(BaseModel, IDMixin):
@@ -323,3 +323,31 @@ class OccupationIndustryYear(BaseModel, IDMixin):
 
     average_wages = db.Column(db.Integer)
     num_vacancies = db.Column(db.Integer)
+
+
+class XLivestockYear(BaseModel, IDMixin):
+
+    __abstract__ = True
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def livestock_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Livestock.id))
+
+    livestock_level = db.Column(livestock_enum)
+
+    num_livestock = db.Column(db.Integer)
+    num_farms = db.Column(db.Integer)
+
+
+class CountryLivestockYear(XLivestockYear):
+    __tablename__ = "country_livestock_year"
+
+class DepartmentLivestockYear(XLivestockYear):
+    __tablename__ = "department_livestock_year"
+
+class MunicipalityLivestockYear(XLivestockYear):
+    __tablename__ = "municipality_livestock_year"
