@@ -325,16 +325,29 @@ class OccupationIndustryYear(BaseModel, IDMixin):
     num_vacancies = db.Column(db.Integer)
 
 
-class CountryLivestockYear(BaseModel, IDMixin):
+class XLivestockYear(BaseModel, IDMixin):
 
-    __tablename__ = "country_livestock_year"
+    __abstract__ = True
 
-    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
-    livestock_id = db.Column(db.Integer, db.ForeignKey(Livestock.id))
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def livestock_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Livestock.id))
+
     livestock_level = db.Column(livestock_enum)
-
-    location = db.relationship(Location)
-    livestock = db.relationship(Livestock)
 
     num_livestock = db.Column(db.Integer)
     num_farms = db.Column(db.Integer)
+
+
+class CountryLivestockYear(XLivestockYear):
+    __tablename__ = "country_livestock_year"
+
+class DepartmentLivestockYear(XLivestockYear):
+    __tablename__ = "department_livestock_year"
+
+class MunicipalityLivestockYear(XLivestockYear):
+    __tablename__ = "municipality_livestock_year"
