@@ -14,7 +14,9 @@ from datasets import (trade4digit_country, trade4digit_department,
                       trade4digit_rcpy_country, population,
                       gdp_nominal_department, gdp_real_department,
                       occupation2digit, occupation2digit_industry2digit,
-                      industry2digit_country)
+                      industry2digit_country, livestock_level1_country,
+                      livestock_level1_department,
+                      livestock_level1_municipality)
 
 from datasets import (product_classification,
                       industry_classification,
