@@ -1086,9 +1086,9 @@ livestock_template = {
     "digit_padding": {
         "location": None,
     },
-    "facet_fields": ["livestock", "location"],
+    "facet_fields": ["location", "livestock"],
     "facets": {
-        ("livestock_id", "location_id"): {
+        ("location_id", "livestock_id"): {
             "num_livestock": first,
             "num_farms": first,
         }
