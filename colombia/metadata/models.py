@@ -96,10 +96,8 @@ occupation_enum = db.Enum(*occupation_levels, name="occupation_level")
 
 
 livestock_levels = [
-    "major_group",
-    "minor_group",
-    "broad_occupation",
-    "detailed_occupation",
+    "level0",
+    "level1",
 ]
 livestock_enum = db.Enum(*livestock_levels, name="livestock_level")
 
