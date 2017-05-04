@@ -242,21 +242,21 @@ if __name__ == "__main__":
             # Livestock - country
             ret = process_dataset(livestock_level1_country)
             df = ret[('location_id', 'livestock_id')].reset_index()
-            df["location_level"] = "level1"
+            df["livestock_level"] = "level1"
             df.to_sql("country_livestock_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # Livestock - department
             ret = process_dataset(livestock_level1_department)
             df = ret[('location_id', 'livestock_id')].reset_index()
-            df["location_level"] = "level1"
+            df["livestock_level"] = "level1"
             df.to_sql("department_livestock_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # Livestock - municipality
             ret = process_dataset(livestock_level1_municipality)
             df = ret[('location_id', 'livestock_id')].reset_index()
-            df["location_level"] = "level1"
+            df["livestock_level"] = "level1"
             df.to_sql("municipality_livestock_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
