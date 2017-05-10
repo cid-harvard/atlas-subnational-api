@@ -21,6 +21,10 @@ metadata_apis = {
         "entity_model": models.Occupation,
         "plural": "occupations",
     },
+    "livestock": {
+        "entity_model": models.Livestock,
+        "plural": "livestock",
+    },
 }
 
 entities = {
