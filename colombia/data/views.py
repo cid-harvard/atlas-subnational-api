@@ -279,6 +279,26 @@ def eey_location_industries(entity_type, entity_id, buildingblock_level):
         return marshal(schema, q)
 
 
+def eey_location_livestock(entity_type, entity_id, buildingblock_level):
+
+    location_level = lookup_classification_level("location", entity_id)
+
+    if location_level in livestock_year_region_mapping:
+        query_model = livestock_year_region_mapping[location_level]["model"]
+        q = query_model.query\
+            .filter_by(livestock_level=buildingblock_level)\
+
+        if hasattr(query_model, "location_id"):
+            q = q.filter_by(location_id=entity_id)
+
+        schema = schemas.XLivestockYearSchema(many=True)
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
 def eey_location_subregions_trade(entity_type, entity_id, buildingblock_level):
 
     location_level = lookup_classification_level("location", entity_id)
@@ -404,6 +424,9 @@ entity_entity_year = {
             },
             "partners": {
                 "func": eey_location_partners
+            },
+            "livestock": {
+                "func": eey_location_livestock
             }
         }
     },
