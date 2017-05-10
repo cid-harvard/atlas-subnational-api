@@ -9,7 +9,9 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      CountryDepartmentProductYear, CountryMSAProductYear,
                      OccupationYear, OccupationIndustryYear,
                      CountryCountryYear, CountryDepartmentYear, CountryMSAYear,
-                     CountryMunicipalityYear, MSAYear, PartnerProductYear)
+                     CountryMunicipalityYear, MSAYear, PartnerProductYear,
+                     CountryLivestockYear, DepartmentLivestockYear, MunicipalityLivestockYear
+                     )
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
 from .. import api_schemas as schemas
@@ -112,7 +114,7 @@ entity_year = {
     "occupation": {
         "model": OccupationYear,
         "schema": schemas.occupation_year
-    }
+    },
 }
 
 entity_year_location = {
@@ -140,6 +142,12 @@ industry_year_region_mapping = {
     "country": {"model": CountryIndustryYear},
 }
 
+livestock_year_region_mapping = {
+    "department": {"model": DepartmentLivestockYear},
+    "municipality": {"model": MunicipalityLivestockYear},
+    "country": {"model": CountryLivestockYear},
+}
+
 
 def eey_product_exporters(entity_type, entity_id, location_level):
 
@@ -149,6 +157,20 @@ def eey_product_exporters(entity_type, entity_id, location_level):
             .all()
         schema = schemas.XProductYearSchema(many=True)
         schema.context = {'id_field_name': location_level + '_id'}
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
+def eey_livestock_locations(entity_type, entity_id, location_level):
+
+    if location_level in livestock_year_region_mapping:
+        q = livestock_year_region_mapping[location_level]["model"].query\
+            .filter_by(livestock_id=entity_id)\
+            .all()
+        schema = schemas.XLivestockYearSchema(many=True)
         return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\
@@ -383,6 +405,13 @@ entity_entity_year = {
             "partners": {
                 "func": eey_location_partners
             }
+        }
+    },
+    "livestock": {
+        "subdatasets": {
+            "locations": {
+                "func": eey_livestock_locations
+            },
         }
     },
 }
