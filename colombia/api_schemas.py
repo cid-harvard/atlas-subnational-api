@@ -53,6 +53,12 @@ class XProductYearSchema(ma.Schema):
                   "product_id", "location_id", "year")
 
 
+class XLivestockYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("num_livestock", "num_farms", "livestock_id", "location_id")
+
+
 class CountryMunicipalityProductYearSchema(ma.Schema):
 
     municipality_id = ma.fields.Integer(attribute="location_id")
