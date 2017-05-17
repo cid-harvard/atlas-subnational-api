@@ -22,7 +22,8 @@ from datasets import (product_classification,
                       industry_classification,
                       location_classification,
                       country_classification,
-                      occupation_classification
+                      occupation_classification,
+                      livestock_classification
                       )
 
 if __name__ == "__main__":
@@ -50,6 +51,10 @@ if __name__ == "__main__":
             db.session.add_all(occupations)
             db.session.commit()
 
+            livestock = classification_to_models(livestock_classification,
+                                                  models.Livestock)
+            db.session.add_all(livestock)
+            db.session.commit()
 
             countries = classification_to_models(country_classification,
                                                   models.Country)
