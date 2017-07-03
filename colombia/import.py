@@ -16,14 +16,18 @@ from datasets import (trade4digit_country, trade4digit_department,
                       occupation2digit, occupation2digit_industry2digit,
                       industry2digit_country, livestock_level1_country,
                       livestock_level1_department,
-                      livestock_level1_municipality)
+                      livestock_level1_municipality,
+                      agproduct_level2_country, agproduct_level2_department,
+                      agproduct_level2_municipality
+                      )
 
 from datasets import (product_classification,
                       industry_classification,
                       location_classification,
                       country_classification,
                       occupation_classification,
-                      livestock_classification
+                      livestock_classification,
+                      agproduct_classification,
                       )
 
 if __name__ == "__main__":
@@ -54,6 +58,11 @@ if __name__ == "__main__":
             livestock = classification_to_models(livestock_classification,
                                                   models.Livestock)
             db.session.add_all(livestock)
+            db.session.commit()
+
+            agproduct = classification_to_models(agproduct_classification,
+                                                  models.AgriculturalProduct)
+            db.session.add_all(agproduct)
             db.session.commit()
 
             countries = classification_to_models(country_classification,
@@ -263,6 +272,27 @@ if __name__ == "__main__":
             df = ret[('location_id', 'livestock_id')].reset_index()
             df["livestock_level"] = "level1"
             df.to_sql("municipality_livestock_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # AgriculturalProduct - country
+            ret = process_dataset(agproduct_level2_country)
+            df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
+            df["agproduct_level"] = "level2"
+            df.to_sql("country_agproduct_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # AgriculturalProduct - department
+            ret = process_dataset(agproduct_level2_department)
+            df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
+            df["agproduct_level"] = "level2"
+            df.to_sql("department_agproduct_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # AgriculturalProduct - municipality
+            ret = process_dataset(agproduct_level2_municipality)
+            df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
+            df["agproduct_level"] = "level2"
+            df.to_sql("municipality_agproduct_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # Occupation - year

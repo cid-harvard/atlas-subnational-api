@@ -7,8 +7,9 @@ from atlas_core.model_mixins import IDMixin
 from ..core import db
 
 from ..metadata.models import (Location, HSProduct, Industry, Occupation,
-                               Country, Livestock, product_enum, industry_enum,
-                               occupation_enum, livestock_enum)
+                               Country, Livestock, AgriculturalProduct,
+                               product_enum, industry_enum, occupation_enum,
+                               livestock_enum, agproduct_enum)
 
 
 class XProductYear(BaseModel, IDMixin):
@@ -351,3 +352,35 @@ class DepartmentLivestockYear(XLivestockYear):
 
 class MunicipalityLivestockYear(XLivestockYear):
     __tablename__ = "municipality_livestock_year"
+
+
+class XAgriculturalProductYear(BaseModel, IDMixin):
+
+    __abstract__ = True
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def agproduct_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(AgriculturalProduct.id))
+
+    agproduct_level = db.Column(agproduct_enum)
+    year = db.Column(db.Integer)
+
+    land_sown = db.Column(db.Integer)
+    land_harvested = db.Column(db.Integer)
+    production_tons = db.Column(db.Integer)
+    yield_ratio = db.Column(db.Float)
+    yield_index = db.Column(db.Float)
+
+
+class CountryAgriculturalProductYear(XAgriculturalProductYear):
+    __tablename__ = "country_agproduct_year"
+
+class DepartmentAgriculturalProductYear(XAgriculturalProductYear):
+    __tablename__ = "department_agproduct_year"
+
+class MunicipalityAgriculturalProductYear(XAgriculturalProductYear):
+    __tablename__ = "municipality_agproduct_year"

@@ -10,7 +10,8 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      OccupationYear, OccupationIndustryYear,
                      CountryCountryYear, CountryDepartmentYear, CountryMSAYear,
                      CountryMunicipalityYear, MSAYear, PartnerProductYear,
-                     CountryLivestockYear, DepartmentLivestockYear, MunicipalityLivestockYear
+                     CountryLivestockYear, DepartmentLivestockYear, MunicipalityLivestockYear,
+                     CountryAgriculturalProductYear, DepartmentAgriculturalProductYear, MunicipalityAgriculturalProductYear
                      )
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
@@ -148,6 +149,12 @@ livestock_year_region_mapping = {
     "country": {"model": CountryLivestockYear},
 }
 
+agproduct_year_region_mapping = {
+    "department": {"model": DepartmentAgriculturalProductYear},
+    "municipality": {"model": MunicipalityAgriculturalProductYear},
+    "country": {"model": CountryAgriculturalProductYear},
+}
+
 
 def eey_product_exporters(entity_type, entity_id, location_level):
 
@@ -177,6 +184,19 @@ def eey_livestock_locations(entity_type, entity_id, location_level):
             .format(location_level)
         abort(400, body=msg)
 
+
+def eey_agproduct_locations(entity_type, entity_id, location_level):
+
+    if location_level in agproduct_year_region_mapping:
+        q = agproduct_year_region_mapping[location_level]["model"].query\
+            .filter_by(agproduct_id=entity_id)\
+            .all()
+        schema = schemas.XAgriculturalProductYearSchema(many=True)
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
 
 def get_all_model_fields(model):
     """Get a iterable of all the fields of a model."""
@@ -292,6 +312,26 @@ def eey_location_livestock(entity_type, entity_id, buildingblock_level):
             q = q.filter_by(location_id=entity_id)
 
         schema = schemas.XLivestockYearSchema(many=True)
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
+def eey_location_agproducts(entity_type, entity_id, buildingblock_level):
+
+    location_level = lookup_classification_level("location", entity_id)
+
+    if location_level in agproduct_year_region_mapping:
+        query_model = agproduct_year_region_mapping[location_level]["model"]
+        q = query_model.query\
+            .filter_by(agproduct_level=buildingblock_level)\
+
+        if hasattr(query_model, "location_id"):
+            q = q.filter_by(location_id=entity_id)
+
+        schema = schemas.XAgriculturalProductYearSchema(many=True)
         return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\
@@ -427,6 +467,9 @@ entity_entity_year = {
             },
             "livestock": {
                 "func": eey_location_livestock
+            },
+            "agproducts": {
+                "func": eey_location_agproducts,
             }
         }
     },
@@ -434,6 +477,13 @@ entity_entity_year = {
         "subdatasets": {
             "locations": {
                 "func": eey_livestock_locations
+            },
+        }
+    },
+    "agproduct": {
+        "subdatasets": {
+            "locations": {
+                "func": eey_agproduct_locations
             },
         }
     },

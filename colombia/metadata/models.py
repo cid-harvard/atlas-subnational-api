@@ -102,6 +102,15 @@ livestock_levels = [
 livestock_enum = db.Enum(*livestock_levels, name="livestock_level")
 
 
+agproduct_levels = [
+    "level0",
+    "level1",
+    "level2",
+    "level3",
+]
+agproduct_enum = db.Enum(*agproduct_levels, name="agproduct_level")
+
+
 class HSProduct(Metadata):
     """A product according to the HS4 (Harmonized System) classification.
     Details can be found here: http://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs_nomenclature_2012/hs_nomenclature_table_2012.aspx
@@ -163,3 +172,11 @@ class Livestock(Metadata):
     #: Possible aggregation levels
     LEVELS = livestock_levels
     level = db.Column(livestock_enum)
+
+
+class AgriculturalProduct(Metadata):
+    __tablename__ = "agproduct"
+
+    #: Possible aggregation levels
+    LEVELS = agproduct_levels
+    level = db.Column(agproduct_enum)

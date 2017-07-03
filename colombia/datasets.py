@@ -9,7 +9,9 @@ location_classification = classification.load("location/Colombia/Prospedia/out/l
 industry_classification = classification.load("industry/ISIC/Colombia_Prosperia/out/industries_colombia_isic_prosperia.csv")
 country_classification = classification.load("location/International/DANE/out/locations_international_dane.csv")
 occupation_classification = classification.load("occupation/SOC/Colombia/out/occupations_soc_2010.csv")
+
 livestock_classification = classification.load("product/Datlas/Rural/out/livestock.csv")
+agproduct_classification = classification.load("product/Datlas/Rural/out/agricultural_products.csv")
 
 
 country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
@@ -1096,7 +1098,7 @@ livestock_template = {
 }
 
 def read_livestock_level1_country():
-    df = pd.read_stata(prefix_path("livestock_Col.dta"))
+    df = pd.read_stata(prefix_path("Rural/livestock_Col.dta"))
     df["location_id"] = "COL"
     return df
 
@@ -1107,12 +1109,84 @@ livestock_level1_country["digit_padding"]["location"] = 3
 
 
 livestock_level1_department = copy.deepcopy(livestock_template)
-livestock_level1_department["read_function"] = lambda: pd.read_stata(prefix_path("livestock_dept.dta"))
+livestock_level1_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/livestock_dept.dta"))
 livestock_level1_department["classification_fields"]["location"]["level"] = "department"
 livestock_level1_department["digit_padding"]["location"] = 2
 
 
 livestock_level1_municipality = copy.deepcopy(livestock_template)
-livestock_level1_municipality["read_function"] = lambda: pd.read_stata(prefix_path("livestock_muni.dta"))
+livestock_level1_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/livestock_muni.dta"))
 livestock_level1_municipality["classification_fields"]["location"]["level"] = "municipality"
 livestock_level1_municipality["digit_padding"]["location"] = 5
+
+
+
+agproduct_template = {
+    "read_function": None,
+    "field_mapping": {
+        "location_id": "location",
+        "product_subgroup_name_sp": "agproduct",
+        "product_level": "agproduct_level",
+        "year": "year",
+        "land_sown_has": "land_sown",
+        "land_harv_has": "land_harvested",
+        "production_tons": "production_tons",
+        "yieldtonsperha": "yield_ratio",
+        "indexyield": "yield_index",
+    },
+    "classification_fields": {
+        "agproduct": {
+            "classification": agproduct_classification,
+            "level": "level2",
+        },
+        "location": {
+            "classification": location_classification,
+            "level": None,
+        },
+    },
+    "digit_padding": {
+        "location": None,
+    },
+    "facet_fields": ["location", "agproduct", "year"],
+    "facets": {
+        ("location_id", "agproduct_id", "year"): {
+            "land_sown": first,
+            "land_harvested": first,
+            "production_tons": first,
+            "yield_ratio": first,
+            "yield_index": first,
+        }
+    }
+}
+
+
+
+def read_agproduct_level2_country():
+    df = pd.read_stata(prefix_path("Rural/agric_2007_2015_Col.dta"))
+    df["location_id"] = "COL"
+    return df
+
+def standardize_names(df):
+    df["agproduct"] = df["agproduct"].str.lower()
+    return df
+
+agproduct_level2_country = copy.deepcopy(agproduct_template)
+agproduct_level2_country["read_function"] = read_agproduct_level2_country
+agproduct_level2_country["hook_pre_merge"] = standardize_names
+agproduct_level2_country["classification_fields"]["location"]["level"] = "country"
+agproduct_level2_country["digit_padding"]["location"] = 3
+# Yield field doesn't exist at country level
+del agproduct_level2_country["field_mapping"]["yieldtonsperha"]
+del agproduct_level2_country["facets"][("location_id", "agproduct_id", "year")]["yield_ratio"]
+
+agproduct_level2_department = copy.deepcopy(agproduct_template)
+agproduct_level2_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_dept.dta"))
+agproduct_level2_department["hook_pre_merge"] = standardize_names
+agproduct_level2_department["classification_fields"]["location"]["level"] = "department"
+agproduct_level2_department["digit_padding"]["location"] = 2
+
+agproduct_level2_municipality = copy.deepcopy(agproduct_template)
+agproduct_level2_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_muni.dta"))
+agproduct_level2_municipality["hook_pre_merge"] = standardize_names
+agproduct_level2_municipality["classification_fields"]["location"]["level"] = "municipality"
+agproduct_level2_municipality["digit_padding"]["location"] = 3

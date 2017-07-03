@@ -25,6 +25,10 @@ metadata_apis = {
         "entity_model": models.Livestock,
         "plural": "livestock",
     },
+    "agproduct": {
+        "entity_model": models.AgriculturalProduct,
+        "plural": "agproducts",
+    },
 }
 
 entities = {
