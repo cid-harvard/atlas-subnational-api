@@ -1166,13 +1166,14 @@ def read_agproduct_level2_country():
     df["location_id"] = "COL"
     return df
 
-def standardize_names(df):
+def hook_agproduct(df):
     df["agproduct"] = df["agproduct"].str.lower()
+    df = df[df.agproduct_level == "level2"]
     return df
 
 agproduct_level2_country = copy.deepcopy(agproduct_template)
 agproduct_level2_country["read_function"] = read_agproduct_level2_country
-agproduct_level2_country["hook_pre_merge"] = standardize_names
+agproduct_level2_country["hook_pre_merge"] = hook_agproduct
 agproduct_level2_country["classification_fields"]["location"]["level"] = "country"
 agproduct_level2_country["digit_padding"]["location"] = 3
 # Yield field doesn't exist at country level
@@ -1181,12 +1182,12 @@ del agproduct_level2_country["facets"][("location_id", "agproduct_id", "year")][
 
 agproduct_level2_department = copy.deepcopy(agproduct_template)
 agproduct_level2_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_dept.dta"))
-agproduct_level2_department["hook_pre_merge"] = standardize_names
+agproduct_level2_department["hook_pre_merge"] = hook_agproduct
 agproduct_level2_department["classification_fields"]["location"]["level"] = "department"
 agproduct_level2_department["digit_padding"]["location"] = 2
 
 agproduct_level2_municipality = copy.deepcopy(agproduct_template)
 agproduct_level2_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_muni.dta"))
-agproduct_level2_municipality["hook_pre_merge"] = standardize_names
+agproduct_level2_municipality["hook_pre_merge"] = hook_agproduct
 agproduct_level2_municipality["classification_fields"]["location"]["level"] = "municipality"
 agproduct_level2_municipality["digit_padding"]["location"] = 3
