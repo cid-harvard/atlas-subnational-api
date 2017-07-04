@@ -18,7 +18,9 @@ from datasets import (trade4digit_country, trade4digit_department,
                       livestock_level1_department,
                       livestock_level1_municipality,
                       agproduct_level2_country, agproduct_level2_department,
-                      agproduct_level2_municipality
+                      agproduct_level2_municipality,
+                      land_use_level2_country, land_use_level2_department,
+                      land_use_level2_municipality
                       )
 
 from datasets import (product_classification,
@@ -28,6 +30,7 @@ from datasets import (product_classification,
                       occupation_classification,
                       livestock_classification,
                       agproduct_classification,
+                      land_use_classification
                       )
 
 if __name__ == "__main__":
@@ -63,6 +66,11 @@ if __name__ == "__main__":
             agproduct = classification_to_models(agproduct_classification,
                                                   models.AgriculturalProduct)
             db.session.add_all(agproduct)
+            db.session.commit()
+
+            land_use = classification_to_models(land_use_classification,
+                                                  models.LandUse)
+            db.session.add_all(land_use)
             db.session.commit()
 
             countries = classification_to_models(country_classification,
@@ -293,6 +301,27 @@ if __name__ == "__main__":
             df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
             df["agproduct_level"] = "level2"
             df.to_sql("municipality_agproduct_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # LandUse - country
+            ret = process_dataset(land_use_level2_country)
+            df = ret[('location_id', 'land_use_id')].reset_index()
+            df["land_use_level"] = "level2"
+            df.to_sql("country_land_use_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # LandUse - department
+            ret = process_dataset(land_use_level2_department)
+            df = ret[('location_id', 'land_use_id')].reset_index()
+            df["land_use_level"] = "level2"
+            df.to_sql("department_land_use_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # LandUse - municipality
+            ret = process_dataset(land_use_level2_municipality)
+            df = ret[('location_id', 'land_use_id')].reset_index()
+            df["land_use_level"] = "level2"
+            df.to_sql("municipality_land_use_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # Occupation - year

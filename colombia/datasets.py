@@ -12,6 +12,7 @@ occupation_classification = classification.load("occupation/SOC/Colombia/out/occ
 
 livestock_classification = classification.load("product/Datlas/Rural/out/livestock.csv")
 agproduct_classification = classification.load("product/Datlas/Rural/out/agricultural_products.csv")
+land_use_classification = classification.load("product/Datlas/Rural/out/land_use.csv")
 
 
 country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
@@ -1191,3 +1192,65 @@ agproduct_level2_municipality["read_function"] = lambda: pd.read_stata(prefix_pa
 agproduct_level2_municipality["hook_pre_merge"] = hook_agproduct
 agproduct_level2_municipality["classification_fields"]["location"]["level"] = "municipality"
 agproduct_level2_municipality["digit_padding"]["location"] = 3
+
+
+def hook_land_use(df):
+    df = df[df.land_use_level == "level2"]
+    df["land_use"] = df["land_use"].str.replace('\x92', 'Â’')
+    return df
+
+
+land_use_template = {
+    "read_function": None,
+    "hook_pre_merge": hook_land_use,
+    "field_mapping": {
+        "location_id": "location",
+        "land_use_type_name_sp": "land_use",
+        "land_use_level": "land_use_level",
+        "land_use_ha": "area",
+    },
+    "classification_fields": {
+        "land_use": {
+            "classification": land_use_classification,
+            "level": "level2",
+        },
+        "location": {
+            "classification": location_classification,
+            "level": None,
+        },
+    },
+    "digit_padding": {
+        "location": None,
+    },
+    "facet_fields": ["location", "land_use"],
+    "facets": {
+        ("location_id", "land_use_id"): {
+            "area": first,
+        }
+    }
+}
+
+def read_land_use_level2_country():
+    df = pd.read_stata(prefix_path("Rural/land_use_Col_c.dta"))
+    df["location_id"] = "COL"
+    return df
+
+land_use_level2_country = copy.deepcopy(land_use_template)
+land_use_level2_country["read_function"] = read_land_use_level2_country
+land_use_level2_country["classification_fields"]["location"]["level"] = "country"
+land_use_level2_country["digit_padding"]["location"] = 3
+
+
+land_use_level2_department = copy.deepcopy(land_use_template)
+land_use_level2_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/land_use_dept_c.dta"))
+land_use_level2_department["classification_fields"]["location"]["level"] = "department"
+land_use_level2_department["digit_padding"]["location"] = 2
+
+
+land_use_level2_municipality = copy.deepcopy(land_use_template)
+land_use_level2_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/land_use_muni_c.dta"))
+land_use_level2_municipality["hook_pre_merge"] = hook_land_use
+land_use_level2_municipality["classification_fields"]["location"]["level"] = "municipality"
+land_use_level2_municipality["digit_padding"]["location"] = 5
+
+
