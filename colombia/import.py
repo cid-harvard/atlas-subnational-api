@@ -17,8 +17,8 @@ from datasets import (trade4digit_country, trade4digit_department,
                       industry2digit_country, livestock_level1_country,
                       livestock_level1_department,
                       livestock_level1_municipality,
-                      agproduct_level2_country, agproduct_level2_department,
-                      agproduct_level2_municipality,
+                      agproduct_level3_country, agproduct_level3_department,
+                      agproduct_level3_municipality,
                       land_use_level2_country, land_use_level2_department,
                       land_use_level2_municipality
                       )
@@ -283,23 +283,23 @@ if __name__ == "__main__":
                       chunksize=10000, if_exists="append")
 
             # AgriculturalProduct - country
-            ret = process_dataset(agproduct_level2_country)
+            ret = process_dataset(agproduct_level3_country)
             df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
-            df["agproduct_level"] = "level2"
+            df["agproduct_level"] = "level3"
             df.to_sql("country_agproduct_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # AgriculturalProduct - department
-            ret = process_dataset(agproduct_level2_department)
+            ret = process_dataset(agproduct_level3_department)
             df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
-            df["agproduct_level"] = "level2"
+            df["agproduct_level"] = "level3"
             df.to_sql("department_agproduct_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # AgriculturalProduct - municipality
-            ret = process_dataset(agproduct_level2_municipality)
+            ret = process_dataset(agproduct_level3_municipality)
             df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
-            df["agproduct_level"] = "level2"
+            df["agproduct_level"] = "level3"
             df.to_sql("municipality_agproduct_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 

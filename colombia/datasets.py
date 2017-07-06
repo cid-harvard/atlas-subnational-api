@@ -1126,7 +1126,7 @@ agproduct_template = {
     "read_function": None,
     "field_mapping": {
         "location_id": "location",
-        "product_subgroup_name_sp": "agproduct",
+        "product_name_sp": "agproduct",
         "product_level": "agproduct_level",
         "year": "year",
         "land_sown_has": "land_sown",
@@ -1138,7 +1138,7 @@ agproduct_template = {
     "classification_fields": {
         "agproduct": {
             "classification": agproduct_classification,
-            "level": "level2",
+            "level": "level3",
         },
         "location": {
             "classification": location_classification,
@@ -1162,36 +1162,36 @@ agproduct_template = {
 
 
 
-def read_agproduct_level2_country():
-    df = pd.read_stata(prefix_path("Rural/agric_2007_2015_Col.dta"))
+def read_agproduct_level3_country():
+    df = pd.read_stata(prefix_path("Rural/agric_2007_2015_Col_c.dta"))
     df["location_id"] = "COL"
     return df
 
 def hook_agproduct(df):
     df["agproduct"] = df["agproduct"].str.lower()
-    df = df[df.agproduct_level == "level2"]
+    df = df[df.agproduct_level == "level3"]
     return df
 
-agproduct_level2_country = copy.deepcopy(agproduct_template)
-agproduct_level2_country["read_function"] = read_agproduct_level2_country
-agproduct_level2_country["hook_pre_merge"] = hook_agproduct
-agproduct_level2_country["classification_fields"]["location"]["level"] = "country"
-agproduct_level2_country["digit_padding"]["location"] = 3
+agproduct_level3_country = copy.deepcopy(agproduct_template)
+agproduct_level3_country["read_function"] = read_agproduct_level3_country
+agproduct_level3_country["hook_pre_merge"] = hook_agproduct
+agproduct_level3_country["classification_fields"]["location"]["level"] = "country"
+agproduct_level3_country["digit_padding"]["location"] = 3
 # Yield field doesn't exist at country level
-del agproduct_level2_country["field_mapping"]["yieldtonsperha"]
-del agproduct_level2_country["facets"][("location_id", "agproduct_id", "year")]["yield_ratio"]
+del agproduct_level3_country["field_mapping"]["yieldtonsperha"]
+del agproduct_level3_country["facets"][("location_id", "agproduct_id", "year")]["yield_ratio"]
 
-agproduct_level2_department = copy.deepcopy(agproduct_template)
-agproduct_level2_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_dept.dta"))
-agproduct_level2_department["hook_pre_merge"] = hook_agproduct
-agproduct_level2_department["classification_fields"]["location"]["level"] = "department"
-agproduct_level2_department["digit_padding"]["location"] = 2
+agproduct_level3_department = copy.deepcopy(agproduct_template)
+agproduct_level3_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_dept_c.dta"))
+agproduct_level3_department["hook_pre_merge"] = hook_agproduct
+agproduct_level3_department["classification_fields"]["location"]["level"] = "department"
+agproduct_level3_department["digit_padding"]["location"] = 2
 
-agproduct_level2_municipality = copy.deepcopy(agproduct_template)
-agproduct_level2_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_muni.dta"))
-agproduct_level2_municipality["hook_pre_merge"] = hook_agproduct
-agproduct_level2_municipality["classification_fields"]["location"]["level"] = "municipality"
-agproduct_level2_municipality["digit_padding"]["location"] = 3
+agproduct_level3_municipality = copy.deepcopy(agproduct_template)
+agproduct_level3_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_muni_c.dta"))
+agproduct_level3_municipality["hook_pre_merge"] = hook_agproduct
+agproduct_level3_municipality["classification_fields"]["location"]["level"] = "municipality"
+agproduct_level3_municipality["digit_padding"]["location"] = 3
 
 
 def hook_land_use(df):
