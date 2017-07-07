@@ -13,7 +13,7 @@ PYTHON_EXECUTABLE=python3
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Linux)
-    VIRTUALENV_EXECUTABLE=virtualenv -p /usr/bin/python3
+    VIRTUALENV_EXECUTABLE=pyvenv
 endif
 ifeq ($(UNAME_S), Darwin)
     VIRTUALENV_EXECUTABLE=pyvenv
