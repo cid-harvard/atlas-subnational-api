@@ -7,9 +7,12 @@ from atlas_core.model_mixins import IDMixin
 from ..core import db
 
 from ..metadata.models import (Location, HSProduct, Industry, Occupation,
-                               Country, Livestock, AgriculturalProduct, LandUse,
-                               product_enum, industry_enum, occupation_enum,
-                               livestock_enum, agproduct_enum, land_use_enum)
+                               Country, Livestock, AgriculturalProduct,
+                               LandUse, FarmType)
+
+from ..metadata.models import (product_enum, industry_enum, occupation_enum,
+                               livestock_enum, agproduct_enum, land_use_enum,
+                               farmtype_enum)
 
 
 class XProductYear(BaseModel, IDMixin):
@@ -410,3 +413,29 @@ class DepartmentLandUseYear(XLandUseYear):
 
 class MunicipalityLandUseYear(XLandUseYear):
     __tablename__ = "municipality_land_use_year"
+
+
+class XFarmTypeYear(BaseModel, IDMixin):
+    __abstract__ = True
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def farmtype_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(FarmType.id))
+
+    farmtype_level = db.Column(farmtype_enum)
+
+    num_farms = db.Column(db.Integer)
+
+
+class CountryFarmTypeYear(XFarmTypeYear):
+    __tablename__ = "country_farmtype_year"
+
+class DepartmentFarmTypeYear(XFarmTypeYear):
+    __tablename__ = "department_farmtype_year"
+
+class MunicipalityFarmTypeYear(XFarmTypeYear):
+    __tablename__ = "municipality_farmtype_year"

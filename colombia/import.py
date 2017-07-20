@@ -20,7 +20,8 @@ from datasets import (trade4digit_country, trade4digit_department,
                       agproduct_level3_country, agproduct_level3_department,
                       agproduct_level3_municipality,
                       land_use_level2_country, land_use_level2_department,
-                      land_use_level2_municipality
+                      land_use_level2_municipality, farmtype_level2_country,
+                      farmtype_level2_department, farmtype_level2_municipality
                       )
 
 from datasets import (product_classification,
@@ -30,7 +31,8 @@ from datasets import (product_classification,
                       occupation_classification,
                       livestock_classification,
                       agproduct_classification,
-                      land_use_classification
+                      land_use_classification,
+                      farmtype_classification,
                       )
 
 if __name__ == "__main__":
@@ -71,6 +73,11 @@ if __name__ == "__main__":
             land_use = classification_to_models(land_use_classification,
                                                   models.LandUse)
             db.session.add_all(land_use)
+            db.session.commit()
+
+            farmtype = classification_to_models(farmtype_classification,
+                                                  models.FarmType)
+            db.session.add_all(farmtype)
             db.session.commit()
 
             countries = classification_to_models(country_classification,
@@ -322,6 +329,27 @@ if __name__ == "__main__":
             df = ret[('location_id', 'land_use_id')].reset_index()
             df["land_use_level"] = "level2"
             df.to_sql("municipality_land_use_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # FarmType - country
+            ret = process_dataset(farmtype_level2_country)
+            df = ret[('location_id', 'farmtype_id')].reset_index()
+            df["farmtype_level"] = "level2"
+            df.to_sql("country_farmtype_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # FarmType - department
+            ret = process_dataset(farmtype_level2_department)
+            df = ret[('location_id', 'farmtype_id')].reset_index()
+            df["farmtype_level"] = "level2"
+            df.to_sql("department_farmtype_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # FarmType - municipality
+            ret = process_dataset(farmtype_level2_municipality)
+            df = ret[('location_id', 'farmtype_id')].reset_index()
+            df["farmtype_level"] = "level2"
+            df.to_sql("municipality_farmtype_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
             # Occupation - year
