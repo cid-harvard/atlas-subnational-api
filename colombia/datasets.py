@@ -1256,7 +1256,7 @@ land_use_level2_municipality["digit_padding"]["location"] = 5
 
 
 def hook_farmtype(df):
-    df = df[df.farms_level == "level2"]
+    df = df[df.farmtype_level == "level2"]
     return df
 
 
