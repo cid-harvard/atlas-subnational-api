@@ -13,6 +13,7 @@ occupation_classification = classification.load("occupation/SOC/Colombia/out/occ
 livestock_classification = classification.load("product/Datlas/Rural/out/livestock.csv")
 agproduct_classification = classification.load("product/Datlas/Rural/out/agricultural_products.csv")
 land_use_classification = classification.load("product/Datlas/Rural/out/land_use.csv")
+farmtype_classification = classification.load("product/Datlas/Rural/out/farm_type.csv")
 
 
 country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
@@ -1254,3 +1255,60 @@ land_use_level2_municipality["classification_fields"]["location"]["level"] = "mu
 land_use_level2_municipality["digit_padding"]["location"] = 5
 
 
+def hook_farmtype(df):
+    df = df[df.farms_level == "level2"]
+    return df
+
+
+farmtype_template = {
+    "read_function": None,
+    "hook_pre_merge": hook_farmtype,
+    "field_mapping": {
+        "location_id": "location",
+        "farms_types_name": "farmtype",
+        "farms_level": "farmtype_level",
+        "farms_number": "num_farms",
+    },
+    "classification_fields": {
+        "farmtype": {
+            "classification": farmtype_classification,
+            "level": "level2",
+        },
+        "location": {
+            "classification": location_classification,
+            "level": None,
+        },
+    },
+    "digit_padding": {
+        "location": None,
+    },
+    "facet_fields": ["location", "farmtype"],
+    "facets": {
+        ("location_id", "farmtype_id"): {
+            "num_farms": first,
+        }
+    }
+}
+
+def read_farmtype_level2_country():
+    df = pd.read_stata(prefix_path("Rural/farms_Col_c.dta"))
+    df["location_id"] = "COL"
+    return df
+
+farmtype_level2_country = copy.deepcopy(farmtype_template)
+farmtype_level2_country["read_function"] = read_farmtype_level2_country
+farmtype_level2_country["classification_fields"]["location"]["level"] = "country"
+farmtype_level2_country["digit_padding"]["location"] = 3
+
+
+farmtype_level2_department = copy.deepcopy(farmtype_template)
+farmtype_level2_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/farms_dept_c.dta"))
+farmtype_level2_department["classification_fields"]["location"]["level"] = "department"
+farmtype_level2_department["digit_padding"]["location"] = 2
+
+
+farmtype_level2_municipality = copy.deepcopy(farmtype_template)
+farmtype_level2_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/farms_muni_c.dta"))
+farmtype_level2_municipality["hook_pre_merge"] = hook_farmtype
+farmtype_level2_municipality["classification_fields"]["location"]["level"] = "municipality"
+farmtype_level2_municipality["digit_padding"]["location"] = 5

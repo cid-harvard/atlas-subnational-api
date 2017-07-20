@@ -73,6 +73,12 @@ class XLandUseYearSchema(ma.Schema):
         fields = ("area", "land_use_id", "location_id")
 
 
+class XFarmTypeYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("num_farms", "farmtype_id", "location_id")
+
+
 class CountryMunicipalityProductYearSchema(ma.Schema):
 
     municipality_id = ma.fields.Integer(attribute="location_id")

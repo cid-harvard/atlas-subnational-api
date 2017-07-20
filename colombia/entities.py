@@ -33,6 +33,10 @@ metadata_apis = {
         "entity_model": models.LandUse,
         "plural": "land_uses",
     },
+    "farmtype": {
+        "entity_model": models.FarmType,
+        "plural": "farmtypes",
+    },
 }
 
 entities = {
