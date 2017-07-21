@@ -248,6 +248,20 @@ def eey_farmtype_locations(entity_type, entity_id, location_level):
         abort(400, body=msg)
 
 
+def eey_farmsize_locations(entity_type, entity_id, location_level):
+
+    if location_level in farmsize_year_region_mapping:
+        q = farmsize_year_region_mapping[location_level]["model"].query\
+            .filter_by(farmsize_id=entity_id)\
+            .all()
+        schema = schemas.XFarmSizeYearSchema(many=True)
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
 def get_all_model_fields(model):
     """Get a iterable of all the fields of a model."""
     return (
@@ -617,6 +631,13 @@ entity_entity_year = {
         "subdatasets": {
             "locations": {
                 "func": eey_farmtype_locations
+            },
+        }
+    },
+    "farmsize": {
+        "subdatasets": {
+            "locations": {
+                "func": eey_farmsize_locations
             },
         }
     },
