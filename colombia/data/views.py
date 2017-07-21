@@ -587,6 +587,9 @@ entity_entity_year = {
             "farmtypes": {
                 "func": eey_location_farmtypes,
             },
+            "farmsizes": {
+                "func": eey_location_farmsizes,
+            },
         }
     },
     "livestock": {
