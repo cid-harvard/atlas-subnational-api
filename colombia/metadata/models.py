@@ -125,6 +125,11 @@ farmtype_levels = [
 ]
 farmtype_enum = db.Enum(*farmtype_levels, name="farmtype_level")
 
+farmsize_levels = [
+    "level0",
+    "level1",
+]
+farmsize_enum = db.Enum(*farmsize_levels, name="farmsize_level")
 
 class HSProduct(Metadata):
     """A product according to the HS4 (Harmonized System) classification.
@@ -211,3 +216,11 @@ class FarmType(Metadata):
     #: Possible aggregation levels
     LEVELS = farmtype_levels
     level = db.Column(farmtype_enum)
+
+
+class FarmSize(Metadata):
+    __tablename__ = "farmsize"
+
+    #: Possible aggregation levels
+    LEVELS = farmsize_levels
+    level = db.Column(farmsize_enum)

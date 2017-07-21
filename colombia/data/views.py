@@ -13,7 +13,8 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      CountryLivestockYear, DepartmentLivestockYear, MunicipalityLivestockYear,
                      CountryAgriculturalProductYear, DepartmentAgriculturalProductYear, MunicipalityAgriculturalProductYear,
                      CountryLandUseYear, DepartmentLandUseYear, MunicipalityLandUseYear,
-                     CountryFarmTypeYear, DepartmentFarmTypeYear, MunicipalityFarmTypeYear
+                     CountryFarmTypeYear, DepartmentFarmTypeYear, MunicipalityFarmTypeYear,
+                     CountryFarmSizeYear, DepartmentFarmSizeYear, MunicipalityFarmSizeYear,
                      )
 from ..api_schemas import marshal
 from .routing import lookup_classification_level
@@ -167,6 +168,12 @@ farmtype_year_region_mapping = {
     "department": {"model": DepartmentFarmTypeYear},
     "municipality": {"model": MunicipalityFarmTypeYear},
     "country": {"model": CountryFarmTypeYear},
+}
+
+farmsize_year_region_mapping = {
+    "department": {"model": DepartmentFarmSizeYear},
+    "municipality": {"model": MunicipalityFarmSizeYear},
+    "country": {"model": CountryFarmSizeYear},
 }
 
 
@@ -415,6 +422,26 @@ def eey_location_farmtypes(entity_type, entity_id, buildingblock_level):
             q = q.filter_by(location_id=entity_id)
 
         schema = schemas.XFarmTypeYearSchema(many=True)
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
+def eey_location_farmsizes(entity_type, entity_id, buildingblock_level):
+
+    location_level = lookup_classification_level("location", entity_id)
+
+    if location_level in farmsize_year_region_mapping:
+        query_model = farmsize_year_region_mapping[location_level]["model"]
+        q = query_model.query\
+            .filter_by(farmsize_level=buildingblock_level)\
+
+        if hasattr(query_model, "location_id"):
+            q = q.filter_by(location_id=entity_id)
+
+        schema = schemas.XFarmSizeYearSchema(many=True)
         return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\

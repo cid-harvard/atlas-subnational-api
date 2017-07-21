@@ -14,6 +14,7 @@ livestock_classification = classification.load("product/Datlas/Rural/out/livesto
 agproduct_classification = classification.load("product/Datlas/Rural/out/agricultural_products.csv")
 land_use_classification = classification.load("product/Datlas/Rural/out/land_use.csv")
 farmtype_classification = classification.load("product/Datlas/Rural/out/farm_type.csv")
+farmsize_classification = classification.load("product/Datlas/Rural/out/farm_size.csv")
 
 
 country_classification.table.code = country_classification.table.code.astype(str).str.zfill(3)
@@ -1312,3 +1313,62 @@ farmtype_level2_municipality["read_function"] = lambda: pd.read_stata(prefix_pat
 farmtype_level2_municipality["hook_pre_merge"] = hook_farmtype
 farmtype_level2_municipality["classification_fields"]["location"]["level"] = "municipality"
 farmtype_level2_municipality["digit_padding"]["location"] = 5
+
+
+
+def hook_farmsize(df):
+    df = df[df.farmsize_level == "level1"]
+    return df
+
+farmsize_template = {
+    "read_function": None,
+    "hook_pre_merge": hook_farmsize,
+    "field_mapping": {
+        "location_id": "location",
+        "landuse_type_sp": "farmsize",
+        "landuse_type_level": "farmsize_level",
+        "av_farms_size_ha": "avg_farmsize",
+    },
+    "classification_fields": {
+        "farmsize": {
+            "classification": farmsize_classification,
+            "level": "level1",
+        },
+        "location": {
+            "classification": location_classification,
+            "level": None,
+        },
+    },
+    "digit_padding": {
+        "location": None,
+    },
+    "facet_fields": ["location", "farmsize"],
+    "facets": {
+        ("location_id", "farmsize_id"): {
+            "avg_farmsize": first,
+        }
+    }
+}
+
+def read_farmsize_level1_country():
+    df = pd.read_stata(prefix_path("Rural/average_farms_size_Col.dta"))
+    df["location_id"] = "COL"
+    return df
+
+farmsize_level1_country = copy.deepcopy(farmsize_template)
+farmsize_level1_country["read_function"] = read_farmsize_level1_country
+farmsize_level1_country["classification_fields"]["location"]["level"] = "country"
+farmsize_level1_country["digit_padding"]["location"] = 3
+
+
+farmsize_level1_department = copy.deepcopy(farmsize_template)
+farmsize_level1_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/average_farms_size_dept.dta"))
+farmsize_level1_department["classification_fields"]["location"]["level"] = "department"
+farmsize_level1_department["digit_padding"]["location"] = 2
+
+
+farmsize_level1_municipality = copy.deepcopy(farmsize_template)
+farmsize_level1_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/average_farms_size_muni.dta"))
+farmsize_level1_municipality["hook_pre_merge"] = hook_farmsize
+farmsize_level1_municipality["classification_fields"]["location"]["level"] = "municipality"
+farmsize_level1_municipality["digit_padding"]["location"] = 5

@@ -8,11 +8,11 @@ from ..core import db
 
 from ..metadata.models import (Location, HSProduct, Industry, Occupation,
                                Country, Livestock, AgriculturalProduct,
-                               LandUse, FarmType)
+                               LandUse, FarmType, FarmSize)
 
 from ..metadata.models import (product_enum, industry_enum, occupation_enum,
                                livestock_enum, agproduct_enum, land_use_enum,
-                               farmtype_enum)
+                               farmtype_enum, farmsize_enum)
 
 
 class XProductYear(BaseModel, IDMixin):
@@ -439,3 +439,30 @@ class DepartmentFarmTypeYear(XFarmTypeYear):
 
 class MunicipalityFarmTypeYear(XFarmTypeYear):
     __tablename__ = "municipality_farmtype_year"
+
+
+class XFarmSizeYear(BaseModel, IDMixin):
+    __abstract__ = True
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def farmsize_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(FarmSize.id))
+
+    farmsize_level = db.Column(farmsize_enum)
+
+    avg_farmsize = db.Column(db.Integer)
+
+
+class CountryFarmSizeYear(XFarmSizeYear):
+    __tablename__ = "country_farmsize_year"
+
+class DepartmentFarmSizeYear(XFarmSizeYear):
+    __tablename__ = "department_farmsize_year"
+
+class MunicipalityFarmSizeYear(XFarmSizeYear):
+    __tablename__ = "municipality_farmsize_year"
+
