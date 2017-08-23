@@ -783,7 +783,7 @@ industry4digit_municipality = {
 }
 
 population = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_pop_muni_dept_natl_1985_2014.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final_Metadata/col_pop_muni_dept_natl.dta")),
     "hook_pre_merge": lambda df: df[~df[["location", "year", "population"]].duplicated()],
     "field_mapping": {
         "year": "year",
@@ -809,7 +809,7 @@ population = {
 
 
 gdp_nominal_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_nomgdp_muni_dept_natl_2000_2014.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final_Metadata/col_nomgdp_muni_dept_natl.dta")),
     "hook_pre_merge": lambda df: df.drop_duplicates(["location", "year"]),
     "field_mapping": {
         "dept_code": "location",
@@ -835,7 +835,7 @@ gdp_nominal_department = {
 
 
 gdp_real_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_realgdp_dept_natl_2000_2014.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final_Metadata/col_realgdp_dept_natl.dta")),
     "field_mapping": {
         "dept_code": "location",
         "real_gdp": "gdp_real",
