@@ -3,30 +3,31 @@ from colombia.core import db
 
 from dataset_tools import (process_dataset, classification_to_models)
 
-from datasets import (trade4digit_country, trade4digit_department,
-                      trade4digit_msa, trade4digit_municipality,
-                      industry4digit_country, industry4digit_department,
-                      industry4digit_msa, industry2digit_department,
-                      industry4digit_municipality,
-                      trade4digit_rcpy_municipality,
-                      industry2digit_msa,
-                      trade4digit_rcpy_department, trade4digit_rcpy_msa,
-                      trade4digit_rcpy_country, population,
-                      gdp_nominal_department, gdp_real_department,
-                      occupation2digit, occupation2digit_industry2digit,
-                      industry2digit_country)
-
-from datasets import (product_classification,
-                      industry_classification,
-                      location_classification,
-                      country_classification,
-                      occupation_classification
-                      )
-
 if __name__ == "__main__":
 
         app = create_app()
         with app.app_context():
+
+            from datasets import (trade4digit_country, trade4digit_department,
+                                trade4digit_msa, trade4digit_municipality,
+                                industry4digit_country, industry4digit_department,
+                                industry4digit_msa, industry2digit_department,
+                                industry4digit_municipality,
+                                trade4digit_rcpy_municipality,
+                                industry2digit_msa,
+                                trade4digit_rcpy_department, trade4digit_rcpy_msa,
+                                trade4digit_rcpy_country, population,
+                                gdp_nominal_department, gdp_real_department,
+                                occupation2digit, occupation2digit_industry2digit,
+                                industry2digit_country)
+
+            from datasets import (product_classification,
+                                industry_classification,
+                                location_classification,
+                                country_classification,
+                                occupation_classification
+                                )
+
 
             products = classification_to_models(product_classification,
                                                 models.HSProduct)
