@@ -181,7 +181,7 @@ if __name__ == "__main__":
 
             # Merge all dept-year variables together
             def filter_year_range(df, min_year, max_year):
-                return dy_p[(min_year <= df.year) & (df.year <= max_year)]
+                return df[(min_year <= df.year) & (df.year <= max_year)]
 
             c = app.config
             df_p = filter_year_range(dy_p, c["YEAR_MIN_TRADE"], c["YEAR_MAX_TRADE"])
