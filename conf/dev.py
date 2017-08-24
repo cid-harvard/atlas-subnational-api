@@ -15,9 +15,6 @@ PROFILE = False
 PORT = 8001
 
 # Ingestion settings
-TRADE_FIRST_YEAR = 2007
-LAST_YEAR = 2015
-
 DATASET_ROOT = "/nfs/projects_nobackup/c/cidgrowlab/Atlas/Colombia/beta/"
 YEAR_MIN_TRADE = 2007
 YEAR_MAX_TRADE = 2014
