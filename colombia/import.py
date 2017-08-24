@@ -96,10 +96,15 @@ if __name__ == "__main__":
             pop_df = ret[('location_id', 'year')].reset_index()
 
             # Merge all dept-year variables together
-            dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2014)]
-            dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2014)]
-            gdp_df = gdp_df[(2007 <= gdp_df.year) & (gdp_df.year <= 2014)]
-            pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2014)]
+            def filter_year_range(df, min_year, max_year):
+                return dy_p[(min_year <= df.year) & (df.year <= max_year)]
+
+            c = app.config
+            df_p = filter_year_range(dy_p, c["YEAR_MIN_TRADE"], c["YEAR_MAX_TRADE"])
+            df_i = filter_year_range(dy_i, c["YEAR_MIN_INDUSTRY"], c["YEAR_MAX_INDUSTRY"])
+            gdp_df = filter_year_range(gdp_df, c["YEAR_MIN_DEMOGRAPHIC"], c["YEAR_MAX_DEMOGRAPHIC"])
+            pop_df = filter_year_range(pop_df, c["YEAR_MIN_DEMOGRAPHIC"], c["YEAR_MAX_DEMOGRAPHIC"])
+
             dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
             dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
             dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")

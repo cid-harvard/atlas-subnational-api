@@ -1,5 +1,6 @@
 import pandas as pd
 import os.path
+from flask import current_app
 
 from linnaeus import classification
 
@@ -23,11 +24,11 @@ def sum_group(x):
     return x.sum()
 
 
-DATASET_ROOT = "/nfs/projects_nobackup/c/cidgrowlab/Atlas/Colombia/beta/"
-YEAR_MIN_TRADE = 2007
-YEAR_MAX_TRADE = 2014
-YEAR_MIN_INDUSTRY = 2007
-YEAR_MAX_INDUSTRY = 2014
+DATASET_ROOT = current_app.config["DATASET_ROOT"]
+YEAR_MIN_TRADE = current_app.config["YEAR_MIN_TRADE"]
+YEAR_MAX_TRADE = current_app.config["YEAR_MAX_TRADE"]
+YEAR_MIN_INDUSTRY = current_app.config["YEAR_MIN_INDUSTRY"]
+YEAR_MAX_INDUSTRY = current_app.config["YEAR_MAX_INDUSTRY"]
 
 # These are MSAs (Metropolitan Statistical Area) that have a single
 # municipality associated with them - they're mostly "cities" which are munis
