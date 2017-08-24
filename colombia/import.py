@@ -3,44 +3,6 @@ from colombia.core import db
 
 from dataset_tools import (process_dataset, classification_to_models)
 
-from datasets import (trade4digit_country, trade4digit_department,
-                      trade4digit_msa, trade4digit_municipality,
-                      industry4digit_country, industry4digit_department,
-                      industry4digit_msa, industry2digit_department,
-                      industry4digit_municipality,
-                      trade4digit_rcpy_municipality,
-                      industry2digit_msa,
-                      trade4digit_rcpy_department, trade4digit_rcpy_msa,
-                      trade4digit_rcpy_country, population,
-                      gdp_nominal_department, gdp_real_department,
-                      occupation2digit, occupation2digit_industry2digit,
-                      industry2digit_country, livestock_level1_country,
-                      livestock_level1_department,
-                      livestock_level1_municipality,
-                      agproduct_level3_country, agproduct_level3_department,
-                      agproduct_level3_municipality,
-                      nonagric_level3_country, nonagric_level3_department,
-                      nonagric_level3_municipality,
-                      land_use_level2_country, land_use_level2_department,
-                      land_use_level2_municipality, farmtype_level2_country,
-                      farmtype_level2_department, farmtype_level2_municipality,
-                      farmsize_level1_country, farmsize_level1_department,
-                      farmsize_level1_municipality,
-                      )
-
-from datasets import (product_classification,
-                      industry_classification,
-                      location_classification,
-                      country_classification,
-                      occupation_classification,
-                      livestock_classification,
-                      agproduct_classification,
-                      nonagric_classification,
-                      land_use_classification,
-                      farmtype_classification,
-                      farmsize_classification,
-                      )
-
 import pandas as pd
 import numpy as np
 
@@ -64,6 +26,47 @@ if __name__ == "__main__":
 
         app = create_app()
         with app.app_context():
+
+            from datasets import (
+                trade4digit_country, trade4digit_department,
+                trade4digit_msa, trade4digit_municipality,
+                industry4digit_country, industry4digit_department,
+                industry4digit_msa, industry2digit_department,
+                industry4digit_municipality,
+                trade4digit_rcpy_municipality,
+                industry2digit_msa,
+                trade4digit_rcpy_department, trade4digit_rcpy_msa,
+                trade4digit_rcpy_country, population,
+                gdp_nominal_department, gdp_real_department,
+                occupation2digit, occupation2digit_industry2digit,
+                industry2digit_country, livestock_level1_country,
+                livestock_level1_department,
+                livestock_level1_municipality,
+                agproduct_level3_country, agproduct_level3_department,
+                agproduct_level3_municipality,
+                nonagric_level3_country, nonagric_level3_department,
+                nonagric_level3_municipality,
+                land_use_level2_country, land_use_level2_department,
+                land_use_level2_municipality, farmtype_level2_country,
+                farmtype_level2_department, farmtype_level2_municipality,
+                farmsize_level1_country, farmsize_level1_department,
+                farmsize_level1_municipality,
+            )
+
+            from datasets import (
+                product_classification,
+                industry_classification,
+                location_classification,
+                country_classification,
+                occupation_classification,
+                livestock_classification,
+                agproduct_classification,
+                nonagric_classification,
+                land_use_classification,
+                farmtype_classification,
+                farmsize_classification,
+            )
+
 
             products = classification_to_models(product_classification,
                                                 models.HSProduct)
