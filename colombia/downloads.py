@@ -263,6 +263,7 @@ def save_rcpy(rcpy_dataset):
     df = df.reset_index().merge(pci, on=["product_id", "year"], how="outer")
     return df.set_index(['country_id', 'location_id', 'product_id', 'year'])
 
+
 def save_rcpy_country():
     return save_rcpy(trade4digit_rcpy_country)
 
@@ -398,8 +399,45 @@ def downloads():
     save(path, save_occupations(), "occupations")
     save(path, save_demographic(), "demographic")
 
+
 if __name__ == "__main__":
 
     app = create_app()
     with app.app_context():
+        from datasets import (trade4digit_country, trade4digit_department,
+                              trade4digit_msa, trade4digit_municipality,
+                              industry4digit_country, industry4digit_department,
+                              industry4digit_msa, industry4digit_municipality,
+                              occupation2digit_industry2digit, gdp_nominal_department,
+                              gdp_real_department, population,
+                              trade4digit_rcpy_country, trade4digit_rcpy_department,
+                              trade4digit_rcpy_msa, trade4digit_rcpy_municipality)
+
+        from datasets import (product_classification, industry_classification,
+                              location_classification, occupation_classification,
+                              country_classification)
+
+        classifications = {
+            "occupation_id": {
+                "name": "occupation",
+                "classification": occupation_classification
+            },
+            "location_id": {
+                "name": "location",
+                "classification": location_classification
+            },
+            "product_id": {
+                "name": "product",
+                "classification": product_classification
+            },
+            "industry_id": {
+                "name": "industry",
+                "classification": industry_classification
+            },
+            "country_id": {
+                "name": "country",
+                "classification": country_classification
+            },
+        }
+
         downloads()
