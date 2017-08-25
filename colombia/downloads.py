@@ -129,7 +129,7 @@ def save_occupations():
     m = ret[('occupation_id', 'industry_id')]
 
     m = merge_classifications(m)
-    m["year"] = current_app.config(["YEAR_MAX_DEMOGRAPHIC"])
+    m["year"] = current_app.config["YEAR_MAX_DEMOGRAPHIC"]
     return m.set_index("year")
 
 
