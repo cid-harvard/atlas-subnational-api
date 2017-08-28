@@ -1,6 +1,7 @@
 import pandas as pd
 import copy
 import os.path
+import re
 
 from linnaeus import classification
 
@@ -11,7 +12,7 @@ country_classification = classification.load("location/International/DANE/out/lo
 occupation_classification = classification.load("occupation/SOC/Colombia/out/occupations_soc_2010.csv")
 
 livestock_classification = classification.load("product/Datlas/Rural/out/livestock.csv")
-agproduct_classification = classification.load("product/Datlas/Rural/out/agricultural_products.csv")
+agproduct_classification = classification.load("product/Datlas/Rural/out/agricultural_products_expanded.csv")
 land_use_classification = classification.load("product/Datlas/Rural/out/land_use.csv")
 farmtype_classification = classification.load("product/Datlas/Rural/out/farm_type.csv")
 farmsize_classification = classification.load("product/Datlas/Rural/out/farm_size.csv")
@@ -28,6 +29,12 @@ def first(x):
 def sum_group(x):
     """Get the sum for a pandas group by"""
     return x.sum()
+
+def slugify(s):
+    """Get a string like 'Foo Bar' and convert to foo_bar. Usually good for
+    creating codes from names, especially for languages with special
+    characters."""
+    return re.sub(r'[^a-zA-Z0-9\_]', '', s.replace(" ", "_").lower())
 
 
 DATASET_ROOT = "/nfs/projects_nobackup/c/cidgrowlab/Atlas/Colombia/beta/"
@@ -1165,12 +1172,12 @@ agproduct_template = {
 
 
 def read_agproduct_level3_country():
-    df = pd.read_stata(prefix_path("Rural/agric_2007_2015_Col_c.dta"))
+    df = pd.read_stata(prefix_path("Rural/agric_2007_2015_Col_final_2.dta"))
     df["location_id"] = "COL"
     return df
 
 def hook_agproduct(df):
-    df["agproduct"] = df["agproduct"].str.lower()
+    df["agproduct"] = df["agproduct"].map(slugify)
     df = df[df.agproduct_level == "level3"]
     return df
 
@@ -1184,13 +1191,13 @@ del agproduct_level3_country["field_mapping"]["yieldtonsperha"]
 del agproduct_level3_country["facets"][("location_id", "agproduct_id", "year")]["yield_ratio"]
 
 agproduct_level3_department = copy.deepcopy(agproduct_template)
-agproduct_level3_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_dept_c.dta"))
+agproduct_level3_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_dept_final_2.dta"))
 agproduct_level3_department["hook_pre_merge"] = hook_agproduct
 agproduct_level3_department["classification_fields"]["location"]["level"] = "department"
 agproduct_level3_department["digit_padding"]["location"] = 2
 
 agproduct_level3_municipality = copy.deepcopy(agproduct_template)
-agproduct_level3_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_muni_c.dta"))
+agproduct_level3_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_muni_final_2.dta"))
 agproduct_level3_municipality["hook_pre_merge"] = hook_agproduct
 agproduct_level3_municipality["classification_fields"]["location"]["level"] = "municipality"
 agproduct_level3_municipality["digit_padding"]["location"] = 3
