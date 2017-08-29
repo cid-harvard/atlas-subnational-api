@@ -7,11 +7,22 @@ from datasets import (trade4digit_country, trade4digit_department,
                       occupation2digit_industry2digit, gdp_nominal_department,
                       gdp_real_department, population,
                       trade4digit_rcpy_country, trade4digit_rcpy_department,
-                      trade4digit_rcpy_msa, trade4digit_rcpy_municipality)
+                      trade4digit_rcpy_msa, trade4digit_rcpy_municipality,
+                      agproduct_level3_country, agproduct_level3_department,
+                      agproduct_level3_municipality, livestock_level1_country,
+                      livestock_level1_department,
+                      livestock_level1_municipality, land_use_level2_country,
+                      land_use_level2_department, land_use_level2_municipality,
+                      farmtype_level2_country, farmtype_level2_department,
+                      farmtype_level2_municipality, farmsize_level1_country,
+                      farmsize_level1_department, farmsize_level1_municipality,
+                      )
 
 from datasets import (product_classification, industry_classification,
                       location_classification, occupation_classification,
-                      country_classification)
+                      country_classification, livestock_classification,
+                      agproduct_classification, land_use_classification,
+                      farmtype_classification, farmsize_classification)
 
 from unidecode import unidecode
 
@@ -37,6 +48,26 @@ classifications = {
     "country_id": {
         "name": "country",
         "classification": country_classification
+    },
+    "livestock_id": {
+        "name": "livestock",
+        "classification": livestock_classification
+    },
+    "agproduct_id": {
+        "name": "agproduct",
+        "classification": agproduct_classification
+    },
+    "land_use_id": {
+        "name": "land_use",
+        "classification": land_use_classification
+    },
+    "farmtype_id": {
+        "name": "farmtype",
+        "classification": farmtype_classification
+    },
+    "farmsize_id": {
+        "name": "farmsize",
+        "classification": farmsize_classification
     },
 }
 
@@ -64,6 +95,38 @@ def merge_classifications(df):
 
     return df.set_index(index_cols)
 
+
+def save(path, df, name, format="excel", include_from_index=["year"]):
+
+    if include_from_index is not None:
+        df = df.reset_index(level=include_from_index)
+
+    if format == "excel":
+        df\
+            .to_excel(
+                os.path.join(path, name) + ".xlsx",
+                float_format='%.2f',
+                index=False,
+                engine="xlsxwriter",
+            )
+    elif format == "csv":
+        df\
+            .to_csv(
+                os.path.join(path, name) + ".csv",
+                float_format='%.2f',
+                index=False,
+                compression="gzip"
+            )
+    elif format == "txt":
+        df\
+            .to_csv(
+                os.path.join(path, name) + ".txt",
+                float_format='%.2f',
+                index=False,
+                compression="gzip"
+            )
+    else:
+        raise ValueError("Download format must be excel, csv or txt.")
 
 def region_product_year(ret):
     """Merge region product year, product year and region year variable
@@ -210,6 +273,27 @@ def save_rcpy_municipality():
     return save_rcpy(trade4digit_rcpy_municipality)
 
 
+def save_rural(path, datasets, facet=None, prefix=""):
+
+    results = {}
+
+    for geolevel, dataset in datasets.items():
+        ret = process_dataset(dataset)
+
+        if facet is None:
+            facet = list(ret.keys())[0]
+
+        results[geolevel] = merge_classifications(ret[facet])
+
+        save(path, results[geolevel],
+             "{}{}".format(prefix, geolevel),
+             format="excel",
+             include_from_index=None,
+             )
+
+    return results
+
+
 def save_classifications(output_dir):
     import pandas as pd
     writer = pd.ExcelWriter(
@@ -228,57 +312,75 @@ def save_classifications(output_dir):
 def downloads():
     path = os.path.join(os.path.dirname(__file__), "../downloads/")
 
-    def save(df, name, format="excel"):
-
-        if format == "excel":
-            df\
-                .reset_index(level=["year"])\
-                .to_excel(
-                    os.path.join(path, name) + ".xlsx",
-                    float_format='%.2f',
-                    index=False,
-                    engine="xlsxwriter"
-                )
-        elif format == "csv":
-            df\
-                .reset_index(level=["year"])\
-                .to_csv(
-                    os.path.join(path, name) + ".csv",
-                    float_format='%.2f',
-                    index=False,
-                    compression="gzip"
-                )
-        elif format == "txt":
-            df\
-                .reset_index(level=["year"])\
-                .to_csv(
-                    os.path.join(path, name) + ".txt",
-                    float_format='%.2f',
-                    index=False,
-                    compression="gzip"
-                )
-        else:
-            raise ValueError("Download format must be excel, csv or txt.")
-
     save_classifications(path)
 
-    save(save_rcpy_country(), "products_rcpy_country", format="csv")
-    save(save_rcpy_department(), "products_rcpy_department", format="csv")
-    save(save_rcpy_msa(), "products_rcpy_msa", format="csv")
-    save(save_rcpy_municipality(), "products_rcpy_municipality", format="csv")
+    save_rural(
+        path,
+        {
+            "country": agproduct_level3_country,
+            "department": agproduct_level3_department,
+            "municipality": agproduct_level3_municipality,
+        },
+        prefix="agproduct_",
+    )
 
-    save(save_products_country(), "products_country")
-    save(save_products_department(), "products_department")
-    save(save_products_msa(), "products_msa")
-    save(save_products_muni(), "products_municipality", format="csv")
+    save_rural(
+        path,
+        {
+            "country": livestock_level1_country,
+            "department": livestock_level1_department,
+            "municipality": livestock_level1_municipality,
+        },
+        prefix="livestock_",
+    )
 
-    save(save_industries_country(), "industries_country")
-    save(save_industries_department(), "industries_department")
-    save(save_industries_msa(), "industries_msa")
-    save(save_industries_municipality(), "industries_municipality", format="txt")
+    save_rural(
+        path,
+        {
+            "country": land_use_level2_country,
+            "department": land_use_level2_department,
+            "municipality": land_use_level2_municipality,
+        },
+        prefix="land_use_",
+    )
 
-    save(save_occupations(), "occupations")
-    save(save_demographic(), "demographic")
+    save_rural(
+        path,
+        {
+            "country": farmtype_level2_country,
+            "department": farmtype_level2_department,
+            "municipality": farmtype_level2_municipality,
+        },
+        prefix="farmtype_",
+    )
+
+    save_rural(
+        path,
+        {
+            "country": farmsize_level1_country,
+            "department": farmsize_level1_department,
+            "municipality": farmsize_level1_municipality,
+        },
+        prefix="farmsize_",
+    )
+
+    save(path, save_rcpy_country(), "products_rcpy_country", format="csv")
+    save(path, save_rcpy_department(), "products_rcpy_department", format="csv")
+    save(path, save_rcpy_msa(), "products_rcpy_msa", format="csv")
+    save(path, save_rcpy_municipality(), "products_rcpy_municipality", format="csv")
+
+    save(path, save_products_country(), "products_country")
+    save(path, save_products_department(), "products_department")
+    save(path, save_products_msa(), "products_msa")
+    save(path, save_products_muni(), "products_municipality", format="csv")
+
+    save(path, save_industries_country(), "industries_country")
+    save(path, save_industries_department(), "industries_department")
+    save(path, save_industries_msa(), "industries_msa")
+    save(path, save_industries_municipality(), "industries_municipality", format="txt")
+
+    save(path, save_occupations(), "occupations")
+    save(path, save_demographic(), "demographic")
 
 if __name__ == "__main__":
 
