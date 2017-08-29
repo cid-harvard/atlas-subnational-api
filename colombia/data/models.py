@@ -345,6 +345,7 @@ class XLivestockYear(BaseModel, IDMixin):
 
     num_livestock = db.Column(db.Integer)
     num_farms = db.Column(db.Integer)
+    average_livestock_load = db.Column(db.Float)
 
 
 class CountryLivestockYear(XLivestockYear):

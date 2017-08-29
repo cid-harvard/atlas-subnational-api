@@ -56,7 +56,8 @@ class XProductYearSchema(ma.Schema):
 class XLivestockYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("num_livestock", "num_farms", "livestock_id", "location_id")
+        fields = ("num_livestock", "num_farms", "average_livestock_load",
+                  "livestock_id", "location_id")
 
 
 class XAgriculturalProductYearSchema(ma.Schema):
