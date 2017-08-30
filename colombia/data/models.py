@@ -217,6 +217,8 @@ class DepartmentYear(BaseModel, IDMixin):
 
     industry_eci = db.Column(db.Float)
 
+    average_livestock_load = db.Column(db.Float)
+
 
 class MSAYear(BaseModel, IDMixin):
 
@@ -237,6 +239,17 @@ class MSAYear(BaseModel, IDMixin):
     num_establishments = db.Column(db.Integer)
     industry_eci = db.Column(db.Float)
 
+
+class MunicipalityYear(BaseModel, IDMixin):
+
+    __tablename__ = "municipality_year"
+
+    location_id = db.Column(db.Integer, db.ForeignKey(Location.id))
+    year = db.Column(db.Integer)
+
+    location = db.relationship(Location)
+
+    average_livestock_load = db.Column(db.Float)
 
 class XIndustryYear(BaseModel, IDMixin):
 

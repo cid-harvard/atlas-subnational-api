@@ -30,6 +30,12 @@ def sum_group(x):
     """Get the sum for a pandas group by"""
     return x.sum()
 
+
+def null(x):
+    sample = x.first()
+    return pd.DataFrame(index=sample.index, columns=sample.columns)
+
+
 def slugify(s):
     """Get a string like 'Foo Bar' and convert to foo_bar. Usually good for
     creating codes from names, especially for languages with special
@@ -1105,6 +1111,11 @@ livestock_template = {
             "num_livestock": first,
             "num_farms": first,
             "average_livestock_load": first,
+        },
+        ("location_id",): {
+            "num_livestock": sum_group,
+            "num_farms": sum_group,
+            "average_livestock_load": null,
         }
     }
 }

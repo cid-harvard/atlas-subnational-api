@@ -134,14 +134,22 @@ if __name__ == "__main__":
             ret = process_dataset(population)
             pop_df = ret[('location_id', 'year')].reset_index()
 
+            ret = process_dataset(livestock_level1_department)
+            ls_df = ret[('location_id')].reset_index()
+            ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
+            ls_df["year"] = 2014
+            ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
+
             # Merge all dept-year variables together
             dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2014)]
             dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2014)]
             gdp_df = gdp_df[(2007 <= gdp_df.year) & (gdp_df.year <= 2014)]
             pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2014)]
+            ls_df = ls_df[(2007 <= ls_df.year) & (ls_df.year <= 2014)]
             dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
             dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
             dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")
+            dy = dy.merge(ls_df, on=["location_id", "year"], how="outer")
 
             dy["gdp_pc_nominal"] = dy.gdp_nominal / dy.population
             dy["gdp_pc_real"] = dy.gdp_real / dy.population
@@ -290,12 +298,26 @@ if __name__ == "__main__":
             df.to_sql("department_livestock_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
+            df = ret[('livestock_id')].reset_index()
+            df["average_livestock_load"] = df.num_livestock / df.num_farms
+            df = df.drop(["num_livestock", "num_farms"], axis=1)
+            df["livestock_level"] = "level1"
+            df.to_sql("livestock_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
             # Livestock - municipality
             ret = process_dataset(livestock_level1_municipality)
             df = ret[('location_id', 'livestock_id')].reset_index()
             df["livestock_level"] = "level1"
             df.to_sql("municipality_livestock_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+            ls_df = ret[('location_id')].reset_index()
+            ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
+            ls_df["year"] = 2014
+            ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
+            ls_df.to_sql("municipality_year", db.engine, index=False,
+                         chunksize=10000, if_exists="append")
 
             # AgriculturalProduct - country
             ret = process_dataset(agproduct_level3_country)
