@@ -135,7 +135,7 @@ if __name__ == "__main__":
             pop_df = ret[('location_id', 'year')].reset_index()
 
             ret = process_dataset(livestock_level1_department)
-            ls_df = ret[('location_id')].reset_index()
+            ls_df = ret[('location_id',)].reset_index()
             ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
             ls_df["year"] = 2014
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
@@ -298,7 +298,7 @@ if __name__ == "__main__":
             df.to_sql("department_livestock_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            df = ret[('livestock_id')].reset_index()
+            df = ret[('location_id',)].reset_index()
             df["average_livestock_load"] = df.num_livestock / df.num_farms
             df = df.drop(["num_livestock", "num_farms"], axis=1)
             df["livestock_level"] = "level1"
@@ -312,7 +312,7 @@ if __name__ == "__main__":
             df.to_sql("municipality_livestock_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            ls_df = ret[('location_id')].reset_index()
+            ls_df = ret[('location_id',)].reset_index()
             ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
             ls_df["year"] = 2014
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
