@@ -171,7 +171,8 @@ class DepartmentYearSchema(ma.Schema):
         fields = ("year", "eci", "diversity", "gdp_nominal", "gdp_real",
                   "gdp_pc_nominal", "gdp_pc_real", "population", "employment",
                   "wages", "monthly_wages", "num_establishments",
-                  "industry_eci", "coi", "industry_coi", "department_id")
+                  "industry_eci", "coi", "industry_coi", "department_id",
+                  "average_livestock_load")
 
 
 class MSAYearSchema(ma.Schema):
@@ -180,6 +181,12 @@ class MSAYearSchema(ma.Schema):
         fields = ("year", "eci", "industry_eci", "employment", "wages",
                   "monthly_wages", "num_establishments", "coi", "industry_coi",
                   "location_id")
+
+
+class MunicipalityYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("year", "location_id", "average_livestock_load")
 
 
 class OccupationYearSchema(ma.Schema):
@@ -217,5 +224,6 @@ industry_year = IndustryYearSchema(many=True)
 occupation_year = OccupationYearSchema(many=True)
 department_year = DepartmentYearSchema(many=True)
 msa_year = MSAYearSchema(many=True)
+municipality_year = MunicipalityYearSchema(many=True)
 
 metadata = ColombiaMetadataSchema(many=True)

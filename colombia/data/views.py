@@ -3,7 +3,7 @@ from sqlalchemy import inspect
 
 from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      MunicipalityProductYear, DepartmentIndustryYear,
-                     CountryIndustryYear, MSAIndustryYear,
+                     CountryIndustryYear, MSAIndustryYear, MunicipalityYear,
                      MunicipalityIndustryYear, ProductYear, IndustryYear,
                      DepartmentYear, Location, CountryMunicipalityProductYear,
                      CountryDepartmentProductYear, CountryMSAProductYear,
@@ -129,7 +129,11 @@ entity_year_location = {
     "msa": {
         "model": MSAYear,
         "schema": schemas.msa_year
-    }
+    },
+    "municipality": {
+        "model": MunicipalityYear,
+        "schema": schemas.municipality_year
+    },
 }
 
 product_year_region_mapping = {
