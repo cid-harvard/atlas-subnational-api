@@ -16,13 +16,15 @@ from datasets import (trade4digit_country, trade4digit_department,
                       farmtype_level2_country, farmtype_level2_department,
                       farmtype_level2_municipality, farmsize_level1_country,
                       farmsize_level1_department, farmsize_level1_municipality,
-                      )
+                      nonagric_level3_country, nonagric_level3_department,
+                      nonagric_level3_municipality)
 
 from datasets import (product_classification, industry_classification,
                       location_classification, occupation_classification,
                       country_classification, livestock_classification,
                       agproduct_classification, land_use_classification,
-                      farmtype_classification, farmsize_classification)
+                      farmtype_classification, farmsize_classification,
+                      nonagric_classification)
 
 from unidecode import unidecode
 
@@ -56,6 +58,10 @@ classifications = {
     "agproduct_id": {
         "name": "agproduct",
         "classification": agproduct_classification
+    },
+    "nonag_id": {
+        "name": "nonag",
+        "classification": nonagric_classification
     },
     "land_use_id": {
         "name": "land_use",
@@ -322,6 +328,16 @@ def downloads():
             "municipality": agproduct_level3_municipality,
         },
         prefix="agproduct_",
+    )
+
+    save_rural(
+        path,
+        {
+            "country": nonagric_level3_country,
+            "department": nonagric_level3_department,
+            "municipality": nonagric_level3_municipality,
+        },
+        prefix="nonag_",
     )
 
     save_rural(

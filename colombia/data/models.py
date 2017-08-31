@@ -8,11 +8,12 @@ from ..core import db
 
 from ..metadata.models import (Location, HSProduct, Industry, Occupation,
                                Country, Livestock, AgriculturalProduct,
-                               LandUse, FarmType, FarmSize)
+                               LandUse, FarmType, FarmSize,
+                               NonagriculturalActivity)
 
 from ..metadata.models import (product_enum, industry_enum, occupation_enum,
                                livestock_enum, agproduct_enum, land_use_enum,
-                               farmtype_enum, farmsize_enum)
+                               farmtype_enum, farmsize_enum, nonag_enum)
 
 
 class XProductYear(BaseModel, IDMixin):
@@ -401,6 +402,36 @@ class DepartmentAgriculturalProductYear(XAgriculturalProductYear):
 
 class MunicipalityAgriculturalProductYear(XAgriculturalProductYear):
     __tablename__ = "municipality_agproduct_year"
+
+
+class XNonagYear(BaseModel, IDMixin):
+
+    __abstract__ = True
+
+    @declared_attr
+    def location_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(Location.id))
+
+    @declared_attr
+    def nonag_id(cls):
+        return db.Column(db.Integer, db.ForeignKey(NonagriculturalActivity.id))
+
+    nonag_level = db.Column(nonag_enum)
+
+    num_farms_ag = db.Column(db.Integer)
+    num_farms_nonag = db.Column(db.Integer)
+    num_farms = db.Column(db.Integer)
+
+
+class CountryNonagYear(XNonagYear):
+    __tablename__ = "country_nonag_year"
+
+class DepartmentNonagYear(XNonagYear):
+    __tablename__ = "department_nonag_year"
+
+class MunicipalityNonagYear(XNonagYear):
+    __tablename__ = "municipality_nonag_year"
+
 
 
 class XLandUseYear(BaseModel, IDMixin):

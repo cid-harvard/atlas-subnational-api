@@ -111,6 +111,14 @@ agproduct_levels = [
 agproduct_enum = db.Enum(*agproduct_levels, name="agproduct_level")
 
 
+nonag_levels = [
+    "level0",
+    "level2",
+    "level3",
+]
+nonag_enum = db.Enum(*nonag_levels, name="nonag_level")
+
+
 land_use_levels = [
     "level0",
     "level1",
@@ -200,6 +208,14 @@ class AgriculturalProduct(Metadata):
     #: Possible aggregation levels
     LEVELS = agproduct_levels
     level = db.Column(agproduct_enum)
+
+
+class NonagriculturalActivity(Metadata):
+    __tablename__ = "nonag"
+
+    #: Possible aggregation levels
+    LEVELS = nonag_levels
+    level = db.Column(nonag_enum)
 
 
 class LandUse(Metadata):

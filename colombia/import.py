@@ -19,6 +19,8 @@ from datasets import (trade4digit_country, trade4digit_department,
                       livestock_level1_municipality,
                       agproduct_level3_country, agproduct_level3_department,
                       agproduct_level3_municipality,
+                      nonagric_level3_country, nonagric_level3_department,
+                      nonagric_level3_municipality,
                       land_use_level2_country, land_use_level2_department,
                       land_use_level2_municipality, farmtype_level2_country,
                       farmtype_level2_department, farmtype_level2_municipality,
@@ -33,6 +35,7 @@ from datasets import (product_classification,
                       occupation_classification,
                       livestock_classification,
                       agproduct_classification,
+                      nonagric_classification,
                       land_use_classification,
                       farmtype_classification,
                       farmsize_classification,
@@ -71,6 +74,11 @@ if __name__ == "__main__":
             agproduct = classification_to_models(agproduct_classification,
                                                   models.AgriculturalProduct)
             db.session.add_all(agproduct)
+            db.session.commit()
+
+            nonagric = classification_to_models(nonagric_classification,
+                                                  models.NonagriculturalActivity)
+            db.session.add_all(nonagric)
             db.session.commit()
 
             land_use = classification_to_models(land_use_classification,
@@ -339,6 +347,28 @@ if __name__ == "__main__":
             df["agproduct_level"] = "level3"
             df.to_sql("municipality_agproduct_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
+
+            # AgriculturalProduct - country
+            ret = process_dataset(nonagric_level3_country)
+            df = ret[('location_id', 'nonag_id')].reset_index()
+            df["nonag_level"] = "level3"
+            df.to_sql("country_nonag_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # AgriculturalProduct - department
+            ret = process_dataset(nonagric_level3_department)
+            df = ret[('location_id', 'nonag_id')].reset_index()
+            df["nonag_level"] = "level3"
+            df.to_sql("department_nonag_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
+            # AgriculturalProduct - municipality
+            ret = process_dataset(nonagric_level3_municipality)
+            df = ret[('location_id', 'nonag_id')].reset_index()
+            df["nonag_level"] = "level3"
+            df.to_sql("municipality_nonag_year", db.engine, index=False,
+                      chunksize=10000, if_exists="append")
+
 
             # LandUse - country
             ret = process_dataset(land_use_level2_country)

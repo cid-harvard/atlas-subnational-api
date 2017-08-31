@@ -13,6 +13,7 @@ occupation_classification = classification.load("occupation/SOC/Colombia/out/occ
 
 livestock_classification = classification.load("product/Datlas/Rural/out/livestock.csv")
 agproduct_classification = classification.load("product/Datlas/Rural/out/agricultural_products_expanded.csv")
+nonagric_classification = classification.load("product/Datlas/Rural/out/nonagricultural_activities.csv")
 land_use_classification = classification.load("product/Datlas/Rural/out/land_use.csv")
 farmtype_classification = classification.load("product/Datlas/Rural/out/farm_type.csv")
 farmsize_classification = classification.load("product/Datlas/Rural/out/farm_size.csv")
@@ -1402,3 +1403,102 @@ farmsize_level1_municipality["read_function"] = lambda: pd.read_stata(prefix_pat
 farmsize_level1_municipality["hook_pre_merge"] = hook_farmsize
 farmsize_level1_municipality["classification_fields"]["location"]["level"] = "municipality"
 farmsize_level1_municipality["digit_padding"]["location"] = 5
+
+
+nonagric_template = {
+    "read_function": None,
+    "field_mapping": {
+        "location_id": "location",
+        "activity_name": "nonag",
+        "activities_level": "nonag_level",
+        "farms_number_agric": "num_farms_ag",
+        "farms_number_nonagric": "num_farms_nonag",
+        "farms_number": "num_farms",
+    },
+    "classification_fields": {
+        "nonag": {
+            "classification": nonagric_classification,
+            "level": "level3",
+        },
+        "location": {
+            "classification": location_classification,
+            "level": None,
+        },
+    },
+    "digit_padding": {
+        "location": None,
+    },
+    "facet_fields": ["location", "nonag"],
+    "facets": {
+        ("location_id", "nonag_id"): {
+            "num_farms": first,
+            "num_farms_ag": first,
+            "num_farms_nonag": first,
+        }
+    }
+}
+
+
+def fix_nonagric(df):
+    df = df[df.activities_level == "level3"]
+    df = df.drop("activity_name_sp", axis=1)
+
+
+    agric = df[df.activities_group == "agric_nonagric"].drop("activities_group", axis=1)
+    nonagric = df[df.activities_group == "nonagric_nonagric"].drop("activities_group", axis=1)
+    assert agric.size == nonagric.size, "the agric_agric and nonagric_nonagric categories should have the same number of items"
+
+    df =  agric.merge(nonagric,
+                      on=["activities_level", "location_id", "activities_subgroup", "activity_name"],
+                      how="outer", suffixes=("_agric", "_nonagric"))
+
+    df["farms_number"] = df["farms_number_agric"] + df["farms_number_nonagric"]
+
+    return df
+
+def read_nonagric_level3_country():
+    df = pd.read_stata(prefix_path("Rural/non_agri_activities_Col.dta"))
+    df["location_id"] = "COL"
+
+    df["activity_name"] = df["activities"].str.strip()
+    df = df.drop("activities", axis=1)
+    df["activity_name_sp"] = pd.np.nan
+
+    df = fix_nonagric(df)
+    return df
+
+
+def read_nonagric_level3_department():
+    df = pd.read_stata(prefix_path("Rural/non_agri_activities_dept.dta"))
+    df = fix_nonagric(df)
+    return df
+
+
+def read_nonagric_level3_municipality():
+    df = pd.read_stata(prefix_path("Rural/non_agri_activities_muni.dta"))
+    df = fix_nonagric(df)
+    return df
+
+def hook_nonagric(df):
+    df["nonag"] = df["nonag"].map(slugify)
+    df = df[df.nonag_level == "level3"]
+    return df
+
+nonagric_level3_country = copy.deepcopy(nonagric_template)
+nonagric_level3_country["read_function"] = read_nonagric_level3_country
+nonagric_level3_country["hook_pre_merge"] = hook_nonagric
+nonagric_level3_country["classification_fields"]["location"]["level"] = "country"
+nonagric_level3_country["digit_padding"]["location"] = 3
+
+nonagric_level3_department = copy.deepcopy(nonagric_template)
+nonagric_level3_department["read_function"] = read_nonagric_level3_department
+nonagric_level3_department["hook_pre_merge"] = hook_nonagric
+nonagric_level3_department["classification_fields"]["location"]["level"] = "department"
+nonagric_level3_department["digit_padding"]["location"] = 2
+
+nonagric_level3_municipality = copy.deepcopy(nonagric_template)
+nonagric_level3_municipality["read_function"] = read_nonagric_level3_municipality
+nonagric_level3_municipality["hook_pre_merge"] = hook_nonagric
+nonagric_level3_municipality["classification_fields"]["location"]["level"] = "municipality"
+nonagric_level3_municipality["digit_padding"]["location"] = 3
+
