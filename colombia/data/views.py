@@ -12,6 +12,7 @@ from .models import (CountryProductYear, DepartmentProductYear, MSAProductYear,
                      CountryMunicipalityYear, MSAYear, PartnerProductYear,
                      CountryLivestockYear, DepartmentLivestockYear, MunicipalityLivestockYear,
                      CountryAgriculturalProductYear, DepartmentAgriculturalProductYear, MunicipalityAgriculturalProductYear,
+                     CountryNonagYear, DepartmentNonagYear, MunicipalityNonagYear,
                      CountryLandUseYear, DepartmentLandUseYear, MunicipalityLandUseYear,
                      CountryFarmTypeYear, DepartmentFarmTypeYear, MunicipalityFarmTypeYear,
                      CountryFarmSizeYear, DepartmentFarmSizeYear, MunicipalityFarmSizeYear,
@@ -162,6 +163,12 @@ agproduct_year_region_mapping = {
     "country": {"model": CountryAgriculturalProductYear},
 }
 
+nonag_year_region_mapping = {
+    "department": {"model": DepartmentNonagYear},
+    "municipality": {"model": MunicipalityNonagYear},
+    "country": {"model": CountryNonagYear},
+}
+
 land_use_year_region_mapping = {
     "department": {"model": DepartmentLandUseYear},
     "municipality": {"model": MunicipalityLandUseYear},
@@ -217,6 +224,20 @@ def eey_agproduct_locations(entity_type, entity_id, location_level):
             .filter_by(agproduct_id=entity_id)\
             .all()
         schema = schemas.XAgriculturalProductYearSchema(many=True)
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
+def eey_nonag_locations(entity_type, entity_id, location_level):
+
+    if location_level in nonag_year_region_mapping:
+        q = nonag_year_region_mapping[location_level]["model"].query\
+            .filter_by(nonag_id=entity_id)\
+            .all()
+        schema = schemas.XNonagriculturalActivityYearSchema(many=True)
         return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\
@@ -400,6 +421,26 @@ def eey_location_agproducts(entity_type, entity_id, buildingblock_level):
             q = q.filter_by(location_id=entity_id)
 
         schema = schemas.XAgriculturalProductYearSchema(many=True)
+        return marshal(schema, q)
+    else:
+        msg = "Data doesn't exist at location level {}"\
+            .format(location_level)
+        abort(400, body=msg)
+
+
+def eey_location_nonags(entity_type, entity_id, buildingblock_level):
+
+    location_level = lookup_classification_level("location", entity_id)
+
+    if location_level in nonag_year_region_mapping:
+        query_model = nonag_year_region_mapping[location_level]["model"]
+        q = query_model.query\
+            .filter_by(nonag_level=buildingblock_level)\
+
+        if hasattr(query_model, "location_id"):
+            q = q.filter_by(location_id=entity_id)
+
+        schema = schemas.XNonagriculturalActivityYearSchema(many=True)
         return marshal(schema, q)
     else:
         msg = "Data doesn't exist at location level {}"\
@@ -599,6 +640,9 @@ entity_entity_year = {
             "agproducts": {
                 "func": eey_location_agproducts,
             },
+            "nonags": {
+                "func": eey_location_nonags,
+            },
             "land_uses": {
                 "func": eey_location_land_uses,
             },
@@ -621,6 +665,13 @@ entity_entity_year = {
         "subdatasets": {
             "locations": {
                 "func": eey_agproduct_locations
+            },
+        }
+    },
+    "nonag": {
+        "subdatasets": {
+            "locations": {
+                "func": eey_nonag_locations
             },
         }
     },

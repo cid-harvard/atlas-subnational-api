@@ -67,6 +67,11 @@ class XAgriculturalProductYearSchema(ma.Schema):
                   "yield_ratio", "yield_index", "agproduct_id", "location_id",
                   "year")
 
+class XNonagriculturalActivityYearSchema(ma.Schema):
+
+    class Meta:
+        fields = ("num_farms", "num_farms_ag", "num_farms_nonag",
+                  "nonag_id", "location_id")
 
 class XLandUseYearSchema(ma.Schema):
 

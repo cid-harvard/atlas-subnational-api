@@ -29,6 +29,10 @@ metadata_apis = {
         "entity_model": models.AgriculturalProduct,
         "plural": "agproducts",
     },
+    "nonag": {
+        "entity_model": models.NonagriculturalActivity,
+        "plural": "nonags",
+    },
     "land_use": {
         "entity_model": models.LandUse,
         "plural": "land_uses",
