@@ -1210,9 +1210,6 @@ agproduct_level3_country["read_function"] = read_agproduct_level3_country
 agproduct_level3_country["hook_pre_merge"] = hook_agproduct
 agproduct_level3_country["classification_fields"]["location"]["level"] = "country"
 agproduct_level3_country["digit_padding"]["location"] = 3
-# Yield field doesn't exist at country level
-del agproduct_level3_country["field_mapping"]["yieldtonsperha"]
-del agproduct_level3_country["facets"][("location_id", "agproduct_id", "year")]["yield_ratio"]
 
 agproduct_level3_department = copy.deepcopy(agproduct_template)
 agproduct_level3_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/agric_2007_2015_dept_final_2.dta"))
