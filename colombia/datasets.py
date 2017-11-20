@@ -1090,7 +1090,7 @@ livestock_template = {
         "location_id": "location",
         "livestock_level": "livestock_level",
         "livestock_number": "num_livestock",
-        "farms_number": "num_farms",
+        "livestock_farms_number": "num_farms",
         "average_livestock_load": "average_livestock_load",
     },
     "classification_fields": {
@@ -1122,7 +1122,7 @@ livestock_template = {
 }
 
 def read_livestock_level1_country():
-    df = pd.read_stata(prefix_path("Rural/livestock_Col.dta"))
+    df = pd.read_stata(prefix_path("Rural/livestock_Col_2.dta"))
     df["location_id"] = "COL"
     return df
 
@@ -1139,16 +1139,14 @@ livestock_level1_country["digit_padding"]["location"] = 3
 
 
 livestock_level1_department = copy.deepcopy(livestock_template)
-livestock_level1_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/livestock_dept.dta"))
+livestock_level1_department["read_function"] = lambda: pd.read_stata(prefix_path("Rural/livestock_dept_2.dta"))
 livestock_level1_department["hook_pre_merge"] = hook_livestock
 livestock_level1_department["classification_fields"]["location"]["level"] = "department"
 livestock_level1_department["digit_padding"]["location"] = 2
 
 
 livestock_level1_municipality = copy.deepcopy(livestock_template)
-del livestock_level1_municipality["field_mapping"]["farms_number"] # this field named differently only in this geolevel
-livestock_level1_municipality["field_mapping"]["livestock_farms_number"] = "num_farms"
-livestock_level1_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/livestock_muni.dta"))
+livestock_level1_municipality["read_function"] = lambda: pd.read_stata(prefix_path("Rural/livestock_muni_2.dta"))
 livestock_level1_municipality["hook_pre_merge"] = hook_livestock
 livestock_level1_municipality["classification_fields"]["location"]["level"] = "municipality"
 livestock_level1_municipality["digit_padding"]["location"] = 5
