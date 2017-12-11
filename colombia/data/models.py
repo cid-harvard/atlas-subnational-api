@@ -220,6 +220,8 @@ class DepartmentYear(BaseModel, IDMixin):
 
     average_livestock_load = db.Column(db.Float)
 
+    yield_index = db.Column(db.Float)
+
 
 class MSAYear(BaseModel, IDMixin):
 
@@ -251,6 +253,8 @@ class MunicipalityYear(BaseModel, IDMixin):
     location = db.relationship(Location)
 
     average_livestock_load = db.Column(db.Float)
+
+    yield_index = db.Column(db.Float)
 
 class XIndustryYear(BaseModel, IDMixin):
 

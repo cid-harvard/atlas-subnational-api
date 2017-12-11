@@ -177,7 +177,7 @@ class DepartmentYearSchema(ma.Schema):
                   "gdp_pc_nominal", "gdp_pc_real", "population", "employment",
                   "wages", "monthly_wages", "num_establishments",
                   "industry_eci", "coi", "industry_coi", "department_id",
-                  "average_livestock_load")
+                  "average_livestock_load", "yield_index")
 
 
 class MSAYearSchema(ma.Schema):
@@ -191,7 +191,8 @@ class MSAYearSchema(ma.Schema):
 class MunicipalityYearSchema(ma.Schema):
 
     class Meta:
-        fields = ("year", "location_id", "average_livestock_load")
+        fields = ("year", "location_id", "average_livestock_load",
+                  "yield_index")
 
 
 class OccupationYearSchema(ma.Schema):

@@ -41,6 +41,19 @@ from datasets import (product_classification,
                       farmsize_classification,
                       )
 
+
+def weighted_mean(data_field, weights_field):
+    """Return a function that, when applied to a dataframe groupby, returns a
+    weighted mean."""
+
+    def inner(groupby):
+        d = groupby[data_field]
+        w = groupby[weights_field]
+        return (d * w).sum() / w.sum()
+
+    return inner
+
+
 if __name__ == "__main__":
 
         app = create_app()
@@ -148,6 +161,15 @@ if __name__ == "__main__":
             ls_df["year"] = 2014
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
 
+            # Yield indexes
+            ret = process_dataset(agproduct_level3_department)
+            agproduct_df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
+            agproduct_df = agproduct_df\
+                .groupby(["location_id", "year"])\
+                .apply(weighted_mean("yield_index", "land_harvested"))
+            agproduct_df.name = "yield_index"
+            agproduct_df = agproduct_df.reset_index()
+
             # Merge all dept-year variables together
             dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2014)]
             dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2014)]
@@ -157,7 +179,8 @@ if __name__ == "__main__":
             dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
             dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
             dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")
-            dy = dy.merge(ls_df, on=["location_id", "year"], how="outer")
+            dy = dy.merge(ls_df, on=["location_id", "year"], how="left")
+            dy = dy.merge(agproduct_df, on=["location_id", "year"], how="left")
 
             dy["gdp_pc_nominal"] = dy.gdp_nominal / dy.population
             dy["gdp_pc_real"] = dy.gdp_real / dy.population
@@ -324,7 +347,17 @@ if __name__ == "__main__":
             ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
             ls_df["year"] = 2014
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
-            ls_df.to_sql("municipality_year", db.engine, index=False,
+
+            ret = process_dataset(agproduct_level3_municipality)
+            agproduct_df = ret[('location_id', 'agproduct_id', 'year')].reset_index()
+            agproduct_df = agproduct_df\
+                .groupby(["location_id", "year"])\
+                .apply(weighted_mean("yield_index", "land_harvested"))
+            agproduct_df.name = "yield_index"
+            agproduct_df = agproduct_df.reset_index()
+
+            my = ls_df.merge(agproduct_df, on=["location_id", "year"], how="outer")
+            my.to_sql("municipality_year", db.engine, index=False,
                          chunksize=10000, if_exists="append")
 
             # AgriculturalProduct - country
@@ -348,21 +381,21 @@ if __name__ == "__main__":
             df.to_sql("municipality_agproduct_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            # AgriculturalProduct - country
+            # Nonagric - country
             ret = process_dataset(nonagric_level3_country)
             df = ret[('location_id', 'nonag_id')].reset_index()
             df["nonag_level"] = "level3"
             df.to_sql("country_nonag_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            # AgriculturalProduct - department
+            # Nonagric - department
             ret = process_dataset(nonagric_level3_department)
             df = ret[('location_id', 'nonag_id')].reset_index()
             df["nonag_level"] = "level3"
             df.to_sql("department_nonag_year", db.engine, index=False,
                       chunksize=10000, if_exists="append")
 
-            # AgriculturalProduct - municipality
+            # Nonagric - municipality
             ret = process_dataset(nonagric_level3_municipality)
             df = ret[('location_id', 'nonag_id')].reset_index()
             df["nonag_level"] = "level3"
