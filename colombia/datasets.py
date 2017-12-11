@@ -1201,6 +1201,8 @@ def read_agproduct_level3_country():
 def hook_agproduct(df):
     df["agproduct"] = df["agproduct"].map(slugify)
     df = df[df.agproduct_level == "level3"]
+    df = df[df.year != ""]
+    df.year = df.year.astype(int)
     return df
 
 agproduct_level3_country = copy.deepcopy(agproduct_template)
