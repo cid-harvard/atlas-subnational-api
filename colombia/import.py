@@ -41,6 +41,9 @@ from datasets import (product_classification,
                       farmsize_classification,
                       )
 
+import pandas as pd
+import numpy as np
+
 
 def weighted_mean(data_field, weights_field):
     """Return a function that, when applied to a dataframe groupby, returns a
@@ -49,6 +52,9 @@ def weighted_mean(data_field, weights_field):
     def inner(groupby):
         d = groupby[data_field]
         w = groupby[weights_field]
+        w_sum = w.sum()
+        if w_sum == 0 or pd.isnull(w_sum):
+            return np.nan
         return (d * w).sum() / w.sum()
 
     return inner
