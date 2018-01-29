@@ -13,7 +13,7 @@ def classification_to_models(classification, model):
     for index, row in classification.table.iterrows():
         row = row.replace([np.nan], [None])
         m = model()
-        m.id = index.item()
+        m.id = index
         m.code = row["code"]
         m.name_en = row["name"]
         if "name_es" in row:
