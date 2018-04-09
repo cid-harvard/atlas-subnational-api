@@ -15,10 +15,10 @@ PROFILE = False
 PORT = 8001
 
 # Ingestion settings
-DATASET_ROOT = "/nfs/projects_nobackup/c/cidgrowlab/Atlas/Colombia/beta/"
+DATASET_ROOT = "/nfs/home/M/makmanalp/shared_space/cid_colombia/Mali/2016Output"
 YEAR_MIN_TRADE = 2007
-YEAR_MAX_TRADE = 2014
+YEAR_MAX_TRADE = 2016
 YEAR_MIN_INDUSTRY = 2007
-YEAR_MAX_INDUSTRY = 2014
+YEAR_MAX_INDUSTRY = 2016
 YEAR_MIN_DEMOGRAPHIC = 2007
-YEAR_MAX_DEMOGRAPHIC = 2014
+YEAR_MAX_DEMOGRAPHIC = 2016
