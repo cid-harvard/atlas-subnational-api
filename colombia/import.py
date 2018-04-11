@@ -27,6 +27,8 @@ if __name__ == "__main__":
         app = create_app()
         with app.app_context():
 
+            c = app.config
+
             from datasets import (
                 trade4digit_country, trade4digit_department,
                 trade4digit_msa, trade4digit_municipality,
@@ -167,7 +169,7 @@ if __name__ == "__main__":
             ret = process_dataset(livestock_level1_department)
             ls_df = ret[('location_id',)].reset_index()
             ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
-            ls_df["year"] = 2014
+            ls_df["year"] = c["YEAR_AGRICULTURAL_CENSUS"]
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
 
             # Yield indexes
@@ -183,12 +185,12 @@ if __name__ == "__main__":
             def filter_year_range(df, min_year, max_year):
                 return df[(min_year <= df.year) & (df.year <= max_year)]
 
-            c = app.config
             df_p = filter_year_range(dy_p, c["YEAR_MIN_TRADE"], c["YEAR_MAX_TRADE"])
             df_i = filter_year_range(dy_i, c["YEAR_MIN_INDUSTRY"], c["YEAR_MAX_INDUSTRY"])
             gdp_df = filter_year_range(gdp_df, c["YEAR_MIN_DEMOGRAPHIC"], c["YEAR_MAX_DEMOGRAPHIC"])
             pop_df = filter_year_range(pop_df, c["YEAR_MIN_DEMOGRAPHIC"], c["YEAR_MAX_DEMOGRAPHIC"])
-            ls_df = ls_df[(2007 <= ls_df.year) & (ls_df.year <= 2014)]
+            ls_df = filter_year_range(ls_df, c["YEAR_AGRICULTURAL_CENSUS"], c["YEAR_AGRICULTURAL_CENSUS"])
+            agproduct_df = filter_year_range(agproduct_df, c["YEAR_MIN_AGPRODUCT"], c["YEAR_MAX_AGPRODUCT"])
 
             dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
             dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
@@ -359,7 +361,7 @@ if __name__ == "__main__":
 
             ls_df = ret[('location_id',)].reset_index()
             ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
-            ls_df["year"] = 2014
+            ls_df["year"] = c["YEAR_AGRICULTURAL_CENSUS"]
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
 
             ret = process_dataset(agproduct_level3_municipality)
