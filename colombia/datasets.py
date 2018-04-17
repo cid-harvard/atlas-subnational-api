@@ -50,6 +50,8 @@ YEAR_MIN_TRADE = current_app.config["YEAR_MIN_TRADE"]
 YEAR_MAX_TRADE = current_app.config["YEAR_MAX_TRADE"]
 YEAR_MIN_INDUSTRY = current_app.config["YEAR_MIN_INDUSTRY"]
 YEAR_MAX_INDUSTRY = current_app.config["YEAR_MAX_INDUSTRY"]
+YEAR_MIN_AGPRODUCT = current_app.config["YEAR_MIN_AGPRODUCT"]
+YEAR_MAX_AGPRODUCT = current_app.config["YEAR_MAX_AGPRODUCT"]
 
 # These are MSAs (Metropolitan Statistical Area) that have a single
 # municipality associated with them - they're mostly "cities" which are munis
@@ -1204,6 +1206,7 @@ def hook_agproduct(df):
     df = df[df.agproduct_level == "level3"]
     df = df[df.year != ""]
     df.year = df.year.astype(int)
+    df = df[df.year.between(YEAR_MIN_AGPRODUCT, YEAR_MAX_AGPRODUCT)]
     return df
 
 agproduct_level3_country = copy.deepcopy(agproduct_template)
