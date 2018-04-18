@@ -12,8 +12,11 @@ def classification_to_models(classification, model):
     models = []
     for index, row in classification.table.iterrows():
         row = row.replace([np.nan], [None])
+        # Convert numpy types to native python types, otherwise sqlite will
+        # choke on them with a "datatype mismatch" error
+        row = row.to_dict()
         m = model()
-        m.id = index
+        m.id = int(index)
         m.code = row["code"]
         m.name_en = row["name"]
         if "name_es" in row:
