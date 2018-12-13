@@ -2,6 +2,7 @@ import pandas as pd
 import copy
 import os.path
 import re
+from flask import current_app
 
 from linnaeus import classification
 
@@ -44,11 +45,13 @@ def slugify(s):
     return re.sub(r'[^a-zA-Z0-9\_]', '', s.replace(" ", "_").lower())
 
 
-DATASET_ROOT = "/nfs/projects_nobackup/c/cidgrowlab/Atlas/Colombia/beta/"
-YEAR_MIN_TRADE = 2007
-YEAR_MAX_TRADE = 2014
-YEAR_MIN_INDUSTRY = 2007
-YEAR_MAX_INDUSTRY = 2014
+DATASET_ROOT = current_app.config["DATASET_ROOT"]
+YEAR_MIN_TRADE = current_app.config["YEAR_MIN_TRADE"]
+YEAR_MAX_TRADE = current_app.config["YEAR_MAX_TRADE"]
+YEAR_MIN_INDUSTRY = current_app.config["YEAR_MIN_INDUSTRY"]
+YEAR_MAX_INDUSTRY = current_app.config["YEAR_MAX_INDUSTRY"]
+YEAR_MIN_AGPRODUCT = current_app.config["YEAR_MIN_AGPRODUCT"]
+YEAR_MAX_AGPRODUCT = current_app.config["YEAR_MAX_AGPRODUCT"]
 
 # These are MSAs (Metropolitan Statistical Area) that have a single
 # municipality associated with them - they're mostly "cities" which are munis
@@ -653,8 +656,8 @@ industry4digit_department = {
         "state_p_est": "num_establishments",
         "state_p_rca": "rca",
         "state_p_distance_flow": "distance",
-        "state_p_cog_flow_pred1": "cog",
-        "state_all_coi_flow_pred1": "industry_coi",
+        "state_p_cog_flow_pred": "cog",
+        "state_all_coi_flow_pred": "industry_coi",
         "all_p_pci": "complexity",
         "state_all_eci": "industry_eci"
     },
@@ -721,8 +724,8 @@ industry4digit_msa = {
         "msa_p_est": "num_establishments",
         "msa_p_rca": "rca",
         "msa_p_distance_flow": "distance",
-        "msa_p_cog_flow_pred1": "cog",
-        "msa_all_coi_flow_pred1": "industry_coi",
+        "msa_p_cog_flow_pred": "cog",
+        "msa_all_coi_flow_pred": "industry_coi",
         "all_p_pci": "complexity",
         "msa_all_eci": "industry_eci"
     },
@@ -804,7 +807,7 @@ industry4digit_municipality = {
 }
 
 population = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_pop_muni_dept_natl_1985_2014.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final_Metadata/col_pop_muni_dept_natl.dta")),
     "hook_pre_merge": lambda df: df[~df[["location", "year", "population"]].duplicated()],
     "field_mapping": {
         "year": "year",
@@ -830,7 +833,7 @@ population = {
 
 
 gdp_nominal_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_nomgdp_muni_dept_natl_2000_2014.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final_Metadata/col_nomgdp_muni_dept_natl.dta")),
     "hook_pre_merge": lambda df: df.drop_duplicates(["location", "year"]),
     "field_mapping": {
         "dept_code": "location",
@@ -856,7 +859,7 @@ gdp_nominal_department = {
 
 
 gdp_real_department = {
-    "read_function": lambda: pd.read_stata(prefix_path("Final Metadata/col_realgdp_dept_natl_2000_2014.dta")),
+    "read_function": lambda: pd.read_stata(prefix_path("Final_Metadata/col_realgdp_dept_natl.dta")),
     "field_mapping": {
         "dept_code": "location",
         "real_gdp": "gdp_real",
@@ -936,8 +939,8 @@ industry2digit_department = {
         "state_d3_wagemonth": "monthly_wages",
         "state_d3_emp": "employment",
         "state_d3_rca": "rca",
-        "state_d3_distance_flow_pred1": "distance",
-        "state_d3_cog_flow_pred1": "cog",
+        "state_d3_distance_flow_pred": "distance",
+        "state_d3_cog_flow_pred": "cog",
         "all_d3_pci": "complexity"
     },
     "classification_fields": {
@@ -986,8 +989,8 @@ industry2digit_msa = {
         "msa_d3_wagemonth": "monthly_wages",
         "msa_d3_emp": "employment",
         "msa_d3_rca": "rca",
-        "msa_d3_distance_flow_pred1": "distance",
-        "msa_d3_cog_flow_pred1": "cog",
+        "msa_d3_distance_flow_pred": "distance",
+        "msa_d3_cog_flow_pred": "cog",
         "all_d3_pci": "complexity"
     },
     "classification_fields": {
@@ -1203,6 +1206,7 @@ def hook_agproduct(df):
     df = df[df.agproduct_level == "level3"]
     df = df[df.year != ""]
     df.year = df.year.astype(int)
+    df = df[df.year.between(YEAR_MIN_AGPRODUCT, YEAR_MAX_AGPRODUCT)]
     return df
 
 agproduct_level3_country = copy.deepcopy(agproduct_template)

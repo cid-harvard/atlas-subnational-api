@@ -3,44 +3,6 @@ from colombia.core import db
 
 from dataset_tools import (process_dataset, classification_to_models)
 
-from datasets import (trade4digit_country, trade4digit_department,
-                      trade4digit_msa, trade4digit_municipality,
-                      industry4digit_country, industry4digit_department,
-                      industry4digit_msa, industry2digit_department,
-                      industry4digit_municipality,
-                      trade4digit_rcpy_municipality,
-                      industry2digit_msa,
-                      trade4digit_rcpy_department, trade4digit_rcpy_msa,
-                      trade4digit_rcpy_country, population,
-                      gdp_nominal_department, gdp_real_department,
-                      occupation2digit, occupation2digit_industry2digit,
-                      industry2digit_country, livestock_level1_country,
-                      livestock_level1_department,
-                      livestock_level1_municipality,
-                      agproduct_level3_country, agproduct_level3_department,
-                      agproduct_level3_municipality,
-                      nonagric_level3_country, nonagric_level3_department,
-                      nonagric_level3_municipality,
-                      land_use_level2_country, land_use_level2_department,
-                      land_use_level2_municipality, farmtype_level2_country,
-                      farmtype_level2_department, farmtype_level2_municipality,
-                      farmsize_level1_country, farmsize_level1_department,
-                      farmsize_level1_municipality,
-                      )
-
-from datasets import (product_classification,
-                      industry_classification,
-                      location_classification,
-                      country_classification,
-                      occupation_classification,
-                      livestock_classification,
-                      agproduct_classification,
-                      nonagric_classification,
-                      land_use_classification,
-                      farmtype_classification,
-                      farmsize_classification,
-                      )
-
 import pandas as pd
 import numpy as np
 
@@ -64,6 +26,49 @@ if __name__ == "__main__":
 
         app = create_app()
         with app.app_context():
+
+            c = app.config
+
+            from datasets import (
+                trade4digit_country, trade4digit_department,
+                trade4digit_msa, trade4digit_municipality,
+                industry4digit_country, industry4digit_department,
+                industry4digit_msa, industry2digit_department,
+                industry4digit_municipality,
+                trade4digit_rcpy_municipality,
+                industry2digit_msa,
+                trade4digit_rcpy_department, trade4digit_rcpy_msa,
+                trade4digit_rcpy_country, population,
+                gdp_nominal_department, gdp_real_department,
+                occupation2digit, occupation2digit_industry2digit,
+                industry2digit_country, livestock_level1_country,
+                livestock_level1_department,
+                livestock_level1_municipality,
+                agproduct_level3_country, agproduct_level3_department,
+                agproduct_level3_municipality,
+                nonagric_level3_country, nonagric_level3_department,
+                nonagric_level3_municipality,
+                land_use_level2_country, land_use_level2_department,
+                land_use_level2_municipality, farmtype_level2_country,
+                farmtype_level2_department, farmtype_level2_municipality,
+                farmsize_level1_country, farmsize_level1_department,
+                farmsize_level1_municipality,
+            )
+
+            from datasets import (
+                product_classification,
+                industry_classification,
+                location_classification,
+                country_classification,
+                occupation_classification,
+                livestock_classification,
+                agproduct_classification,
+                nonagric_classification,
+                land_use_classification,
+                farmtype_classification,
+                farmsize_classification,
+            )
+
 
             products = classification_to_models(product_classification,
                                                 models.HSProduct)
@@ -164,7 +169,7 @@ if __name__ == "__main__":
             ret = process_dataset(livestock_level1_department)
             ls_df = ret[('location_id',)].reset_index()
             ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
-            ls_df["year"] = 2014
+            ls_df["year"] = c["YEAR_AGRICULTURAL_CENSUS"]
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
 
             # Yield indexes
@@ -177,11 +182,16 @@ if __name__ == "__main__":
             agproduct_df = agproduct_df.reset_index()
 
             # Merge all dept-year variables together
-            dy_p = dy_p[(2007 <= dy_p.year) & (dy_p.year <= 2014)]
-            dy_i = dy_i[(2007 <= dy_i.year) & (dy_i.year <= 2014)]
-            gdp_df = gdp_df[(2007 <= gdp_df.year) & (gdp_df.year <= 2014)]
-            pop_df = pop_df[(2007 <= pop_df.year) & (pop_df.year <= 2014)]
-            ls_df = ls_df[(2007 <= ls_df.year) & (ls_df.year <= 2014)]
+            def filter_year_range(df, min_year, max_year):
+                return df[(min_year <= df.year) & (df.year <= max_year)]
+
+            df_p = filter_year_range(dy_p, c["YEAR_MIN_TRADE"], c["YEAR_MAX_TRADE"])
+            df_i = filter_year_range(dy_i, c["YEAR_MIN_INDUSTRY"], c["YEAR_MAX_INDUSTRY"])
+            gdp_df = filter_year_range(gdp_df, c["YEAR_MIN_DEMOGRAPHIC"], c["YEAR_MAX_DEMOGRAPHIC"])
+            pop_df = filter_year_range(pop_df, c["YEAR_MIN_DEMOGRAPHIC"], c["YEAR_MAX_DEMOGRAPHIC"])
+            ls_df = filter_year_range(ls_df, c["YEAR_AGRICULTURAL_CENSUS"], c["YEAR_AGRICULTURAL_CENSUS"])
+            agproduct_df = filter_year_range(agproduct_df, c["YEAR_MIN_AGPRODUCT"], c["YEAR_MAX_AGPRODUCT"])
+
             dy = dy_p.merge(dy_i, on=["location_id", "year"], how="outer")
             dy = dy.merge(gdp_df, on=["location_id", "year"], how="outer")
             dy = dy.merge(pop_df, on=["location_id", "year"], how="outer")
@@ -351,7 +361,7 @@ if __name__ == "__main__":
 
             ls_df = ret[('location_id',)].reset_index()
             ls_df["average_livestock_load"] = ls_df.num_livestock / ls_df.num_farms
-            ls_df["year"] = 2014
+            ls_df["year"] = c["YEAR_AGRICULTURAL_CENSUS"]
             ls_df = ls_df[["location_id", "average_livestock_load", "year"]]
 
             ret = process_dataset(agproduct_level3_municipality)
